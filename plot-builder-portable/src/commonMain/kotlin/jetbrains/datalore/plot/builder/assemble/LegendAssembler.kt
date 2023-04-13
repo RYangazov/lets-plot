@@ -17,7 +17,7 @@ import jetbrains.datalore.plot.base.scale.breaks.ScaleBreaksUtil
 import jetbrains.datalore.plot.builder.assemble.LegendAssemblerUtil.mapToAesthetics
 import jetbrains.datalore.plot.builder.guide.*
 import jetbrains.datalore.plot.builder.layout.LegendBoxInfo
-import jetbrains.datalore.plot.builder.presentation.Defaults
+import jetbrains.datalore.plot.builder.presentation.Defaults.Common.Legend
 import jetbrains.datalore.plot.builder.theme.LegendTheme
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -114,8 +114,8 @@ class LegendAssembler(
 
 
     private class LegendLayer(
-        internal val keyElementFactory: LegendKeyElementFactory,
-        internal val aesList: List<Aes<*>>,
+        val keyElementFactory: LegendKeyElementFactory,
+        val aesList: List<Aes<*>>,
         constantByAes: Map<Aes<*>, Any>,
         aestheticsDefaults: AestheticsDefaults,
 //        scaleMap: Map<Aes<*>, Scale>,
@@ -126,8 +126,8 @@ class LegendAssembler(
         fillByAes: Aes<Color>
     ) {
 
-        internal val keyAesthetics: Aesthetics
-        internal val keyLabels: List<String>
+        val keyAesthetics: Aesthetics
+        val keyLabels: List<String>
 
         init {
             val aesValuesByLabel = LinkedHashMap<String, MutableMap<Aes<*>, Any>>()
@@ -165,33 +165,23 @@ class LegendAssembler(
     companion object {
         private const val DEBUG_DRAWING = jetbrains.datalore.plot.FeatureSwitch.LEGEND_DEBUG_DRAWING
         fun wrap(text: String): String {
-            if (text.contains("\n") || text.length <= Defaults.Common.Legend.STRING_MAX_LENGTH) return text
-            var i: Int = 0
-            var substringIndex: Int = 0
-            var tempIndex: Int = 0
-            var tempString: String = String()
-            var resultString: String = String()
-            var stringSplitter: String = ""
-            while (i < Defaults.Common.Legend.STRINGS_MAX_COUNT && substringIndex < text.length - 1) {
-                //Let's take a part of the string for analysis on the presence of spaces
-                tempString = text.substring(
-                    substringIndex,
-                    min(text.length, substringIndex + Defaults.Common.Legend.STRING_MAX_LENGTH)
-                )
-                tempIndex = if (tempString.lastIndexOf(" ") < 0) min(
-                    Defaults.Common.Legend.STRING_MAX_LENGTH,
-                    tempString.length
-                ) else tempString.lastIndexOf(" ") + 1
-                resultString += stringSplitter + tempString.substring(0, tempIndex)
-                stringSplitter = "\n"
-                substringIndex += tempIndex
-                i++
-                if (i == Defaults.Common.Legend.STRINGS_MAX_COUNT
-                    && tempString.length >= Defaults.Common.Legend.STRING_MAX_LENGTH
-                )
-                    resultString = resultString.dropLast(2) + ".."
-            }
-            return resultString
+            if (text.contains("\n") || text.length <= Legend.LINES_MAX_LENGTH) return text
+            return recursiveWrap(text)
+        }
+
+        private fun recursiveWrap(text: String, recursiveDepth: Int = 1): String {
+            val trimmedText: String = text.trim()
+            if (recursiveDepth == Legend.LINES_MAX_COUNT) return ".."
+            if (trimmedText.isEmpty()) return ""
+            val tempIndex: Int =
+                trimmedText.substring(0, min(Legend.LINES_MAX_LENGTH, trimmedText.length))
+                    .lastIndexOf(" ").takeIf { it >= 0 } ?: min(Legend.LINES_MAX_LENGTH, trimmedText.length)
+            var result = trimmedText.substring(0, tempIndex)
+            result += if (tempIndex == trimmedText.length) "" else "\n" + recursiveWrap(
+                trimmedText.substring(min(tempIndex, trimmedText.length), trimmedText.length),
+                recursiveDepth + 1
+            )
+            return result
         }
 
         fun createLegendSpec(
