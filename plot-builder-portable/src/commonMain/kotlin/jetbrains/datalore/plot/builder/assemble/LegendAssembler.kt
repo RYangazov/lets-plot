@@ -17,6 +17,7 @@ import jetbrains.datalore.plot.base.scale.breaks.ScaleBreaksUtil
 import jetbrains.datalore.plot.builder.assemble.LegendAssemblerUtil.mapToAesthetics
 import jetbrains.datalore.plot.builder.guide.*
 import jetbrains.datalore.plot.builder.layout.LegendBoxInfo
+import jetbrains.datalore.plot.builder.presentation.Defaults
 import jetbrains.datalore.plot.builder.theme.LegendTheme
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -65,7 +66,7 @@ class LegendAssembler(
             val keyElementFactory = legendLayer.keyElementFactory
             val dataPoints = legendLayer.keyAesthetics.dataPoints().iterator()
             for (label in legendLayer.keyLabels) {
-                legendBreaksByLabel.getOrPut(label) { LegendBreak(label) }
+                legendBreaksByLabel.getOrPut(label) { LegendBreak(wrap(label)) }
                     .addLayer(dataPoints.next(), keyElementFactory)
             }
         }
@@ -163,6 +164,35 @@ class LegendAssembler(
 
     companion object {
         private const val DEBUG_DRAWING = jetbrains.datalore.plot.FeatureSwitch.LEGEND_DEBUG_DRAWING
+        fun wrap(text: String): String {
+            if (text.contains("\n") || text.length <= Defaults.Common.Legend.STRING_MAX_LENGTH) return text
+            var i: Int = 0
+            var substringIndex: Int = 0
+            var tempIndex: Int = 0
+            var tempString: String = String()
+            var resultString: String = String()
+            var stringSplitter: String = ""
+            while (i < Defaults.Common.Legend.STRINGS_MAX_COUNT && substringIndex < text.length - 1) {
+                //Let's take a part of the string for analysis on the presence of spaces
+                tempString = text.substring(
+                    substringIndex,
+                    min(text.length, substringIndex + Defaults.Common.Legend.STRING_MAX_LENGTH)
+                )
+                tempIndex = if (tempString.lastIndexOf(" ") < 0) min(
+                    Defaults.Common.Legend.STRING_MAX_LENGTH,
+                    tempString.length
+                ) else tempString.lastIndexOf(" ") + 1
+                resultString += stringSplitter + tempString.substring(0, tempIndex)
+                stringSplitter = "\n"
+                substringIndex += tempIndex
+                i++
+                if (i == Defaults.Common.Legend.STRINGS_MAX_COUNT
+                    && tempString.length >= Defaults.Common.Legend.STRING_MAX_LENGTH
+                )
+                    resultString = resultString.dropLast(2) + ".."
+            }
+            return resultString
+        }
 
         fun createLegendSpec(
             title: String,

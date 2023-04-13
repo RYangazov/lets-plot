@@ -8,11 +8,13 @@ package jetbrains.datalore.plot.builder.layout.axis
 import jetbrains.datalore.base.interval.DoubleSpan
 import jetbrains.datalore.plot.base.ScaleMapper
 import jetbrains.datalore.plot.base.scale.Mappers
+import jetbrains.datalore.plot.base.scale.ScaleBreaks
 import jetbrains.datalore.plot.builder.guide.Orientation
 import jetbrains.datalore.plot.builder.layout.AxisLayoutInfo
 import jetbrains.datalore.plot.builder.layout.axis.label.AxisLabelsLayout
 import jetbrains.datalore.plot.builder.layout.axis.label.BreakLabelsLayoutUtil
 import jetbrains.datalore.plot.builder.layout.util.Insets
+import jetbrains.datalore.plot.builder.presentation.Defaults
 import jetbrains.datalore.plot.builder.theme.AxisTheme
 
 internal abstract class AxisLayouter(
@@ -63,10 +65,16 @@ internal abstract class AxisLayouter(
 
             if (orientation.isHorizontal) {
                 val labelsLayout: AxisLabelsLayout = if (breaksProvider.isFixedBreaks) {
+                    val scaleBreaks = breaksProvider.fixedBreaks
+                    var trimmedScaleBreaks = ScaleBreaks(
+                        scaleBreaks.domainValues,
+                        scaleBreaks.transformedValues,
+                        scaleBreaks.labels.map { trimLongValues(it) }
+                    )
                     AxisLabelsLayout.horizontalFixedBreaks(
                         orientation,
                         axisDomain,
-                        breaksProvider.fixedBreaks,
+                        trimmedScaleBreaks,
                         geomAreaInsets,
                         theme
                     )
@@ -91,6 +99,10 @@ internal abstract class AxisLayouter(
                 axisDomain,
                 labelsLayout
             )
+        }
+        fun trimLongValues(text : String) : String {
+            if (text.length <= Defaults.Common.Label.LABEL_MAX_LENGTH) return text
+            else return text.take(Defaults.Common.Label.LABEL_MAX_LENGTH) + ".."
         }
     }
 }

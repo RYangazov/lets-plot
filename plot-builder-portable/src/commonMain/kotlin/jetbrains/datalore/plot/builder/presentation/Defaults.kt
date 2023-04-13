@@ -59,6 +59,12 @@ object Defaults {
         object Legend {
             const val TITLE_FONT_SIZE = FONT_MEDIUM
             const val ITEM_FONT_SIZE = FONT_SMALL
+            const val STRING_MAX_LENGTH = 30
+            const val STRINGS_MAX_COUNT= 5
+        }
+
+        object Label {
+            const val LABEL_MAX_LENGTH = 20
         }
 
         object Tooltip {
