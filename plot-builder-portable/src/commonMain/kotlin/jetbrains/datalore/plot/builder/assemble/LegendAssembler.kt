@@ -173,12 +173,12 @@ class LegendAssembler(
             val trimmedText: String = text.trim()
             if (recursiveDepth == Legend.LINES_MAX_COUNT) return ".."
             if (trimmedText.isEmpty()) return ""
-            val tempIndex: Int =
+            val index: Int =
                 trimmedText.substring(0, min(Legend.LINES_MAX_LENGTH, trimmedText.length))
                     .lastIndexOf(" ").takeIf { it >= 0 } ?: min(Legend.LINES_MAX_LENGTH, trimmedText.length)
-            var result = trimmedText.substring(0, tempIndex)
-            result += if (tempIndex == trimmedText.length) "" else "\n" + recursiveWrap(
-                trimmedText.substring(min(tempIndex, trimmedText.length), trimmedText.length),
+            var result = trimmedText.substring(0, index)
+            result += if (index == trimmedText.length) "" else "\n" + recursiveWrap(
+                trimmedText.substring(min(index, trimmedText.length), trimmedText.length),
                 recursiveDepth + 1
             )
             return result
