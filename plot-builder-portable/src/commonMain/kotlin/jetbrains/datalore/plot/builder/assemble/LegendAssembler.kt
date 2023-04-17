@@ -182,7 +182,7 @@ class LegendAssembler(
 
         private fun String.getLineLength(n: Int): Int {
             if (this.length <= n) return this.length
-            //Trying to find space in last part of string. If word length is greater n / 3, then we can split it
+            //Trying to find space in last part of string. If word length is greater 2 * n / 3, then we can split it
             return if (this.take(n).lastIndexOf(" ") < n / 3) n else this.take(n).lastIndexOf(" ")
         }
 
