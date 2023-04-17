@@ -112,7 +112,6 @@ class LegendAssembler(
         }
     }
 
-
     private class LegendLayer(
         val keyElementFactory: LegendKeyElementFactory,
         val aesList: List<Aes<*>>,
@@ -166,22 +165,25 @@ class LegendAssembler(
         private const val DEBUG_DRAWING = jetbrains.datalore.plot.FeatureSwitch.LEGEND_DEBUG_DRAWING
         fun wrap(text: String): String {
             if (text.contains("\n") || text.length <= Legend.LINES_MAX_LENGTH) return text
-            return recursiveWrap(text)
+
+            return generateSequence(text.split(Legend.LINES_MAX_LENGTH)) {
+                when {
+                    it.first.isEmpty() -> null
+                    else -> it.first.split(Legend.LINES_MAX_LENGTH)
+                }
+            }
+                .map(Pair<*, String>::second)
+                .joinToString("\n", limit = Legend.LINES_MAX_COUNT)
         }
 
-        private fun recursiveWrap(text: String, recursiveDepth: Int = 1): String {
-            val trimmedText: String = text.trim()
-            if (recursiveDepth == Legend.LINES_MAX_COUNT) return ".."
-            if (trimmedText.isEmpty()) return ""
-            val index: Int =
-                trimmedText.substring(0, min(Legend.LINES_MAX_LENGTH, trimmedText.length))
-                    .lastIndexOf(" ").takeIf { it >= 0 } ?: min(Legend.LINES_MAX_LENGTH, trimmedText.length)
-            var result = trimmedText.substring(0, index)
-            result += if (index == trimmedText.length) "" else "\n" + recursiveWrap(
-                trimmedText.substring(min(index, trimmedText.length), trimmedText.length),
-                recursiveDepth + 1
-            )
-            return result
+        private fun String.split(n: Int): Pair<String, String> {
+            return Pair(this.drop(this.getLineLength(n)), this.take(this.getLineLength(n)))
+        }
+
+        private fun String.getLineLength(n: Int): Int {
+            if (this.length <= n) return this.length
+            //Trying to find space in last part of string. If word length is greater n / 3, then we can split it
+            return if (this.take(n).lastIndexOf(" ") < n / 3) n else this.take(n).lastIndexOf(" ")
         }
 
         fun createLegendSpec(
@@ -270,3 +272,5 @@ class LegendAssembler(
         }
     }
 }
+
+
