@@ -66,8 +66,9 @@ class LegendAssembler(
             val keyElementFactory = legendLayer.keyElementFactory
             val dataPoints = legendLayer.keyAesthetics.dataPoints().iterator()
             for (label in legendLayer.keyLabels) {
-                legendBreaksByLabel.getOrPut(label) { LegendBreak(wrap(label)) }
-                    .addLayer(dataPoints.next(), keyElementFactory)
+                legendBreaksByLabel.getOrPut(label) {
+                    LegendBreak(wrap(label, Legend.LINES_MAX_LENGTH, Legend.LINES_MAX_COUNT))
+                }.addLayer(dataPoints.next(), keyElementFactory)
             }
         }
 
@@ -163,27 +164,24 @@ class LegendAssembler(
 
     companion object {
         private const val DEBUG_DRAWING = jetbrains.datalore.plot.FeatureSwitch.LEGEND_DEBUG_DRAWING
-        fun wrap(text: String): String {
-            if (text.contains("\n") || text.length <= Legend.LINES_MAX_LENGTH) return text
+        fun wrap(text: String, length: Int, limit: Int = -1): String {
+            fun String.split(length: Int): Pair<String, String> {
+                //Trying to find space in last part of string.
+                // If word length is greater 2 * length / 3, then we can split it
+                val lineLength =
+                    this.length.takeIf { it == length } ?: this.take(length + 1).lastIndexOf(" ")
+                        .takeIf { it > length / 3 } ?: length
+                return Pair(this.drop(lineLength), this.take(lineLength))
+            }
 
-            return generateSequence(text.split(Legend.LINES_MAX_LENGTH)) {
+            return text.takeIf { it.contains("\n") || it.length <= length } ?: generateSequence(text.split(length)) {
                 when {
                     it.first.isEmpty() -> null
-                    else -> it.first.split(Legend.LINES_MAX_LENGTH)
+                    else -> it.first.trim().split(length)
                 }
             }
                 .map(Pair<*, String>::second)
-                .joinToString("\n", limit = Legend.LINES_MAX_COUNT)
-        }
-
-        private fun String.split(n: Int): Pair<String, String> {
-            return Pair(this.drop(this.getLineLength(n)), this.take(this.getLineLength(n)))
-        }
-
-        private fun String.getLineLength(n: Int): Int {
-            if (this.length <= n) return this.length
-            //Trying to find space in last part of string. If word length is greater 2 * n / 3, then we can split it
-            return if (this.take(n).lastIndexOf(" ") < n / 3) n else this.take(n).lastIndexOf(" ")
+                .joinToString("\n", limit = limit)
         }
 
         fun createLegendSpec(
@@ -270,6 +268,7 @@ class LegendAssembler(
                 reverse = false
             )
         }
+
     }
 }
 
