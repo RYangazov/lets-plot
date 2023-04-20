@@ -168,20 +168,20 @@ class LegendAssembler(
             fun String.split(length: Int): Pair<String, String> {
                 //Trying to find space in last part of string.
                 // If word length is greater 2 * length / 3, then we can split it
-                val lineLength =
-                    this.length.takeIf { it == length } ?: this.take(length + 1).lastIndexOf(" ")
-                        .takeIf { it > length / 3 } ?: length
+                val lineLength = if (this.length <= length) this.length else
+                    this.take(length + 1).lastIndexOf(" ").takeIf { it > length / 3 } ?: length
                 return Pair(this.drop(lineLength), this.take(lineLength))
             }
 
-            return text.takeIf { it.contains("\n") || it.length <= length } ?: generateSequence(text.split(length)) {
-                when {
-                    it.first.isEmpty() -> null
-                    else -> it.first.trim().split(length)
+            return text.takeIf { it.length <= length || it.contains("\n") }
+                ?: generateSequence(text.split(length)) { (line, _) ->
+                    when {
+                        line.isEmpty() -> null
+                        else -> line.trim().split(length)
+                    }
                 }
-            }
-                .map(Pair<*, String>::second)
-                .joinToString("\n", limit = limit)
+                    .map(Pair<*, String>::second)
+                    .joinToString("\n", limit = limit)
         }
 
         fun createLegendSpec(
