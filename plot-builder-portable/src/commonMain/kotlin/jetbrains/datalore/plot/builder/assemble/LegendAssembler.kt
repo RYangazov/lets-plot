@@ -6,6 +6,7 @@
 package jetbrains.datalore.plot.builder.assemble
 
 import jetbrains.datalore.base.geometry.DoubleVector
+import jetbrains.datalore.base.numberFormat.length
 import jetbrains.datalore.base.values.Color
 import jetbrains.datalore.plot.base.Aes
 import jetbrains.datalore.plot.base.Aesthetics
@@ -21,6 +22,7 @@ import jetbrains.datalore.plot.builder.presentation.Defaults.Common.Legend
 import jetbrains.datalore.plot.builder.theme.LegendTheme
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.max
 import kotlin.math.min
 
 class LegendAssembler(
@@ -164,24 +166,37 @@ class LegendAssembler(
 
     companion object {
         private const val DEBUG_DRAWING = jetbrains.datalore.plot.FeatureSwitch.LEGEND_DEBUG_DRAWING
-        fun wrap(text: String, length: Int, limit: Int = -1): String {
-            fun String.split(length: Int): Pair<String, String> {
-                //Trying to find space in last part of string.
-                // If word length is greater 2 * length / 3, then we can split it
-                val lineLength = if (this.length <= length) this.length else
-                    this.take(length + 1).lastIndexOf(" ").takeIf { it > length / 3 } ?: length
-                return Pair(this.drop(lineLength), this.take(lineLength))
-            }
+        fun wrap(text: String, lineLength: Int, limit: Int = -1): String {
+            fun List<List<String>>.length() = lastOrNull()?.run { sumOf(String::length) + size } ?: 0
 
-            return text.takeIf { it.length <= length || it.contains("\n") }
-                ?: generateSequence(text.split(length)) { (line, _) ->
+            fun List<String>.accumulate(): MutableList<MutableList<String>> {
+                val lines = mutableListOf(mutableListOf<String>())
+                forEach { word ->
+                    val freeSpace = lineLength - lines.length()
                     when {
-                        line.isEmpty() -> null
-                        else -> line.trim().split(length)
+                        freeSpace >= word.length -> lines.last().add(word)
+                        word.length <= lineLength -> {
+                            lines.add(mutableListOf<String>(word))
+                        }
+                        else -> {
+                            lines.last().add(word.take(freeSpace))
+                            word.drop(freeSpace)
+                                .chunked(lineLength)
+                                .forEach {
+                                    lines.add(mutableListOf<String>(it))
+                                }
+                        }
                     }
                 }
-                    .map(Pair<*, String>::second)
-                    .joinToString("\n", limit = limit)
+                return lines
+            }
+
+            return text.takeUnless { it.length <= lineLength || it.contains("\n") }
+                ?.split(" ")
+                ?.accumulate()
+                ?.joinToString("\n", limit = limit) {
+                    it.joinToString(separator = " ")
+                } ?: text
         }
 
         fun createLegendSpec(

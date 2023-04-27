@@ -25,7 +25,7 @@ class LegendAssemblerTest {
         assertThat(
             LegendAssembler.wrap(
                 "Lorem ipsum dolor sit amet,\n"
-                        + "consectetur adipiscing elit.", 7
+                        + "consectetur adipiscing elit.", 7 ,7
             )
         )
             .isEqualTo("Lorem ipsum dolor sit amet,\nconsectetur adipiscing elit.")
@@ -55,7 +55,7 @@ class LegendAssemblerTest {
 
     @Test
     fun wrapWithoutSpaces() {
-        assertThat(LegendAssembler.wrap("abcdefghijklmnopqrstuvwxyz", 7, 4))
+        assertThat(LegendAssembler.wrap("abcdefghijklmnopqrstuvwxyz", 7))
             .isEqualTo(
                 """
                 |abcdefg
@@ -77,7 +77,7 @@ class LegendAssemblerTest {
                 |...
                 """.trimMargin()
             )
-        assertThat(LegendAssembler.wrap("abcde fghijk lmno pqrstuvwxyz", 7, 3))
+        assertThat(LegendAssembler.wrap("abcde fghijk lmno pqrstuv", 7, 3))
             .isEqualTo(
                 """
                 |abcde
@@ -90,14 +90,12 @@ class LegendAssemblerTest {
 
     @Test
     fun wrapLongWords() {
-        assertThat(LegendAssembler.wrap("amet, consectetur adipiscing elit", 7))
+        assertThat(LegendAssembler.wrap("amet, consectetur adipiscing elit", 11))
             .isEqualTo(
                 """
                 |amet,
-                |consect
-                |etur
-                |adipisc
-                |ing
+                |consectetur
+                |adipiscing
                 |elit
                 """.trimMargin()
             )
@@ -107,9 +105,8 @@ class LegendAssemblerTest {
         assertThat(LegendAssembler.wrap("Lorem ipsum abcdefghijklmnopqrstuvwxyz, abcdefghijklmnopqrstuvwxyz elit.", 20))
             .isEqualTo(
                 """
-                |Lorem ipsum
-                |abcdefghijklmnopqrst
-                |uvwxyz,
+                |Lorem ipsum abcdefgh
+                |ijklmnopqrstuvwxyz, 
                 |abcdefghijklmnopqrst
                 |uvwxyz elit.
                 """.trimMargin()
@@ -120,12 +117,99 @@ class LegendAssemblerTest {
             .isEqualTo(
                 """
                 |Lorem abcdefghijklmn
-                |opqrstuvwxyz,
-                |abcdefghijklmnopqrst
-                |uvwxyz elit.
+                |opqrstuvwxyz, abcdef
+                |ghijklmnopqrstuvwxyz
+                |elit.
                 """.trimMargin()
             )
 
+
+        assertThat(LegendAssembler.wrap("XYABAACYYDBASXXYAUAOKXYABAACYYXYABAACYYDBASXXYAUAOKDBASXXYAUAOK в белке ASSDASDASDASDASDASDASDASDASDAS скукоживается QWQWQWQWQWEQEQEQWQWQEQEQWQWQEQ", 30))
+            .isEqualTo(
+                """
+                |XYABAACYYDBASXXYAUAOKXYABAACYY
+                |XYABAACYYDBASXXYAUAOKDBASXXYAU
+                |AOK в белке
+                |ASSDASDASDASDASDASDASDASDASDAS
+                |скукоживается
+                |QWQWQWQWQWEQEQEQWQWQEQEQWQWQEQ
+                """.trimMargin()
+            )
+
+        assertThat(LegendAssembler.wrap("XYABAACYYDBASXXYAUAOKXYABAACYYXYABAACYYDBASXXYAUAOKDBASXXYAUAOK в белке ASSDASDASDASDASDASDASDASDASDASASDAS скукоживается QWQWQWQWQWEQEQEQWQWQEQEQWQWQEQQWQWQWQWQWQWQW", 30))
+            .isEqualTo(
+                """
+                |XYABAACYYDBASXXYAUAOKXYABAACYY
+                |XYABAACYYDBASXXYAUAOKDBASXXYAU
+                |AOK в белке ASSDASDASDASDASDAS
+                |DASDASDASDASASDAS
+                |скукоживается QWQWQWQWQWEQEQEQ
+                |WQWQEQEQWQWQEQQWQWQWQWQWQWQW
+                """.trimMargin()
+            )
+        assertThat(LegendAssembler.wrap("XYABAACYYDBASXXYAUAOKXYABAACYYXYABAACYYDBASXXYAUAOKDBASXXYAUAOK в белке ASSDASDASDASDASDASDASDASDASDASASDAS скукоживается QWQWQWQWQWEQEQEQWQWQEQEQWQWQEQQWQWQWQWQWQWQW", 31))
+            .isEqualTo(
+                """
+                |XYABAACYYDBASXXYAUAOKXYABAACYYX
+                |YABAACYYDBASXXYAUAOKDBASXXYAUAO
+                |K в белке ASSDASDASDASDASDASDAS
+                |DASDASDASASDAS скукоживается QW
+                |QWQWQWQWEQEQEQWQWQEQEQWQWQEQQWQ
+                |WQWQWQWQWQW
+                """.trimMargin()
+            )
+    }
+
+    @Test
+    fun wrapRealText() {
+        assertThat(LegendAssembler.wrap("Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
+                "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " +
+                "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute " +
+                "irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. " +
+                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia " +
+                "deserunt mollit anim id est laborum.", 30, 5))
+            .isEqualTo(
+                """
+                |Lorem ipsum dolor sit amet,
+                |consectetur adipiscing elit,
+                |sed do eiusmod tempor
+                |incididunt ut labore et dolore
+                |magna aliqua. Ut enim ad minim
+                |...
+                """.trimMargin()
+            )
+        assertThat(LegendAssembler.wrap("Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
+                "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, " +
+                "quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute " +
+                "irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. " +
+                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia " +
+                "deserunt mollit anim id est laborum.", 50, 5))
+            .isEqualTo(
+                """
+                |Lorem ipsum dolor sit amet, consectetur adipiscing
+                |elit, sed do eiusmod tempor incididunt ut labore
+                |et dolore magna aliqua. Ut enim ad minim veniam,
+                |quis nostrud exercitation ullamco laboris nisi ut
+                |aliquip ex ea commodo consequat. Duis aute irure
+                |...
+                """.trimMargin()
+            )
+        assertThat(LegendAssembler.wrap("Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
+                "https://github.com/JetBrains/lets-plot/issues/315, quis nostrud exercitation " +
+                "ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute " +
+                "irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. " +
+                "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia " +
+                "deserunt mollit anim id est laborum.", 35, 5))
+            .isEqualTo(
+                """
+                |Lorem ipsum dolor sit amet,
+                |consectetur adipiscing elit, https:
+                |//github.com/JetBrains/lets-plot/is
+                |sues/315, quis nostrud exercitation
+                |ullamco laboris nisi ut aliquip ex
+                |...
+                """.trimMargin()
+            )
     }
 
 }
