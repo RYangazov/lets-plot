@@ -106,7 +106,7 @@ class LegendAssemblerTest {
             .isEqualTo(
                 """
                 |Lorem ipsum abcdefgh
-                |ijklmnopqrstuvwxyz, 
+                |ijklmnopqrstuvwxyz,
                 |abcdefghijklmnopqrst
                 |uvwxyz elit.
                 """.trimMargin()
@@ -158,8 +158,33 @@ class LegendAssemblerTest {
                 |WQWQWQWQWQW
                 """.trimMargin()
             )
+        assertThat(LegendAssembler.wrap("XYABAACYYDBASXXYAUAOKXYABAACYYXYABAACYYDBASXXYAUAOKDBASXXYAUAOK в белке ASSDASDASDASDASDASDASDASDASDASASDAS скукоживается QWQWQWQWQWEQEQEQWQWQEQEQWQWQEQQWQWQWQWQWQWQW", 31))
+            .isEqualTo(
+                """
+                |XYABAACYYDBASXXYAUAOKXYABAACYYX
+                |YABAACYYDBASXXYAUAOKDBASXXYAUAO
+                |K в белке ASSDASDASDASDASDASDAS
+                |DASDASDASASDAS скукоживается QW
+                |QWQWQWQWEQEQEQWQWQEQEQWQWQEQQWQ
+                |WQWQWQWQWQW
+                """.trimMargin()
+            )
     }
 
+    @Test
+    fun wrapLongWordsWhenLineLengthEqualLimit() {
+    assertThat(LegendAssembler.wrap("XYABAACYYDBASXXYAUAOKXYABAACYYXYABAACYYDBASXXYAUAOKDBASXXYAUAOK в белке ASSDASDASDASDASDASDASDASDASDASASDA скукоживается QWQWQWQWQWEQEQEQWQWQEQEQWQWQEQQWQWQWQWQWQWQW", 30))
+    .isEqualTo(
+    """
+                |XYABAACYYDBASXXYAUAOKXYABAACYY
+                |XYABAACYYDBASXXYAUAOKDBASXXYAU
+                |AOK в белке ASSDASDASDASDASDAS
+                |DASDASDASDASASDA скукоживается
+                |QWQWQWQWQWEQEQEQWQWQEQEQWQWQEQ
+                |QWQWQWQWQWQWQW
+                """.trimMargin()
+    )
+}
     @Test
     fun wrapRealText() {
         assertThat(LegendAssembler.wrap("Lorem ipsum dolor sit amet, consectetur adipiscing elit, " +
