@@ -169,18 +169,16 @@ class LegendAssembler(
         fun wrap(text: String, lengthLimit: Int, countLimit: Int = -1): String {
             if (text.length <= lengthLimit || text.contains("\n")) return text
 
-            fun List<String>.stringLength() = let { line -> line.sumOf(String::length) + line.size }
-
             return text.split(" ")
                 .let { words ->
                     val lines = mutableListOf(mutableListOf<String>())
                     words.forEach { word ->
-                        val freeSpace = lengthLimit - lines.last().stringLength().coerceAtMost(lengthLimit)
+                        val freeSpace =
+                            lengthLimit - lines.last().let { line -> line.sumOf(String::length) + line.size }
+                                .coerceAtMost(lengthLimit)
                         when {
                             freeSpace >= word.length -> lines.last().add(word)
-                            word.length <= lengthLimit -> {
-                                lines.add(mutableListOf<String>(word))
-                            }
+                            word.length <= lengthLimit -> lines.add(mutableListOf(word))
                             else -> {
                                 lines.last().takeIf { freeSpace > 0 }?.add(word.take(freeSpace))
                                 word.drop(freeSpace)
