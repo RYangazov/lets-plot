@@ -6,11 +6,11 @@ import jetbrains.datalore.plot.PlotHtmlExport
 import jetbrains.datalore.plot.PlotHtmlHelper
 import jetbrains.datalore.plot.PlotSvgExportPortable
 import jetbrains.datalore.plot.pythonExtension.interop.TypeUtils.pyDictToMap
+import jetbrains.datalore.plot.pythonExtension.pngj.RGBEncoderNative
 import jetbrains.datalore.vis.svgToString.SvgToString
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.toKString
-import pngj.RGBEncoderNative
 
 object PlotReprGenerator {
     fun generateDynamicDisplayHtml(plotSpecDict: CPointer<PyObject>?): CPointer<PyObject>? {

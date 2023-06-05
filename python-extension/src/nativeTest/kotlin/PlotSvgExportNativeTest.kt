@@ -2,11 +2,11 @@
  * Copyright (c) 2023. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
+package jetbrains.datalore.plot.pythonExtension.pngj
 
 import jetbrains.datalore.plot.PlotSvgExportPortable
 import jetbrains.datalore.plot.parsePlotSpec
 import jetbrains.datalore.vis.svgToString.SvgToString
-import pngj.RGBEncoderNative
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
