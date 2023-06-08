@@ -10,6 +10,8 @@ import platform.zlib.*
 import platform.posix.memcpy
 import platform.posix.memset
 import platform.posix.size_tVar
+import platform.zlib.uLong
+
 
 class NativeDeflater() : Deflater {
     private lateinit var data: ByteArray
@@ -18,10 +20,23 @@ class NativeDeflater() : Deflater {
     private var strategy: Int = Z_DEFAULT_COMPRESSION
     private var crc: Int = 0
 
+    private fun Int.touLong(): uLong {
+        val ul: uLong = 0U
+        var a: Any = ul
+        if (a is UInt){
+            a = this.toUInt()
+        } else if(a is ULong){
+            a = this.toULong()
+        } else {
+            error("Incompatible type uLong $a")
+        }
+        return a as uLong
+    }
+
     fun deflateByteArray(input: ByteArray): ByteArray {
         memScoped {
             // Allocate output buffer with maximum possible size
-            val maxOutputSize = compressBound(input.size.toUInt()).toInt()
+            val maxOutputSize = compressBound(input.size.touLong()).toInt()
             val output = ByteArray(maxOutputSize)
 
             // Prepare input and output pointers
@@ -57,7 +72,7 @@ class NativeDeflater() : Deflater {
         //TODO("Refactor code duplicate with method deflateByteArray")
         memScoped {
             // Allocate output buffer with maximum possible size
-            val maxOutputSize = compressBound(data.size.toUInt()).toInt()
+            val maxOutputSize = compressBound(data.size.touLong()).toInt()
             val output = ByteArray(maxOutputSize)
 
             // Prepare input and output pointers

@@ -7,9 +7,10 @@ package jetbrains.datalore.plot.pythonExtension.pngj
 
 import kotlinx.cinterop.*
 import platform.zlib.crc32
+import platform.zlib.uLong
 
 class CRC32: Checksum {
-    private var crc: UInt = 0U
+    private var crc: uLong = 0U
     override fun update(b: ByteArray, off: Int, len: Int) {
         memScoped {
             val buffer = allocArray<ByteVar>(len)
