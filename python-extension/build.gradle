@@ -55,11 +55,5 @@ kotlin {
                 implementation project(':plot-config-portable')
             }
         }
-        nativeMain {
-            dependencies {
-                implementation project(':base-portable')
-                implementation project(':vis-svg-portable')
-            }
-        }
     }
 }
