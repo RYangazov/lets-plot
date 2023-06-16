@@ -8,11 +8,13 @@ package jetbrains.datalore.plot.builder.layout.axis
 import jetbrains.datalore.base.interval.DoubleSpan
 import jetbrains.datalore.plot.base.ScaleMapper
 import jetbrains.datalore.plot.base.scale.Mappers
+import jetbrains.datalore.plot.base.scale.ScaleBreaks
 import jetbrains.datalore.plot.builder.guide.Orientation
 import jetbrains.datalore.plot.builder.layout.AxisLayoutInfo
 import jetbrains.datalore.plot.builder.layout.axis.label.AxisLabelsLayout
 import jetbrains.datalore.plot.builder.layout.axis.label.BreakLabelsLayoutUtil
 import jetbrains.datalore.plot.builder.layout.util.Insets
+import jetbrains.datalore.plot.builder.presentation.Defaults.Common.Label
 import jetbrains.datalore.plot.builder.theme.AxisTheme
 
 internal abstract class AxisLayouter(
@@ -63,10 +65,15 @@ internal abstract class AxisLayouter(
 
             if (orientation.isHorizontal) {
                 val labelsLayout: AxisLabelsLayout = if (breaksProvider.isFixedBreaks) {
+                    val trimmedScaleBreaks = ScaleBreaks(
+                        breaksProvider.fixedBreaks.domainValues,
+                        breaksProvider.fixedBreaks.transformedValues,
+                        breaksProvider.fixedBreaks.labels.map { trimLongValues(it) }
+                    )
                     AxisLabelsLayout.horizontalFixedBreaks(
                         orientation,
                         axisDomain,
-                        breaksProvider.fixedBreaks,
+                        trimmedScaleBreaks,
                         geomAreaInsets,
                         theme
                     )
@@ -82,7 +89,12 @@ internal abstract class AxisLayouter(
 
             // vertical
             val labelsLayout: AxisLabelsLayout = if (breaksProvider.isFixedBreaks) {
-                AxisLabelsLayout.verticalFixedBreaks(orientation, axisDomain, breaksProvider.fixedBreaks, theme)
+                val trimmedScaleBreaks = ScaleBreaks(
+                    breaksProvider.fixedBreaks.domainValues,
+                    breaksProvider.fixedBreaks.transformedValues,
+                    breaksProvider.fixedBreaks.labels.map { trimLongValues(it) }
+                )
+                AxisLabelsLayout.verticalFixedBreaks(orientation, axisDomain, trimmedScaleBreaks, theme)
             } else {
                 AxisLabelsLayout.verticalFlexBreaks(orientation, axisDomain, breaksProvider, theme)
             }
@@ -91,6 +103,10 @@ internal abstract class AxisLayouter(
                 axisDomain,
                 labelsLayout
             )
+        }
+        private fun trimLongValues(text : String) : String {
+            return if (text.length <= Label.LABEL_MAX_LENGTH) text
+            else text.take(Label.LABEL_MAX_LENGTH) + ".."
         }
     }
 }
