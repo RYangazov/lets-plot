@@ -29,7 +29,7 @@ object PlotReprGenerator {
     fun generateSvg(plotSpecDict: CPointer<PyObject>?, useCssPixelatedImageRendering: Int): CPointer<PyObject>? {
         try {
             val plotSpecMap = pyDictToMap(plotSpecDict)
-            val nativeEncoder = SvgToString(RGBEncoderNative(), useCssPixelatedImageRendering == 1)
+            val nativeEncoder = SvgToString(rgbEncoder = RGBEncoderNative(), useCssPixelatedImageRendering = useCssPixelatedImageRendering == 1)
             @Suppress("UNCHECKED_CAST")
             val svg = PlotSvgExportPortable.buildSvgImageFromRawSpecs(plotSpecMap as MutableMap<String, Any>, svgToString = nativeEncoder)
             val result = Py_BuildValue("s", svg);

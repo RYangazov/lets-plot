@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020. JetBrains s.r.o.
+ * Copyright (c) 2023. JetBrains s.r.o.
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
@@ -11,6 +11,7 @@ import jetbrains.datalore.plot.testing.EXPECTED_BUNCH_SVG
 import jetbrains.datalore.plot.testing.EXPECTED_SINGLE_PLOT_SVG
 import jetbrains.datalore.plot.testing.rawSpec_GGBunch
 import jetbrains.datalore.plot.testing.rawSpec_SinglePlot
+import jetbrains.datalore.vis.svgMapper.awt.RGBEncoderAwt
 import jetbrains.datalore.vis.svgToString.SvgToString
 import kotlin.test.*
 
@@ -39,15 +40,14 @@ internal class PlotSvgExportPortableTest {
             |   ]
             |}
         """.trimMargin()
-
         PlotSvgExportPortable.buildSvgImageFromRawSpecs(
             plotSpec = parsePlotSpec(spec),
-            SvgToString(null, false)
+            SvgToString(rgbEncoder = RGBEncoderAwt(), useCssPixelatedImageRendering = false)
         ).let { assertTrue(it.contains("style=\"image-rendering: optimizeSpeed\"")) }
 
         PlotSvgExportPortable.buildSvgImageFromRawSpecs(
             plotSpec = parsePlotSpec(spec),
-            SvgToString(null, true)
+            SvgToString(rgbEncoder = RGBEncoderAwt(), useCssPixelatedImageRendering = true)
         ).let { assertTrue(it.contains("style=\"image-rendering: optimizeSpeed; image-rendering: pixelated\"")) }
     }
 
@@ -56,11 +56,9 @@ internal class PlotSvgExportPortableTest {
     fun svgFromSinglePlot() {
         val svg = PlotSvgExportPortable.buildSvgImageFromRawSpecs(
             plotSpec = rawSpec_SinglePlot(),
-            plotSize = DoubleVector(400.0, 300.0)
+            plotSize = DoubleVector(400.0, 300.0),
+            svgToString = SvgToString(rgbEncoder = RGBEncoderAwt(), useCssPixelatedImageRendering = false)
         )
-
-//        println(svg)
-
         assertEquals(EXPECTED_SINGLE_PLOT_SVG, svg)
     }
 
@@ -69,11 +67,9 @@ internal class PlotSvgExportPortableTest {
     fun svgFromGGBunch() {
         val svg = PlotSvgExportPortable.buildSvgImageFromRawSpecs(
             plotSpec = rawSpec_GGBunch(),
-            plotSize = DoubleVector(400.0, 300.0)  // Ignored
+            plotSize = DoubleVector(400.0, 300.0),  // Ignored
+            svgToString = SvgToString(rgbEncoder = RGBEncoderAwt(), useCssPixelatedImageRendering = false)
         )
-
         assertEquals(EXPECTED_BUNCH_SVG, svg)
-
-//        println(svg)
     }
 }

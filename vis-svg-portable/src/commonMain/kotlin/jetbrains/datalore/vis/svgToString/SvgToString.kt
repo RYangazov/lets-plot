@@ -12,7 +12,7 @@ import jetbrains.datalore.vis.svg.XmlNamespace.XLINK_NAMESPACE_URI
 import jetbrains.datalore.vis.svg.XmlNamespace.XLINK_PREFIX
 
 class SvgToString(
-    private val rgbEncoder: RGBEncoder?,
+    private val rgbEncoder: RGBEncoder,
     private val useCssPixelatedImageRendering: Boolean = true // true for browser, false for Batik.Transcoder or Cairo
 ) {
     fun render(svg: SvgSvgElement): String {

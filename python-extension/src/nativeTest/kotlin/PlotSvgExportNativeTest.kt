@@ -40,17 +40,14 @@ internal class PlotSvgExportNativeTest {
             }
         """.trimIndent()
 
-        var nativeEncoder = SvgToString(RGBEncoderNative(), false)
-
         PlotSvgExportPortable.buildSvgImageFromRawSpecs(
             plotSpec = parsePlotSpec(spec),
-            nativeEncoder
+            SvgToString(rgbEncoder = RGBEncoderNative(), useCssPixelatedImageRendering = false)
         ).let { assertTrue(it.contains("style=\"image-rendering: optimizeSpeed\"")) }
 
-        nativeEncoder = SvgToString(RGBEncoderNative(), true)
         PlotSvgExportPortable.buildSvgImageFromRawSpecs(
             plotSpec = parsePlotSpec(spec),
-            nativeEncoder
+            SvgToString(rgbEncoder = RGBEncoderNative(), useCssPixelatedImageRendering = true)
         ).let { assertTrue(it.contains("style=\"image-rendering: optimizeSpeed; image-rendering: pixelated\"")) }
 
     }

@@ -16,8 +16,6 @@ import jetbrains.datalore.vis.svgToString.SvgToString
 
 object PlotSvgExportPortable {
     private val LOG = PortableLogging.logger(PlotSvgExportPortable::class)
-    private val PORTABLE_SVG_STR_MAPPER =
-        SvgToString(rgbEncoder = null)   // data-frame --> rgb image is not supported (geom_raster)
 
     /**
      * @param plotSpec Raw specification of a plot or GGBunch.
@@ -25,7 +23,7 @@ object PlotSvgExportPortable {
     @Suppress("MemberVisibilityCanBePrivate")
     fun buildSvgImageFromRawSpecs(
         plotSpec: MutableMap<String, Any>,
-        svgToString: SvgToString = PORTABLE_SVG_STR_MAPPER
+        svgToString: SvgToString
     ): String {
         return buildSvgImageFromRawSpecs(plotSpec, null, svgToString)
     }
@@ -38,7 +36,7 @@ object PlotSvgExportPortable {
     fun buildSvgImageFromRawSpecs(
         plotSpec: MutableMap<String, Any>,
         plotSize: DoubleVector?,
-        svgToString: SvgToString = PORTABLE_SVG_STR_MAPPER
+        svgToString: SvgToString
     ): String {
         val list = MonolithicCommon.buildSvgImagesFromRawSpecs(
             plotSpec,
