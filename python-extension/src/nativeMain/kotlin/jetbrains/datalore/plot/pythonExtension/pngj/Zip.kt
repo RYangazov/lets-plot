@@ -7,9 +7,9 @@ package jetbrains.datalore.plot.pythonExtension.pngj
 
 import kotlinx.cinterop.*
 
-internal actual object Zip {
+internal object Zip {
 
-    actual fun compressBytes(
+    fun compressBytes(
         ori: ByteArray,
         offset: Int,
         len: Int,
@@ -18,7 +18,7 @@ internal actual object Zip {
         return if (compress) NativeDeflater().deflateByteArray(ori) else ori
     }
 
-    actual fun newDeflater(deflaterCompLevel: Int): Deflater {
+    fun newDeflater(deflaterCompLevel: Int = DEFLATER_DEFAULT_STRATEGY): Deflater {
         return object : Deflater {
             private val deflater = NativeDeflater()
             override fun setStrategy(deflaterStrategy: Int) {
@@ -55,11 +55,11 @@ internal actual object Zip {
         }
     }
 
-    actual fun crc32(): Checksum {
+    fun crc32(): Checksum {
         return CRC32()
     }
 
-    actual val IS_BYTE_ORDER_BIG_ENDIAN: Boolean
+    val IS_BYTE_ORDER_BIG_ENDIAN: Boolean
         get() = memScoped {
             val array = allocArray<ByteVar>(2)
             array[0] = 1
@@ -68,3 +68,23 @@ internal actual object Zip {
             value == 1.toShort()
         }
 }
+
+
+internal interface Deflater {
+    fun setStrategy(deflaterStrategy: Int)
+    fun finished(): Boolean
+    fun setInput(data: ByteArray, off: Int, len: Int)
+    fun needsInput(): Boolean
+    fun deflate(buf: ByteArray, off: Int, n: Int): Int
+    fun finish()
+    fun end()
+    fun reset()
+}
+
+internal interface Checksum {
+    fun update(b: ByteArray, off: Int = 0, len: Int = b.size)
+    val value: Long
+    fun reset()
+}
+
+internal const val DEFLATER_DEFAULT_STRATEGY: Int = 0

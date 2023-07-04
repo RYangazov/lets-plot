@@ -40,24 +40,16 @@ kotlin {
                 compilerOpts "-I${project.buildSettings.python.include_path}"
             }
         }
-
     } else {
         jvm() // at least one target is required by MPP - dummy jvm target will work just fine
     }
 
     sourceSets {
-        commonMain {
+         nativeMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-
-                // (!) only `portable` sources
                 implementation project(':base-portable')
                 implementation project(':plot-config-portable')
-            }
-        }
-        nativeMain {
-            dependencies {
-                implementation project(':base-portable')
                 implementation project(':vis-svg-portable')
             }
         }

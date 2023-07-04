@@ -5,7 +5,6 @@
 
 package jetbrains.datalore.plot.pythonExtension.pngj
 
-import jetbrains.datalore.plot.pythonExtension.pngj.arraycopy
 import jetbrains.datalore.plot.pythonExtension.pngj.chunks.ChunkHelper
 import jetbrains.datalore.plot.pythonExtension.pngj.chunks.ChunkRaw
 

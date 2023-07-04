@@ -5,7 +5,6 @@
 
 package jetbrains.datalore.plot.pythonExtension.pngj
 
-import jetbrains.datalore.plot.pythonExtension.pngj.fill
 import jetbrains.datalore.plot.pythonExtension.pngj.chunks.PngChunkPLTE
 import jetbrains.datalore.plot.pythonExtension.pngj.chunks.PngChunkTRNS
 

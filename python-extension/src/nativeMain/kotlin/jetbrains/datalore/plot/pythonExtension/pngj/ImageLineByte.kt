@@ -5,8 +5,6 @@
 
 package jetbrains.datalore.plot.pythonExtension.pngj
 
-import jetbrains.datalore.plot.pythonExtension.pngj.arraycopy
-
 /**
  * Lightweight wrapper for an image scanline, used for read and write.
  *

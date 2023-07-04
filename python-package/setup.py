@@ -71,7 +71,7 @@ elif this_system == 'Windows':
 
 elif this_system == 'Linux':
     stdcpp_lib = 'stdc++'
-    extra_link = ['-static', '-lz']
+    extra_link = ['-lz']
     
 else:
     raise ValueError("Unsupported platform.")
