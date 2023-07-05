@@ -59,7 +59,7 @@ with open(os.path.join(root_dir, 'README.md'), encoding='utf-8') as f:
 if this_system == 'Darwin':
     stdcpp_lib = 'c++'
     # fix for "ImportError: dlopen(...) Symbol not found: _NSGenericException" on macOS
-    extra_link = ['-framework', 'Foundation', '-static', '-lz']
+    extra_link = ['-framework', 'Foundation', '-lz']
 
 elif this_system == 'Windows':
     stdcpp_lib = 'stdc++'
