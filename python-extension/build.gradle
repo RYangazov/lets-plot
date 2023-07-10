@@ -54,13 +54,12 @@ kotlin {
                 implementation project(':base-portable')
                 implementation project(':datamodel')
                 implementation project(':plot-config-portable')
-                //implementation project(':vis-svg-portable')
             }
         }
         nativeTest {
             dependencies {
                 implementation project(':base-portable')
-                //implementation project(':vis-svg-portable')
+                implementation project(':datamodel')
             }
         }
     }

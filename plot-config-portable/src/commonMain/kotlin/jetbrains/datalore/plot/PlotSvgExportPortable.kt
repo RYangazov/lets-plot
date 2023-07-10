@@ -12,7 +12,6 @@ import jetbrains.datalore.plot.PlotSvgHelper.fetchPlotSizeFromSvg
 import jetbrains.datalore.plot.config.BunchConfig
 import jetbrains.datalore.plot.config.FigKind
 import jetbrains.datalore.plot.config.PlotConfig
-import jetbrains.datalore.vis.svgToString.SvgToString
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgImageElementEx
 import org.jetbrains.letsPlot.datamodel.svg.util.SvgToString
 
@@ -32,19 +31,7 @@ object PlotSvgExportPortable {
         rgbEncoder: SvgImageElementEx.RGBEncoder,
         useCssPixelatedImageRendering: Boolean
     ): String {
-        return buildSvgImageFromRawSpecs(plotSpec, null, svgToString)
-    }
-
-    /**
-     * @param plotSpec Raw specification of a plot or GGBunch.
-     * @param plotSize Desired plot size. Has no effect on GGBunch.
-     */
-    @Suppress("MemberVisibilityCanBePrivate")
-    fun buildSvgImageFromRawSpecs(
-        plotSpec: MutableMap<String, Any>,
-        plotSize: DoubleVector?,
-        svgToString: SvgToString
-    ): String {
+        val svgToString = SvgToString(rgbEncoder, useCssPixelatedImageRendering)
         val list = MonolithicCommon.buildSvgImagesFromRawSpecs(
             plotSpec,
             plotSize,

@@ -7,7 +7,6 @@ import jetbrains.datalore.plot.PlotHtmlHelper
 import jetbrains.datalore.plot.PlotSvgExportPortable
 import jetbrains.datalore.plot.pythonExtension.interop.TypeUtils.pyDictToMap
 import jetbrains.datalore.plot.pythonExtension.pngj.RGBEncoderNative
-import jetbrains.datalore.vis.svgToString.SvgToString
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.toKString
@@ -29,11 +28,15 @@ object PlotReprGenerator {
     fun generateSvg(plotSpecDict: CPointer<PyObject>?, useCssPixelatedImageRendering: Int): CPointer<PyObject>? {
         return try {
             val plotSpecMap = pyDictToMap(plotSpecDict)
-            val nativeEncoder = SvgToString(rgbEncoder = RGBEncoderNative(), useCssPixelatedImageRendering = useCssPixelatedImageRendering == 1)
+
             @Suppress("UNCHECKED_CAST")
-            val svg = PlotSvgExportPortable.buildSvgImageFromRawSpecs(plotSpecMap as MutableMap<String, Any>, svgToString = nativeEncoder)
-            val result = Py_BuildValue("s", svg);
-            return result
+            val svg = PlotSvgExportPortable.buildSvgImageFromRawSpecs(
+                plotSpec = plotSpecMap as MutableMap<String, Any>,
+                plotSize = null,
+                RGBEncoderNative(),
+                useCssPixelatedImageRendering = useCssPixelatedImageRendering == 1,
+            )
+            Py_BuildValue("s", svg)
         } catch (e: Throwable) {
             val svgStr = """
                 <svg style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">

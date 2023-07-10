@@ -6,8 +6,7 @@
 package jetbrains.datalore.plot.pythonExtension.pngj
 
 import jetbrains.datalore.base.encoding.Base64
-import jetbrains.datalore.vis.svg.SvgImageElementEx.RGBEncoder
-import jetbrains.datalore.vis.svg.SvgUtils
+import org.jetbrains.letsPlot.datamodel.svg.dom.SvgImageElementEx.RGBEncoder
 
 class RGBEncoderNative : RGBEncoder {
 
@@ -35,6 +34,10 @@ class RGBEncoderNative : RGBEncoder {
             png.writeRow(iLine)
         }
         png.end()
-        return SvgUtils.pngDataURI(Base64.encode(outputStream.byteArray))
+        return toPngDataUri(Base64.encode(outputStream.byteArray))
+    }
+
+    private fun toPngDataUri(base64EncodedPngImage: String): String {
+        return "data:image/png;base64,$base64EncodedPngImage"
     }
 }
