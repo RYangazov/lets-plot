@@ -33,7 +33,7 @@ object PlotReprGenerator {
             val svg = PlotSvgExportPortable.buildSvgImageFromRawSpecs(
                 plotSpec = plotSpecMap as MutableMap<String, Any>,
                 plotSize = null,
-                RGBEncoderNative(),
+                rgbEncoder = RGBEncoderNative(),
                 useCssPixelatedImageRendering = useCssPixelatedImageRendering == 1,
             )
             Py_BuildValue("s", svg)
