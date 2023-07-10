@@ -18,12 +18,11 @@ import org.yaml.snakeyaml.Yaml
 project.ext.letsPlotTaskGroup = 'lets-plot'
 
 def include_sources_letsPlotJvmCommon = [
+        'commons',
         'base-portable',
         'base',
-        'mapper-core',
         'vis-canvas',
-        'vis-svg-mapper',
-        'vis-svg-portable',
+        'datamodel',
         'plot-base-portable',
         'plot-common-portable',
         'plot-builder-portable',
@@ -33,17 +32,15 @@ def include_sources_letsPlotJvmCommon = [
 ]
 
 def include_sources_letsPlotJvmJfx = [
-        'vis-svg-mapper-jfx',
-        'vis-swing-common',
-        'vis-swing-jfx',
+        'platf-awt',
+        'platf-jfx-swing',
         'vis-demo-common',
         'vis-demo-common-jfx',
 ]
 
 def include_sources_letsPlotJvmBatik = [
-        'vis-svg-mapper-batik',
-        'vis-swing-common',
-        'vis-swing-batik',
+        'platf-awt',
+        'platf-batik',
         'vis-demo-common',
         'vis-demo-common-batik',
 ]
@@ -90,6 +87,8 @@ allprojects {
             return "unknown"
         }
     }
+
+    project.ext.jfx_platform_resolved = project.ext.jfx_platform()
 
     repositories {
         mavenCentral()
@@ -238,13 +237,14 @@ task publishKotlinApiDependenciesToMavenRepository {
 subprojects {
     // Configure Kotlin targets.
     if (name in [
+            'commons',
             'base-portable',
             'plot-base-portable',
             'plot-builder-portable',
             'plot-common-portable',
             'plot-config-portable',
             'test-common',
-            'vis-svg-portable',
+            'datamodel',
     ]) {
         apply plugin: "org.jetbrains.kotlin.multiplatform"
 
@@ -279,9 +279,10 @@ subprojects {
 
     // Configure publishing for projects which "Lets-Plot Kotlin API" depends on.
     if (name in [
+            'commons',
             'plot-base-portable',
             'base-portable',
-            'vis-svg-portable',
+            'datamodel',
             'plot-common-portable',
             'plot-config-portable',
             'plot-builder-portable',

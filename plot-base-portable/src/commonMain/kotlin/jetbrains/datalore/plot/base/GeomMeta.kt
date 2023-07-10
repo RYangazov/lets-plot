@@ -48,7 +48,6 @@ object GeomMeta {
         Aes.ALPHA,
         Aes.SHAPE,
         Aes.MAP_ID
-        // strokeWidth
     )
 
     private val PATH = listOf(
@@ -409,7 +408,9 @@ object GeomMeta {
                 Aes.EXPLODE,
                 Aes.SIZE,
                 Aes.FILL,
-                Aes.ALPHA
+                Aes.ALPHA,
+                Aes.COLOR,
+                Aes.STROKE
             )
 
             GeomKind.LOLLIPOP -> listOf(

@@ -24,10 +24,10 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-//                implementation "io.github.microutils:kotlin-logging:$kotlinLogging_version"
 
+                implementation project(':commons')
                 implementation project(':base-portable')
-                implementation project(':vis-svg-mapper')
+                implementation project(':datamodel')
                 implementation project(':plot-config-portable')
                 implementation project(':plot-config')
             }
@@ -43,7 +43,7 @@ kotlin {
                 implementation kotlin('stdlib-jdk8')
                 implementation "io.github.microutils:kotlin-logging-jvm:$kotlinLogging_version"
 
-//                implementation project(':vis-svg-mapper')
+                implementation project(':platf-awt')
 
                 batikArtifacts.forEach {
                     api "$batikGroupId:$it:$batik_version"

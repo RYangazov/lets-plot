@@ -15,15 +15,10 @@ import jetbrains.datalore.plot.base.Aesthetics
 import jetbrains.datalore.plot.base.DataPointAesthetics
 import jetbrains.datalore.plot.base.Geom
 import jetbrains.datalore.plot.base.geom.*
-import jetbrains.datalore.plot.base.geom.util.ArrowSpec
-import jetbrains.datalore.plot.base.geom.util.GeomUtil
+import jetbrains.datalore.plot.base.geom.util.*
 import jetbrains.datalore.plot.base.geom.util.GeomUtil.TO_LOCATION_X_Y
 import jetbrains.datalore.plot.base.geom.util.GeomUtil.TO_RECTANGLE
-import jetbrains.datalore.plot.base.geom.util.MultiPointData
-import jetbrains.datalore.plot.base.geom.util.MultiPointDataConstructor
-import jetbrains.datalore.plot.base.geom.util.MultiPointDataConstructor.createMultiPointDataByGroup
-import jetbrains.datalore.plot.base.geom.util.MultiPointDataConstructor.multiPointAppender
-import jetbrains.datalore.plot.base.geom.util.MultiPointDataConstructor.singlePointAppender
+import jetbrains.datalore.plot.base.geom.util.GeomUtil.createPathGroups
 import jetbrains.datalore.plot.common.data.SeriesUtil
 import kotlin.math.abs
 import kotlin.math.min
@@ -32,24 +27,23 @@ internal class DataPointsConverter(
     private val layerIndex: Int,
     private val aesthetics: Aesthetics
 ) {
+
+    companion object {
+        private fun <T> List<DoubleVector>.toVecs(): List<Vec<T>> = map { explicitVec(it.x, it.y) }
+    }
+
     private val pointFeatureConverter get() = PointFeatureConverter(aesthetics)
     private val mySinglePathFeatureConverter get() = SinglePathFeatureConverter(aesthetics)
     private val myMultiPathFeatureConverter get() = MultiPathFeatureConverter(aesthetics)
 
-    data class PieOptions(
-        val strokeColor: Color,
-        val strokeWidth: Double,
-        val holeSize: Double
-    )
     private fun pieConverter(geom: PieGeom): List<DataPointLiveMapAesthetics> {
-        val pieOptions = PieOptions(geom.strokeColor, geom.strokeWidth, geom.holeSize)
         val colorGetter: (DataPointAesthetics) -> Color = { p: DataPointAesthetics -> p.fill()!! }
         val definedDataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.Y, Aes.SLICE)
         return MultiDataPointHelper.getPoints(definedDataPoints, colorGetter)
             .map {
                 DataPointLiveMapAesthetics(it, MapLayerKind.PIE).apply {
                     point = Vec(it.aes.x()!!, it.aes.y()!!)
-                    setPieOptions(pieOptions)
+                    holeRatio = geom.holeSize
                 }
             }
     }
@@ -89,9 +83,9 @@ internal class DataPointsConverter(
         fun pathToBuilder(p: DataPointAesthetics, points: List<Vec<LonLat>>, isClosed: Boolean) =
             DataPointLiveMapAesthetics(
                 p = p,
-                layerKind = when {
-                    isClosed -> MapLayerKind.POLYGON
-                    else -> MapLayerKind.PATH
+                layerKind = when (isClosed) {
+                    true -> MapLayerKind.POLYGON
+                    false -> MapLayerKind.PATH
                 }
             ).apply {
                 this.geometry = points
@@ -129,36 +123,28 @@ internal class DataPointsConverter(
                 setGeodesic(geom.geodesic)
             }
 
-            return process(multiPointDataByGroup(singlePointAppender(TO_LOCATION_X_Y)), false)
+            val paths = createPathGroups(aesthetics.dataPoints(), TO_LOCATION_X_Y)
+            val variadicPathData = LinesHelper.createVariadicPathData(paths)
+            val visualPathData = LinesHelper.createVisualPath(variadicPathData)
+
+            return process(paths = visualPathData, isClosed = false)
         }
 
         fun polygon(): List<DataPointLiveMapAesthetics> {
-            return process(multiPointDataByGroup(singlePointAppender(TO_LOCATION_X_Y)), true)
+            val paths = createPathGroups(aesthetics.dataPoints(), TO_LOCATION_X_Y)
+            return process(paths = paths, isClosed = true)
         }
 
         fun rect(): List<DataPointLiveMapAesthetics> {
-            return process(multiPointDataByGroup(multiPointAppender(TO_RECTANGLE)), true)
-        }
-
-        private fun multiPointDataByGroup(coordinateAppender: (DataPointAesthetics, (DoubleVector?) -> Unit) -> Unit): List<MultiPointData> {
-            return createMultiPointDataByGroup(
-                aesthetics.dataPoints(),
-                coordinateAppender,
-                MultiPointDataConstructor.collector()
-            )
-        }
-
-        private fun process(multiPointDataList: List<MultiPointData>, isClosed: Boolean): List<DataPointLiveMapAesthetics> {
-            val mapObjects = ArrayList<DataPointLiveMapAesthetics>()
-
-            for (multiPointData in multiPointDataList) {
-                pathToBuilder(
-                    multiPointData.aes,
-                    multiPointData.points.toVecs(),
-                    isClosed
-                ).let(mapObjects::add)
+            val groupedData = GeomUtil.createGroups(aesthetics.dataPoints(), sorted = true)
+            val rectangles = groupedData.map { (_, groupData) ->
+                groupData.flatMap { aes -> TO_RECTANGLE(aes).map { PathPoint(aes, it) } }
             }
-            return mapObjects
+            return process(rectangles.map(::PathData), isClosed = true)
+        }
+
+        private fun process(paths: List<PathData>, isClosed: Boolean): List<DataPointLiveMapAesthetics> {
+            return paths.map { pathToBuilder(it.aes, it.coordinates.toVecs(), isClosed) }
         }
     }
 
@@ -341,10 +327,6 @@ internal class DataPointsConverter(
 
             return mapObjects
         }
-    }
-
-    private fun <T> List<DoubleVector>.toVecs(): List<Vec<T>> {
-        return map { explicitVec<T>(it.x, it.y) }
     }
 
     internal class MultiDataPointHelper private constructor(

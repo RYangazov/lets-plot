@@ -13,17 +13,24 @@ import jetbrains.datalore.plot.config.BunchConfig
 import jetbrains.datalore.plot.config.FigKind
 import jetbrains.datalore.plot.config.PlotConfig
 import jetbrains.datalore.vis.svgToString.SvgToString
+import org.jetbrains.letsPlot.datamodel.svg.dom.SvgImageElementEx
+import org.jetbrains.letsPlot.datamodel.svg.util.SvgToString
 
 object PlotSvgExportPortable {
     private val LOG = PortableLogging.logger(PlotSvgExportPortable::class)
 
     /**
      * @param plotSpec Raw specification of a plot or GGBunch.
+     * @param plotSize Desired plot size. Has no effect on GGBunch.
+     * @param rgbEncoder Platform-specific implementation of SvgImageElementEx.RGBEncoder interface. Needed for `geom_raster()`.
+     * @param useCssPixelatedImageRendering true for CSS style "pixelated", false for SVG style "optimizeSpeed". Used for compatibility.
      */
     @Suppress("MemberVisibilityCanBePrivate")
     fun buildSvgImageFromRawSpecs(
         plotSpec: MutableMap<String, Any>,
-        svgToString: SvgToString
+        plotSize: DoubleVector? = null,
+        rgbEncoder: SvgImageElementEx.RGBEncoder,
+        useCssPixelatedImageRendering: Boolean
     ): String {
         return buildSvgImageFromRawSpecs(plotSpec, null, svgToString)
     }

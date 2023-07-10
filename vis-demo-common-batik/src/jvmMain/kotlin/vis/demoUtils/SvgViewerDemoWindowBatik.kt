@@ -6,8 +6,8 @@
 package jetbrains.datalore.vis.demoUtils
 
 import jetbrains.datalore.vis.demoUtils.swing.SvgViewerDemoWindowBase
-import jetbrains.datalore.vis.svg.SvgSvgElement
-import jetbrains.datalore.vis.swing.BatikMapperComponent
+import org.jetbrains.letsPlot.datamodel.svg.dom.SvgSvgElement
+import org.jetbrains.letsPlot.platf.batik.plot.util.BatikMapperComponent
 import java.awt.Color
 import javax.swing.BorderFactory
 import javax.swing.JComponent

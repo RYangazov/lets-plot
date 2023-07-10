@@ -19,8 +19,9 @@ kotlin {
             dependencies {
                 implementation kotlin('stdlib-common')
 
+                implementation project(':commons')
                 implementation project(':base-portable')
-                implementation project(':vis-svg-portable')
+                implementation project(':datamodel')
                 implementation project(':plot-base-portable')
                 implementation project(':plot-builder-portable')
                 implementation project(':plot-builder')
@@ -36,10 +37,9 @@ kotlin {
         jvmMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
-                implementation "io.github.microutils:kotlin-logging-jvm:$kotlinLogging_version"
+//                implementation "io.github.microutils:kotlin-logging-jvm:$kotlinLogging_version"
 
-                implementation project(':base')
-                implementation project(':vis-svg-mapper')
+                implementation project(':platf-awt')
                 compileOnly project(':vis-canvas')
                 compileOnly project(':plot-livemap')
             }
@@ -61,10 +61,7 @@ kotlin {
         jsMain {
             dependencies {
                 implementation kotlin('stdlib-js')
-                implementation "io.github.microutils:kotlin-logging-js:$kotlinLogging_version"
-
-                implementation project(':mapper-core')
-                implementation project(':vis-svg-mapper')
+//                implementation "io.github.microutils:kotlin-logging-js:$kotlinLogging_version"
             }
         }
         jsTest {

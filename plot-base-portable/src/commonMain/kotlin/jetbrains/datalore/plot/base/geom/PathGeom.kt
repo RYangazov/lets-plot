@@ -7,9 +7,8 @@ package jetbrains.datalore.plot.base.geom
 
 import jetbrains.datalore.plot.base.*
 import jetbrains.datalore.plot.base.geom.util.GeomUtil
-import jetbrains.datalore.plot.base.geom.util.HintColorUtil
-import jetbrains.datalore.plot.base.geom.util.LinePathConstructor
 import jetbrains.datalore.plot.base.geom.util.LinesHelper
+import jetbrains.datalore.plot.base.geom.util.TargetCollectorHelper
 import jetbrains.datalore.plot.base.render.LegendKeyElementFactory
 import jetbrains.datalore.plot.base.render.SvgRoot
 
@@ -35,26 +34,22 @@ open class PathGeom : GeomBase() {
     ) {
 
         val dataPoints = dataPoints(aesthetics)
-        val targetCollector = getGeomTargetCollector(ctx)
         val linesHelper = LinesHelper(pos, coord, ctx)
+        val targetCollectorHelper = TargetCollectorHelper(GeomKind.PATH, ctx)
 
-        val geomConstructor = LinePathConstructor(
-            targetCollector,
-            dataPoints,
-            linesHelper,
-            myClosePath = false,
-            HintColorUtil.createColorMarkerMapper(GeomKind.PATH, ctx),
-            ctx.flipped
-        )
+        val variadicPathData = linesHelper.createVariadicPathData(dataPoints)
 
-        appendNodes(
-            geomConstructor.construct(),
-            root
-        )
+        // To not add interpolated points and to not show incorrect tooltips on them
+        targetCollectorHelper.addVariadicPaths(variadicPathData)
+
+        val visualPathData = LinesHelper.createVisualPath(variadicPathData)
+
+        val svgPath = linesHelper.createPaths(visualPathData, closePath = false)
+        root.appendNodes(svgPath)
     }
+
 
     companion object {
         const val HANDLES_GROUPS = true
     }
-
 }

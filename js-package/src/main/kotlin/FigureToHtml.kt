@@ -3,13 +3,9 @@
  * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
  */
 
-import jetbrains.datalore.base.event.dom.DomEventMapper
 import jetbrains.datalore.base.geometry.DoubleRectangle
 import jetbrains.datalore.base.geometry.DoubleVector
 import jetbrains.datalore.base.geometry.Vector
-import jetbrains.datalore.base.js.css.*
-import jetbrains.datalore.base.js.css.enumerables.CssCursor
-import jetbrains.datalore.base.js.css.enumerables.CssPosition
 import jetbrains.datalore.plot.builder.FigureBuildInfo
 import jetbrains.datalore.plot.builder.GeomLayer
 import jetbrains.datalore.plot.builder.PlotContainer
@@ -19,12 +15,16 @@ import jetbrains.datalore.plot.livemap.CursorServiceConfig
 import jetbrains.datalore.plot.livemap.LiveMapProviderUtil
 import jetbrains.datalore.vis.canvas.dom.DomCanvasControl
 import jetbrains.datalore.vis.canvasFigure.CanvasFigure
-import jetbrains.datalore.vis.svg.SvgNodeContainer
-import jetbrains.datalore.vis.svg.SvgSvgElement
-import jetbrains.datalore.vis.svgMapper.dom.SvgRootDocumentMapper
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.dom.createElement
+import org.jetbrains.letsPlot.platf.w3c.dom.css.*
+import org.jetbrains.letsPlot.platf.w3c.dom.css.enumerables.CssCursor
+import org.jetbrains.letsPlot.platf.w3c.dom.css.enumerables.CssPosition
+import org.jetbrains.letsPlot.base.platf.dom.DomEventMapper
+import org.jetbrains.letsPlot.platf.w3c.mapping.svg.SvgRootDocumentMapper
+import org.jetbrains.letsPlot.datamodel.svg.dom.SvgNodeContainer
+import org.jetbrains.letsPlot.datamodel.svg.dom.SvgSvgElement
 import org.w3c.dom.Element
 import org.w3c.dom.HTMLElement
 import org.w3c.dom.Node

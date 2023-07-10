@@ -18,9 +18,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
+                implementation project(':commons')
                 implementation project(':base-portable')
-                implementation project(':base')
-                implementation project(':vis-svg-portable')
+                implementation project(':datamodel')
             }
         }
         commonTest {
@@ -34,8 +34,11 @@ kotlin {
         jvmMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
-                compileOnly("org.openjfx:javafx-base:$jfx_version:${jfx_platform()}")
-                compileOnly("org.openjfx:javafx-graphics:$jfx_version:${jfx_platform()}")
+//                compileOnly("org.openjfx:javafx-base:$jfx_version:${jfx_platform()}")
+//                compileOnly("org.openjfx:javafx-graphics:$jfx_version:${jfx_platform()}")
+
+//                implementation project(':platf-awt')
+//                implementation project(':platf-jfx-swing')
             }
         }
         jvmTest {
@@ -47,6 +50,8 @@ kotlin {
         jsMain {
             dependencies {
                 implementation kotlin('stdlib-js')
+
+                implementation project(':platf-w3c')
             }
         }
         jsTest {

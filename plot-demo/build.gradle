@@ -31,11 +31,9 @@ kotlin {
             dependencies {
                 implementation kotlin('stdlib-common')
 
+                implementation project(':commons')
                 implementation project(':base-portable')
-                implementation project(':base')
-                implementation project(':mapper-core')
-                implementation project(':vis-svg-portable')
-                implementation project(':vis-svg-mapper')
+                implementation project(':datamodel')
                 implementation project(':plot-base-portable')
                 implementation project(':plot-common-portable')
                 implementation project(':plot-builder-portable')
@@ -62,10 +60,9 @@ kotlin {
             dependsOn allJvm
             dependsOn jvmMain
             dependencies {
-                implementation project(':vis-svg-mapper-batik')
                 implementation project(':vis-demo-common-batik')
-                implementation project(':vis-swing-common')
-                implementation project(':vis-swing-batik')
+                implementation project(':platf-awt')
+                implementation project(':platf-batik')
             }
         }
         jvmJfxMain {
@@ -73,10 +70,9 @@ kotlin {
             dependsOn jvmMain
             dependencies {
                 implementation project(':vis-canvas')
-                implementation project(':vis-svg-mapper-jfx')
                 implementation project(':vis-demo-common-jfx')
-                implementation project(':vis-swing-common')
-                implementation project(':vis-swing-jfx')
+                implementation project(':platf-awt')
+                implementation project(':platf-jfx-swing')
 
                 compileOnly("org.openjfx:javafx-base:$jfx_version:${jfx_platform()}")
                 compileOnly("org.openjfx:javafx-graphics:$jfx_version:${jfx_platform()}")
@@ -87,12 +83,15 @@ kotlin {
             dependsOn allJvm
             dependencies {
                 implementation "org.jetbrains.kotlinx:kotlinx-html-jvm:${kotlinx_html_version}"
+                implementation project(':platf-awt')
             }
         }
 
         jsMain {
             dependencies {
                 implementation kotlin('stdlib-js')
+
+                implementation project(':platf-w3c')
             }
         }
     }

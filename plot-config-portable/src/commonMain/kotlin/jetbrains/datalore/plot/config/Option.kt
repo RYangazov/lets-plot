@@ -290,8 +290,6 @@ object Option {
 
         object Pie {
             const val HOLE = "hole"
-            const val STROKE = "stroke"
-            const val STROKE_COLOR = "stroke_color"
         }
 
         object Lollipop {
@@ -428,6 +426,13 @@ object Option {
             const val DISTRIBUTION = "distribution"
             const val DISTRIBUTION_PARAMETERS = "dparams"
             const val LINE_QUANTILES = "quantiles"
+        }
+
+        object Summary {
+            const val QUANTILES = "quantiles"
+            const val FUN = "fun"
+            const val FUN_MIN = "fun_min"
+            const val FUN_MAX = "fun_max"
         }
     }
 

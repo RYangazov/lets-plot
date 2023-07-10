@@ -15,23 +15,21 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
+                implementation project(':commons')
                 implementation project(':base-portable')
-                implementation project(':base')
-                implementation project(':mapper-core')
+                implementation project(':datamodel')
                 implementation project(':plot-base-portable')
                 implementation project(':plot-builder-portable')
                 implementation project(':plot-builder')
                 implementation project(':plot-config-portable')
-                implementation project(':vis-svg-portable')
             }
         }
         jvmMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
                 implementation project(':vis-canvas')
-                implementation project(':vis-svg-mapper-batik')
-                implementation project(':vis-swing-common')
-                implementation project(':vis-swing-batik')
+                implementation project(':platf-awt')
+                implementation project(':platf-batik')
                 implementation project(':vis-demo-common')
             }
         }

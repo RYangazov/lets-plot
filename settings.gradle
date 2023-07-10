@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2023. JetBrains s.r.o.
+ * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
+ */
+
 pluginManagement {
     plugins {
         id "org.jetbrains.kotlin.multiplatform" version "$kotlin_version"
@@ -11,18 +16,18 @@ pluginManagement {
 
 rootProject.name = "lets-plot"
 
-include 'base-portable',
-        'base',
+include 'commons',
+        'base-portable',
+        'platf-w3c',
+        'platf-awt',
+        'platf-batik',
+        'platf-jfx-swing',
         'gis',
         'livemap',
         'livemap-demo',
         'plot-livemap',
         'plot-livemap-stub',
-        'mapper-core',
-        'vis-svg-portable',
-        'vis-svg-mapper',
-        'vis-svg-mapper-jfx',
-        'vis-svg-mapper-batik',
+        'datamodel',
         'vis-canvas',
         'plot-base-portable',
         'plot-common-portable',
@@ -46,12 +51,5 @@ include 'base-portable',
         'jvm-package:jvm-publish-batik',
         'jvm-package:jvm-publish-gis',
         'test-common',
-        'vis-swing-common',
-        'vis-swing-batik',
-        'vis-swing-jfx'
-
-
-/*
- * Copyright (c) 2019. JetBrains s.r.o.
- * Use of this source code is governed by the MIT license that can be found in the LICENSE file.
- */
+        'platf-batik',
+        'platf-jfx-swing'

@@ -5,7 +5,6 @@
 
 plugins {
     id "org.jetbrains.kotlin.multiplatform"
-    id "org.jetbrains.gradle.plugin.idea-ext"
     id "groovy"   // add 'test' task
 }
 
@@ -19,7 +18,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
-//                implementation "io.github.microutils:kotlin-logging:$kotlinLogging_version"
+                implementation project(':commons')
             }
         }
         commonTest {
@@ -34,8 +33,6 @@ kotlin {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
                 implementation "io.github.microutils:kotlin-logging-jvm:$kotlinLogging_version"
-//                compileOnly "org.hamcrest:hamcrest-core:$hamcrest_version"
-//                compileOnly "org.hamcrest:hamcrest-library:$hamcrest_version"
             }
         }
         jvmTest {
@@ -58,15 +55,6 @@ kotlin {
             dependencies {
                 implementation kotlin('test-js')
             }
-        }
-    }
-}
-
-idea {
-    module {
-        settings {
-            packagePrefix["src/jvmMain/kotlin"] = "jetbrains.datalore"
-            packagePrefix["src/jvmTest/kotlin"] = "jetbrains.datalore"
         }
     }
 }

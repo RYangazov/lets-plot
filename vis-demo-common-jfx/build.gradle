@@ -14,10 +14,9 @@ kotlin {
         commonMain {
             dependencies {
                 implementation kotlin('stdlib-common')
+                implementation project(':commons')
                 implementation project(':base-portable')
-                implementation project(':base')
-                implementation project(':mapper-core')
-                implementation project(':vis-svg-portable')
+                implementation project(':datamodel')
                 implementation project(':plot-base-portable')
                 implementation project(':plot-builder-portable')
                 implementation project(':plot-builder')
@@ -32,9 +31,8 @@ kotlin {
                 compileOnly("org.openjfx:javafx-swing:$jfx_version:${jfx_platform()}")
 
                 implementation project(':vis-canvas')
-                implementation project(':vis-svg-mapper-jfx')
-                implementation project(':vis-swing-common')
-                implementation project(':vis-swing-jfx')
+                implementation project(':platf-awt')
+                implementation project(':platf-jfx-swing')
             }
         }
     }

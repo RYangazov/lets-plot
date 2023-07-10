@@ -19,6 +19,7 @@ import jetbrains.datalore.plot.config.Option.Stat.DensityRidges
 import jetbrains.datalore.plot.config.Option.Stat.YDensity
 import jetbrains.datalore.plot.config.Option.Stat.QQ
 import jetbrains.datalore.plot.config.Option.Stat.QQLine
+import jetbrains.datalore.plot.config.Option.Stat.Summary
 
 object StatProto {
 
@@ -114,6 +115,10 @@ object StatProto {
             StatKind.QQ_LINE -> return configureQQLineStat(options)
 
             StatKind.QQ2_LINE -> return configureQQ2LineStat(options)
+
+            StatKind.SUMMARY -> return configureSummaryStat(options)
+
+            StatKind.SUMMARYBIN -> return configureSummaryBinStat(options)
 
             else -> throw IllegalArgumentException("Unknown stat: '$statKind'")
         }
@@ -400,5 +405,76 @@ object StatProto {
         }
 
         return Stats.qq2line(lineQuantiles ?: QQLineStat.DEF_LINE_QUANTILES)
+    }
+
+    private fun configureSummaryStat(options: OptionsAccessor): SummaryStat {
+        val (lq, mq, uq) = getSummaryQuantiles(options)
+        val (yAggFun, yMinFun, yMaxFun) = getSummaryAggFunctions(options)
+
+        return SummaryStat(yAggFun, yMinFun, yMaxFun, lq, mq, uq)
+    }
+
+    private fun configureSummaryBinStat(options: OptionsAccessor): SummaryBinStat {
+        val (lq, mq, uq) = getSummaryQuantiles(options)
+        val (yAggFun, yMinFun, yMaxFun) = getSummaryAggFunctions(options)
+
+        val boundary = options.getDouble(Bin.BOUNDARY)
+        val center = options.getDouble(Bin.CENTER)
+        val (xPos, xPosKind) = when {
+            boundary != null -> Pair(boundary, BinStat.XPosKind.BOUNDARY)
+            center != null -> Pair(center, BinStat.XPosKind.CENTER)
+            else -> Pair(0.0, BinStat.XPosKind.NONE)
+        }
+
+        return SummaryBinStat(
+            options.getIntegerDef(Bin.BINS, BinStat.DEF_BIN_COUNT),
+            options.getDouble(Bin.BINWIDTH),
+            xPosKind,
+            xPos,
+            yAggFun, yMinFun, yMaxFun,
+            lq, mq, uq
+        )
+    }
+
+    private fun getSummaryAggFunctions(options: OptionsAccessor): Triple<(List<Double>) -> Double, (List<Double>) -> Double, (List<Double>) -> Double> {
+        return Triple(
+            getAggFunction(options, Summary.FUN) ?: AggregateFunctions::mean,
+            getAggFunction(options, Summary.FUN_MIN) ?: AggregateFunctions::min,
+            getAggFunction(options, Summary.FUN_MAX) ?: AggregateFunctions::max
+        )
+    }
+
+    private fun getAggFunction(
+        options: OptionsAccessor,
+        option: String
+    ): ((List<Double>) -> Double)? {
+        return options.getString(option)?.let {
+            when (it.lowercase()) {
+                "count" -> AggregateFunctions::count
+                "sum" -> AggregateFunctions::sum
+                "mean" -> AggregateFunctions::mean
+                "median" -> AggregateFunctions::median
+                "min" -> AggregateFunctions::min
+                "max" -> AggregateFunctions::max
+                "lq" -> getSummaryQuantiles(options).let { (lq, _, _) -> { values -> AggregateFunctions.quantile(values, lq) } }
+                "mq" -> getSummaryQuantiles(options).let { (_, mq, _) -> { values -> AggregateFunctions.quantile(values, mq) } }
+                "uq" -> getSummaryQuantiles(options).let { (_, _, uq) -> { values -> AggregateFunctions.quantile(values, uq) } }
+                else -> throw IllegalArgumentException(
+                    "Unsupported function name: '$it'\n" +
+                    "Use one of: count, sum, mean, median, min, max, lq, mq, uq."
+                )
+            }
+        }
+    }
+
+    private fun getSummaryQuantiles(options: OptionsAccessor): Triple<Double, Double, Double> {
+        return if (options.hasOwn(Summary.QUANTILES)) {
+            val quantiles = options.getBoundedDoubleList(Summary.QUANTILES, 0.0, 1.0)
+            require(quantiles.size == 3) { "Parameter 'quantiles' should contains 3 values" }
+            val (lq, mq, uq) = quantiles.sorted()
+            Triple(lq, mq, uq)
+        } else {
+            SummaryStat.DEF_QUANTILES
+        }
     }
 }
