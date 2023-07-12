@@ -5,9 +5,9 @@
 
 package jetbrains.livemap.canvascontrols
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.registration.Registration
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.registration.Registration
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.datalore.vis.canvas.*
 import jetbrains.datalore.vis.canvas.AnimationProvider.AnimationEventHandler
 import jetbrains.datalore.vis.canvas.CanvasControlUtil.setAnimationHandler

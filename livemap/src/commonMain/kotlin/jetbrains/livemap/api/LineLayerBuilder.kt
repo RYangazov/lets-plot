@@ -5,9 +5,9 @@
 
 package jetbrains.livemap.api
 
-import jetbrains.datalore.base.spatial.LonLat
-import jetbrains.datalore.base.typedGeometry.*
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.intern.spatial.LonLat
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.*
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.livemap.World
 import jetbrains.livemap.WorldPoint
 import jetbrains.livemap.WorldRectangle
@@ -25,6 +25,7 @@ import jetbrains.livemap.mapengine.MapProjection
 import jetbrains.livemap.mapengine.RenderableComponent
 import jetbrains.livemap.mapengine.placement.WorldDimensionComponent
 import jetbrains.livemap.mapengine.placement.WorldOriginComponent
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.*
 
 @LiveMapDsl
 class LineLayerBuilder(

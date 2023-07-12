@@ -35,10 +35,12 @@ See: [example notebook](https://nbviewer.org/github/JetBrains/lets-plot/blob/mas
 
   `linewidth` aesthetic is used for line width, `size` - for mid-point size only.
 
-- [BREAKING] `geom_pie()` no longer supports parameters `stroke_color` and `stroke`. Use aesthetics `color` for color 
-  and `stroke` for width of slice borders.
+- [BREAKING] `geom_pie()` no longer supports parameter `stroke_color`. Use the `color` aesthetic for color 
+  of slice borders.
 
 - Reduce the default `width`/`height` values for `geom_errorbar()`.
+
+- Change the default `position` value from `'identity'` to `'dodge'` for `geom_errorbar()`, `geom_pointrange()` and `geom_linerange()`. 
 
 
 ### Fixed
@@ -50,3 +52,5 @@ See: [example notebook](https://nbviewer.org/github/JetBrains/lets-plot/blob/mas
 - `geom_path` doesn't support different colors for segments [[#313](https://github.com/JetBrains/lets-plot/issues/313)].
 - Weird tooltip/legend in case of extremely long value [[#315](https://github.com/JetBrains/lets-plot/issues/315)].
 - Add `stat_summary`, `stat_summary_bin` to ggplot [[#316](https://github.com/JetBrains/lets-plot/issues/316)].
+- `geom_boxplot()` doesn't apply alpha to outliers [[#754](https://github.com/JetBrains/lets-plot/issues/754)].
+- ggsave() doesn't save geom_raster() layer to a file [[#778](https://github.com/JetBrains/lets-plot/issues/778)].

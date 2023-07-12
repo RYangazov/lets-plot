@@ -5,12 +5,12 @@
 
 package jetbrains.livemap.demo
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.spatial.GeoRectangle
-import jetbrains.datalore.base.typedGeometry.Vec
-import jetbrains.datalore.base.typedGeometry.createMultiPolygon
-import jetbrains.datalore.base.typedGeometry.explicitVec
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.spatial.GeoRectangle
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Vec
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.createMultiPolygon
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.explicitVec
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.livemap.api.*
 import jetbrains.livemap.model.Cities.BOSTON
 import jetbrains.livemap.model.Cities.FRISCO

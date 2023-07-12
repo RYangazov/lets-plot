@@ -5,11 +5,11 @@
 
 package jetbrains.datalore.plotDemo.model.component
 
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.values.Color
-import jetbrains.datalore.base.values.Font
-import jetbrains.datalore.base.values.FontFamily
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.values.Color
+import org.jetbrains.letsPlot.commons.values.Font
+import org.jetbrains.letsPlot.commons.values.FontFamily
 import jetbrains.datalore.plot.base.render.svg.GroupComponent
 import jetbrains.datalore.plot.base.render.svg.MultilineLabel
 import jetbrains.datalore.plot.builder.layout.TextJustification

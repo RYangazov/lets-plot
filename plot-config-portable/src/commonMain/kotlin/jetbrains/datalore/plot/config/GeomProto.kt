@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.base.spatial.projections.identity
-import jetbrains.datalore.base.spatial.projections.mercator
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.identity
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.mercator
 import jetbrains.datalore.plot.base.GeomKind
 import jetbrains.datalore.plot.base.GeomKind.*
 import jetbrains.datalore.plot.builder.assemble.geom.DefaultSampling
@@ -135,9 +135,16 @@ class GeomProto(val geomKind: GeomKind) {
             }
 
             else -> {
-                // Some other geoms has stateless position adjustments defined in `defaults`
-                // Otherwise it's just `identity`
-                DEFAULTS[geomKind]?.get(Layer.POS) ?: PosProto.IDENTITY
+                // Layer also can be set via stat_xxx function
+                when (StatKind.safeValueOf(layerOptions.getStringSafe(Layer.STAT))) {
+                    StatKind.BOXPLOT_OUTLIER -> mapOf(
+                        Meta.NAME to PosProto.DODGE,
+                        Pos.Dodge.WIDTH to 0.95
+                    )
+                    // Some other geoms have stateless position adjustments defined in `defaults`
+                    // Otherwise it's just `identity`
+                    else -> DEFAULTS[geomKind]?.get(Layer.POS) ?: PosProto.IDENTITY
+                }
             }
         }
 
@@ -166,7 +173,10 @@ class GeomProto(val geomKind: GeomKind) {
             DEFAULTS[DOT_PLOT] = dotplotDefaults()
             DEFAULTS[CONTOUR] = contourDefaults()
             DEFAULTS[CONTOURF] = contourfDefaults()
-            DEFAULTS[CROSS_BAR] = crossBarDefaults()
+            DEFAULTS[ERROR_BAR] = verticalIntervalDefaults()
+            DEFAULTS[CROSS_BAR] = verticalIntervalDefaults()
+            DEFAULTS[LINE_RANGE] = verticalIntervalDefaults()
+            DEFAULTS[POINT_RANGE] = verticalIntervalDefaults()
             DEFAULTS[BOX_PLOT] = boxplotDefaults()
             DEFAULTS[AREA_RIDGES] = areaRidgesDefaults()
             DEFAULTS[VIOLIN] = violinDefaults()
@@ -229,7 +239,7 @@ class GeomProto(val geomKind: GeomKind) {
         }
 
 
-        private fun crossBarDefaults(): Map<String, Any> {
+        private fun verticalIntervalDefaults(): Map<String, Any> {
             val defaults = HashMap<String, Any>()
             defaults[Layer.STAT] = "identity"
             defaults[Layer.POS] = mapOf(

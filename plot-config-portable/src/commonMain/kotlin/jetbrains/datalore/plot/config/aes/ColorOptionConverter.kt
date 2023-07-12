@@ -5,9 +5,9 @@
 
 package jetbrains.datalore.plot.config.aes
 
-import jetbrains.datalore.base.function.Function
-import jetbrains.datalore.base.values.Color
-import jetbrains.datalore.base.values.Colors
+import org.jetbrains.letsPlot.commons.intern.function.Function
+import org.jetbrains.letsPlot.commons.values.Color
+import org.jetbrains.letsPlot.commons.values.Colors
 
 class ColorOptionConverter : Function<Any?, Color?> {
     override fun apply(value: Any?): Color? {

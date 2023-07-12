@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.builder.sampling.method
 
-import jetbrains.datalore.base.algorithms.isClosed
-import jetbrains.datalore.base.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.algorithms.isClosed
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import jetbrains.datalore.plot.base.DataFrame
 import jetbrains.datalore.plot.common.util.MutableInteger
 import jetbrains.datalore.plot.builder.sampling.PointSampling

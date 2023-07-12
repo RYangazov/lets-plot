@@ -5,9 +5,9 @@
 
 package jetbrains.datalore.plot.builder.presentation
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.unsupported.UNSUPPORTED
-import jetbrains.datalore.base.values.Font
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.unsupported.UNSUPPORTED
+import org.jetbrains.letsPlot.commons.values.Font
 
 class PlotLabelSpec(
     override val font: Font

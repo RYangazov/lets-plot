@@ -5,12 +5,12 @@
 
 package jetbrains.livemap.api
 
-import jetbrains.datalore.base.spatial.LonLat
-import jetbrains.datalore.base.typedGeometry.Geometry
-import jetbrains.datalore.base.typedGeometry.MultiPolygon
-import jetbrains.datalore.base.typedGeometry.Ring
-import jetbrains.datalore.base.typedGeometry.Transforms.transform
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.intern.spatial.LonLat
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Geometry
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.MultiPolygon
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Ring
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Transforms.transform
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.livemap.World
 import jetbrains.livemap.chart.ChartElementComponent
 import jetbrains.livemap.chart.IndexComponent

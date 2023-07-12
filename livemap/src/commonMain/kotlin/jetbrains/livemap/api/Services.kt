@@ -7,9 +7,9 @@ package jetbrains.livemap.api
 
 import org.jetbrains.letsPlot.commons.intern.async.Async
 import org.jetbrains.letsPlot.commons.intern.async.Asyncs
-import jetbrains.datalore.base.spatial.LonLat
-import jetbrains.datalore.base.typedGeometry.Rect
-import jetbrains.datalore.base.unsupported.UNSUPPORTED
+import org.jetbrains.letsPlot.commons.intern.spatial.LonLat
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Rect
+import org.jetbrains.letsPlot.commons.unsupported.UNSUPPORTED
 import jetbrains.gis.geoprotocol.GeoRequest
 import jetbrains.gis.geoprotocol.GeoResponse
 import jetbrains.gis.geoprotocol.GeoTransport

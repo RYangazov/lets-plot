@@ -1,8 +1,8 @@
 package jetbrains.livemap.chart
 
-import jetbrains.datalore.base.typedGeometry.Geometry
-import jetbrains.datalore.base.typedGeometry.Vec
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Geometry
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Vec
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.livemap.Client
 import jetbrains.livemap.World
 import jetbrains.livemap.chart.path.PathRenderer.ArrowSpec

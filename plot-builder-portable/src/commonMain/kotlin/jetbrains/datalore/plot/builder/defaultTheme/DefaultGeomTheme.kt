@@ -5,7 +5,8 @@
 
 package jetbrains.datalore.plot.builder.defaultTheme
 
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.values.Color
+import org.jetbrains.letsPlot.commons.values.Colors
 import jetbrains.datalore.plot.base.GeomKind
 import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeOption
 import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeOption.AXIS
@@ -13,8 +14,8 @@ import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeOption.AXIS_LINE
 import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeOption.LINE
 import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeOption.PLOT_BKGR_RECT
 import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeOption.RECT
-import jetbrains.datalore.plot.builder.presentation.FontFamilyRegistry
 import jetbrains.datalore.plot.base.aes.GeomTheme
+import jetbrains.datalore.plot.builder.presentation.DefaultFontFamilyRegistry
 
 internal class DefaultGeomTheme private constructor(
     private val color: Color,
@@ -34,22 +35,16 @@ internal class DefaultGeomTheme private constructor(
     override fun lineWidth() = lineWidth
 
     companion object {
-        internal class InheritedColors(
-            options: Map<String, Any>,
-            fontFamilyRegistry: FontFamilyRegistry
-        ) : ThemeValuesAccess(options, fontFamilyRegistry) {
-
-            private val lineKey = listOf(AXIS_LINE + "_x", AXIS_LINE + "_y", AXIS_LINE, AXIS, LINE)
+        private class InheritedColors(
+            options: Map<String, Any>
+        ) : ThemeValuesAccess(options, DefaultFontFamilyRegistry()) {
+            private val lineKey = listOf(AXIS_LINE, AXIS, LINE)
 
             private val backgroundKey = listOf(PLOT_BKGR_RECT, RECT)
 
-            fun lineColor(): Color {
-                return getColor(getElemValue(lineKey), ThemeOption.Elem.COLOR)
-            }
+            fun lineColor() = getColor(getElemValue(lineKey), ThemeOption.Elem.COLOR)
 
-            fun backgroundFill(): Color {
-                return getColor(getElemValue(backgroundKey), ThemeOption.Elem.FILL)
-            }
+            fun backgroundFill() = getColor(getElemValue(backgroundKey), ThemeOption.Elem.FILL)
         }
 
         private class FixedColors(geomKind: GeomKind) {
@@ -62,7 +57,8 @@ internal class DefaultGeomTheme private constructor(
         }
 
         // defaults for geomKind
-        fun forGeomKind(geomKind: GeomKind, inheritedColors: InheritedColors): GeomTheme {
+        fun forGeomKind(geomKind: GeomKind, themeSettings: Map<String, Any>): GeomTheme {
+            val inheritedColors = InheritedColors(themeSettings)
             val fixedColors = FixedColors(geomKind)
 
             var color = fixedColors.color
@@ -102,8 +98,7 @@ internal class DefaultGeomTheme private constructor(
                 GeomKind.RIBBON,
                 GeomKind.MAP -> {
                     color = inheritedColors.lineColor()
-                    fill = inheritedColors.lineColor()
-                    alpha = 0.1
+                    fill = Colors.withOpacity(inheritedColors.lineColor(), 0.1)
                     size *= sizeMultiplier
                 }
 
@@ -128,7 +123,6 @@ internal class DefaultGeomTheme private constructor(
                 GeomKind.DOT_PLOT,
                 GeomKind.Y_DOT_PLOT -> {
                     color = inheritedColors.backgroundFill()
-                    fill = inheritedColors.lineColor()
                 }
 
                 GeomKind.POINT_RANGE -> {
@@ -151,24 +145,32 @@ internal class DefaultGeomTheme private constructor(
                     size *= sizeMultiplier
                 }
 
-                GeomKind.BAR,
+                GeomKind.BAR -> {
+                    color = Color.TRANSPARENT
+                    size *= sizeMultiplier
+                }
+
+                GeomKind.HISTOGRAM -> {
+                    color = inheritedColors.lineColor()
+                    fill = inheritedColors.lineColor()
+                }
+
                 GeomKind.POLYGON -> {
                     color = inheritedColors.backgroundFill()
                     size *= sizeMultiplier
                 }
 
-                GeomKind.HISTOGRAM,
                 GeomKind.TILE,
                 GeomKind.BIN_2D -> {
-                    color = inheritedColors.backgroundFill()
+                    color = Color.TRANSPARENT
                     fill = inheritedColors.lineColor()
-                    size = 0.0
+                    size *= sizeMultiplier
                 }
 
                 GeomKind.CONTOURF,
                 GeomKind.DENSITY2DF -> {
-                    color = inheritedColors.backgroundFill()
-                    size = 0.0
+                    color = Color.TRANSPARENT
+                    size *= sizeMultiplier
                 }
 
                 GeomKind.TEXT, GeomKind.LABEL -> {
@@ -178,8 +180,9 @@ internal class DefaultGeomTheme private constructor(
                 }
 
                 GeomKind.PIE -> {
-                    color = Color.TRANSPARENT
+                    color = inheritedColors.backgroundFill()
                     size = 10.0
+                    lineWidth *= sizeMultiplier
                 }
 
                 GeomKind.RASTER,

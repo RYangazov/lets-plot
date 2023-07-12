@@ -5,11 +5,11 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.base.interval.DoubleSpan
-import jetbrains.datalore.base.spatial.projections.azimuthalEqualArea
-import jetbrains.datalore.base.spatial.projections.conicEqualArea
-import jetbrains.datalore.base.spatial.projections.identity
-import jetbrains.datalore.base.spatial.projections.mercator
+import org.jetbrains.letsPlot.commons.interval.DoubleSpan
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.azimuthalEqualArea
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.conicEqualArea
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.identity
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.mercator
 import jetbrains.datalore.plot.builder.coord.CoordProvider
 import jetbrains.datalore.plot.builder.coord.CoordProviders
 import jetbrains.datalore.plot.config.Option.Coord

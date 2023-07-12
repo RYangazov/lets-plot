@@ -5,14 +5,14 @@
 
 package jetbrains.datalore.plot.builder
 
-import jetbrains.datalore.base.event.Event
-import jetbrains.datalore.base.gcommon.base.Throwables
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.logging.PortableLogging
-import jetbrains.datalore.base.registration.Registration
-import jetbrains.datalore.base.values.Color
-import jetbrains.datalore.base.values.SomeFig
+import org.jetbrains.letsPlot.commons.event.Event
+import org.jetbrains.letsPlot.commons.intern.gcommon.base.Throwables
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.logging.PortableLogging
+import org.jetbrains.letsPlot.commons.registration.Registration
+import org.jetbrains.letsPlot.commons.values.Color
+import org.jetbrains.letsPlot.commons.values.SomeFig
 import jetbrains.datalore.plot.FeatureSwitch.PLOT_DEBUG_DRAWING
 import jetbrains.datalore.plot.base.PlotContext
 import jetbrains.datalore.plot.base.render.svg.MultilineLabel

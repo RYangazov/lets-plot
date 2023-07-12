@@ -5,10 +5,10 @@
 
 package jetbrains.livemap.ui
 
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.typedGeometry.toDoubleVector
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.toDoubleVector
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.livemap.LiveMapLocation
 import jetbrains.livemap.core.BusyStateComponent
 import jetbrains.livemap.core.Clipboard

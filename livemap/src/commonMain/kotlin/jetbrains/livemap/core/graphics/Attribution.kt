@@ -5,9 +5,9 @@
 
 package jetbrains.livemap.core.graphics
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.registration.Registration
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.registration.Registration
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.datalore.vis.canvas.Context2d
 import jetbrains.livemap.core.graphics.Attribution.AttributionParts.SimpleLink
 import jetbrains.livemap.core.graphics.Attribution.AttributionParts.SimpleText

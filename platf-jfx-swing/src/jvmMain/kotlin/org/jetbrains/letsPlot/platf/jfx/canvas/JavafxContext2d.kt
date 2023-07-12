@@ -14,9 +14,9 @@ import javafx.scene.text.Font
 import javafx.scene.text.FontPosture
 import javafx.scene.text.Text
 import javafx.scene.text.TextAlignment
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.math.toDegrees
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.intern.math.toDegrees
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.datalore.vis.canvas.*
 
 typealias JfxFont = javafx.scene.text.Font

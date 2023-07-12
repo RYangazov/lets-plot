@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.builder.interact
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.values.Color.Companion.WHITE
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.values.Color.Companion.WHITE
 import jetbrains.datalore.plot.base.Aes
 import jetbrains.datalore.plot.base.PlotContext
 import jetbrains.datalore.plot.base.interact.ContextualMapping

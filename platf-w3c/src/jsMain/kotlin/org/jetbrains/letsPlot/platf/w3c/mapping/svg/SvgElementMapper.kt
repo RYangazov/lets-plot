@@ -5,10 +5,10 @@
 
 package org.jetbrains.letsPlot.platf.w3c.mapping.svg
 
-import jetbrains.datalore.base.function.Function
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.observable.property.WritableProperty
-import jetbrains.datalore.base.registration.Registration
+import org.jetbrains.letsPlot.commons.intern.function.Function
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.observable.property.WritableProperty
+import org.jetbrains.letsPlot.commons.registration.Registration
 import org.jetbrains.letsPlot.platf.w3c.dom.events.DomEventType
 import org.jetbrains.letsPlot.base.platf.dom.DomEventUtil
 import org.jetbrains.letsPlot.datamodel.mapping.framework.Synchronizer
@@ -110,10 +110,10 @@ internal class SvgElementMapper<SourceT : SvgElement, TargetT : SVGElement>(
         }
     }
 
-    private fun createMouseEvent(evt: MouseEvent): jetbrains.datalore.base.event.MouseEvent {
+    private fun createMouseEvent(evt: MouseEvent): org.jetbrains.letsPlot.commons.event.MouseEvent {
         evt.stopPropagation()
         val coords = myPeer.inverseScreenTransform(source, DoubleVector(evt.clientX.toDouble(), evt.clientY.toDouble()))
-        return jetbrains.datalore.base.event.MouseEvent(
+        return org.jetbrains.letsPlot.commons.event.MouseEvent(
             coords.x.toInt(),
             coords.y.toInt(),
             DomEventUtil.getButton(evt),

@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.builder.assemble
 
-import jetbrains.datalore.base.interval.DoubleSpan
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.interval.DoubleSpan
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.datalore.plot.base.Aes
 import jetbrains.datalore.plot.base.PlotContext
 import jetbrains.datalore.plot.base.Scale

@@ -5,8 +5,8 @@
 
 package jetbrains.livemap.ui
 
-import jetbrains.datalore.base.registration.Registration
-import jetbrains.datalore.base.typedGeometry.Vec
+import org.jetbrains.letsPlot.commons.registration.Registration
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Vec
 import jetbrains.datalore.vis.canvas.Font
 import jetbrains.livemap.Client
 import jetbrains.livemap.core.animation.Animation

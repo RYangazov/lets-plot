@@ -5,17 +5,17 @@
 
 package jetbrains.livemap.effects
 
-import jetbrains.datalore.base.event.MouseEvent
-import jetbrains.datalore.base.event.MouseEventSource
-import jetbrains.datalore.base.event.MouseEventSpec
-import jetbrains.datalore.base.observable.event.EventHandler
-import jetbrains.datalore.base.registration.Registration
-import jetbrains.datalore.base.typedGeometry.Geometry
-import jetbrains.datalore.base.typedGeometry.LineString
-import jetbrains.datalore.base.typedGeometry.Vec
-import jetbrains.datalore.base.typedGeometry.explicitVec
-import jetbrains.datalore.base.unsupported.UNSUPPORTED
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.event.MouseEvent
+import org.jetbrains.letsPlot.commons.event.MouseEventSource
+import org.jetbrains.letsPlot.commons.event.MouseEventSpec
+import org.jetbrains.letsPlot.commons.intern.observable.event.EventHandler
+import org.jetbrains.letsPlot.commons.registration.Registration
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Geometry
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.LineString
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Vec
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.explicitVec
+import org.jetbrains.letsPlot.commons.unsupported.UNSUPPORTED
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.datalore.vis.canvas.Context2d
 import jetbrains.livemap.Client
 import jetbrains.livemap.World

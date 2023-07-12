@@ -5,10 +5,10 @@
 
 package jetbrains.datalore.plot.base.coord
 
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.interval.DoubleSpan
-import jetbrains.datalore.base.spatial.projections.identity
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.interval.DoubleSpan
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.identity
 import jetbrains.datalore.plot.base.CoordinateSystem
 
 object Coords {

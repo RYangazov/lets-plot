@@ -5,9 +5,9 @@
 
 package jetbrains.datalore.plot.builder.coord
 
-import jetbrains.datalore.base.interval.DoubleSpan
-import jetbrains.datalore.base.spatial.projections.Projection
-import jetbrains.datalore.base.spatial.projections.mercator
+import org.jetbrains.letsPlot.commons.interval.DoubleSpan
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.Projection
+import org.jetbrains.letsPlot.commons.intern.spatial.projections.mercator
 
 object CoordProviders {
     @Suppress("NAME_SHADOWING")

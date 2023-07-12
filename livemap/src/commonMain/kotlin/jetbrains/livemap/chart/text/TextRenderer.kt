@@ -5,9 +5,9 @@
 
 package jetbrains.livemap.chart.text
 
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.typedGeometry.Vec
-import jetbrains.datalore.base.typedGeometry.explicitVec
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Vec
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.explicitVec
 import jetbrains.datalore.vis.canvas.Context2d
 import jetbrains.livemap.Client
 import jetbrains.livemap.chart.ChartElementComponent

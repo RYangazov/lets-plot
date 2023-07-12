@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.base.geom
 
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.values.SomeFig
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.values.SomeFig
 import jetbrains.datalore.plot.base.interact.GeomTargetLocator
 
 interface LiveMapProvider {

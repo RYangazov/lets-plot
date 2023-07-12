@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.base.geom.util
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.datalore.plot.base.Aes
 import jetbrains.datalore.plot.base.DataPointAesthetics
 import jetbrains.datalore.plot.base.geom.util.HintsCollection.HintConfigFactory.HintConfig

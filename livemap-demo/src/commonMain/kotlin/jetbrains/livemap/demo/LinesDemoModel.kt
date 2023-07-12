@@ -5,10 +5,10 @@
 
 package jetbrains.livemap.demo
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.spatial.LonLatPoint
-import jetbrains.datalore.base.typedGeometry.explicitVec
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.spatial.LonLatPoint
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.explicitVec
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.livemap.api.*
 
 class LinesDemoModel(dimension: DoubleVector) : DemoModelBase(dimension) {

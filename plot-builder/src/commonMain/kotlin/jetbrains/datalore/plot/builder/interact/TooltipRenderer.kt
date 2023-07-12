@@ -5,16 +5,16 @@
 
 package jetbrains.datalore.plot.builder.interact
 
-import jetbrains.datalore.base.event.MouseEventSpec.*
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.observable.event.handler
-import jetbrains.datalore.base.registration.CompositeRegistration
-import jetbrains.datalore.base.registration.Disposable
-import jetbrains.datalore.base.values.Color
-import jetbrains.datalore.base.values.Color.Companion.WHITE
-import jetbrains.datalore.base.values.Colors
-import jetbrains.datalore.base.values.Colors.mimicTransparency
+import org.jetbrains.letsPlot.commons.event.MouseEventSpec.*
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.observable.event.handler
+import org.jetbrains.letsPlot.commons.registration.CompositeRegistration
+import org.jetbrains.letsPlot.commons.registration.Disposable
+import org.jetbrains.letsPlot.commons.values.Color
+import org.jetbrains.letsPlot.commons.values.Color.Companion.WHITE
+import org.jetbrains.letsPlot.commons.values.Colors
+import org.jetbrains.letsPlot.commons.values.Colors.mimicTransparency
 import jetbrains.datalore.plot.base.PlotContext
 import jetbrains.datalore.plot.base.interact.GeomTargetLocator
 import jetbrains.datalore.plot.base.interact.TipLayoutHint.Kind.*

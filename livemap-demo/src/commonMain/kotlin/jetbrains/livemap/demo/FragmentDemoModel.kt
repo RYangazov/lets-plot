@@ -5,8 +5,8 @@
 
 package jetbrains.livemap.demo
 
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.livemap.api.*
 import jetbrains.livemap.model.Cities.GERMANY
 

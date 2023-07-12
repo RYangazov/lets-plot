@@ -5,12 +5,12 @@
 
 package jetbrains.datalore.plot.builder.interact.loc
 
-import jetbrains.datalore.base.algorithms.calculateArea
-import jetbrains.datalore.base.algorithms.splitRings
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.geometry.DoubleRectangles.boundingBox
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.interval.DoubleSpan
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.algorithms.calculateArea
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.algorithms.splitRings
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangles.boundingBox
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.interval.DoubleSpan
 import jetbrains.datalore.plot.base.interact.GeomTargetLocator.LookupSpace
 import jetbrains.datalore.plot.base.interact.GeomTargetLocator.LookupSpace.*
 import jetbrains.datalore.plot.builder.interact.MathUtil.polygonContainsCoordinate

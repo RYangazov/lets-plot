@@ -6,10 +6,10 @@
 package jetbrains.gis.geoprotocol
 
 
-import jetbrains.datalore.base.geometry.DoubleRectangle
-import jetbrains.datalore.base.geometry.DoubleVector
-import jetbrains.datalore.base.spatial.LonLat
-import jetbrains.datalore.base.spatial.QuadKey
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
+import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.spatial.LonLat
+import org.jetbrains.letsPlot.commons.intern.spatial.QuadKey
 
 
 interface GeoRequest {

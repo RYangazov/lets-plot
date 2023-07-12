@@ -5,9 +5,9 @@
 
 package jetbrains.livemap.api
 
-import jetbrains.datalore.base.spatial.LonLat
-import jetbrains.datalore.base.typedGeometry.Vec
-import jetbrains.datalore.base.values.Color
+import org.jetbrains.letsPlot.commons.intern.spatial.LonLat
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.Vec
+import org.jetbrains.letsPlot.commons.values.Color
 import jetbrains.datalore.vis.canvas.FontStyle
 import jetbrains.datalore.vis.canvas.FontWeight
 import jetbrains.livemap.chart.ChartElementComponent
