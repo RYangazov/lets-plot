@@ -15,7 +15,7 @@ import org.jetbrains.letsPlot.datamodel.svg.dom.SvgGElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgLineElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgRectElement
 
-object CrossBarHelper {
+object BoxHelper {
     fun buildBoxes(
         root: SvgRoot,
         aesthetics: Aesthetics,
@@ -32,26 +32,20 @@ object CrossBarHelper {
 
     fun buildMidlines(
         root: SvgRoot,
-        aesthetics: Aesthetics,
+        dataPoints: Iterable<DataPointAesthetics>,
         ctx: GeomContext,
         geomHelper: GeomHelper,
         fatten: Double
     ) {
         val elementHelper = geomHelper.createSvgElementHelper()
-
-        for (p in GeomUtil.withDefined(
-            aesthetics.dataPoints(),
-            Aes.X,
-            Aes.Y,
-            Aes.WIDTH
-        )) {
+        for (p in dataPoints) {
             val x = p.x()!!
-            val y = p.y()!!
+            val middle = if (p.defined(Aes.MIDDLE)) p.middle()!! else p.y()!!
             val width = p.width()!! * ctx.getResolution(Aes.X)
 
             val line = elementHelper.createLine(
-                DoubleVector(x - width / 2, y),
-                DoubleVector(x + width / 2, y),
+                DoubleVector(x - width / 2, middle),
+                DoubleVector(x + width / 2, middle),
                 p
             )!!
 
@@ -62,7 +56,6 @@ object CrossBarHelper {
             root.add(line)
         }
     }
-
     fun legendFactory(whiskers: Boolean): LegendKeyElementFactory =
         CrossBarLegendKeyElementFactory(whiskers)
 }

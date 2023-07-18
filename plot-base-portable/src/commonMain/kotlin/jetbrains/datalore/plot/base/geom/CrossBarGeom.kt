@@ -8,10 +8,7 @@ package jetbrains.datalore.plot.base.geom
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import jetbrains.datalore.plot.base.*
-import jetbrains.datalore.plot.base.geom.util.BarTooltipHelper
-import jetbrains.datalore.plot.base.geom.util.CrossBarHelper
-import jetbrains.datalore.plot.base.geom.util.GeomHelper
-import jetbrains.datalore.plot.base.geom.util.HintColorUtil
+import jetbrains.datalore.plot.base.geom.util.*
 import jetbrains.datalore.plot.base.render.LegendKeyElementFactory
 import jetbrains.datalore.plot.base.render.SvgRoot
 
@@ -29,11 +26,12 @@ class CrossBarGeom : GeomBase() {
         ctx: GeomContext
     ) {
         val geomHelper = GeomHelper(pos, coord, ctx)
-        CrossBarHelper.buildBoxes(
+        BoxHelper.buildBoxes(
             root, aesthetics, pos, coord, ctx,
             clientRectByDataPoint(ctx, geomHelper, isHintRect = false)
         )
-        CrossBarHelper.buildMidlines(root, aesthetics, ctx, geomHelper, fattenMidline)
+        val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.Y, Aes.WIDTH)
+        BoxHelper.buildMidlines(root, dataPoints, ctx, geomHelper, fattenMidline)
         BarTooltipHelper.collectRectangleTargets(
             listOf(Aes.YMAX, Aes.YMIN),
             aesthetics, pos, coord, ctx,
@@ -45,7 +43,7 @@ class CrossBarGeom : GeomBase() {
     companion object {
         const val HANDLES_GROUPS = false
 
-        private val LEGEND_FACTORY = CrossBarHelper.legendFactory(false)
+        private val LEGEND_FACTORY = BoxHelper.legendFactory(false)
 
         private fun clientRectByDataPoint(
             ctx: GeomContext,

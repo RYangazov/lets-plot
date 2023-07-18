@@ -32,7 +32,7 @@ class BoxplotGeom : GeomBase() {
         ctx: GeomContext
     ) {
         val geomHelper = GeomHelper(pos, coord, ctx)
-        CrossBarHelper.buildBoxes(
+        BoxHelper.buildBoxes(
             root, aesthetics, pos, coord, ctx,
             clientRectByDataPoint(ctx, geomHelper, isHintRect = false)
         )
@@ -52,7 +52,8 @@ class BoxplotGeom : GeomBase() {
         ctx: GeomContext,
         geomHelper: GeomHelper
     ) {
-        CrossBarHelper.buildMidlines(root, aesthetics, ctx, geomHelper, fattenMidline)
+        val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.MIDDLE, Aes.WIDTH)
+        BoxHelper.buildMidlines(root, dataPoints, ctx, geomHelper, fattenMidline)
 
         val elementHelper = geomHelper.createSvgElementHelper()
         for (p in GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X)) {
@@ -115,7 +116,7 @@ class BoxplotGeom : GeomBase() {
         const val DEF_WHISKER_WIDTH = 0.5
         const val HANDLES_GROUPS = false
 
-        private val LEGEND_FACTORY = CrossBarHelper.legendFactory(true)
+        private val LEGEND_FACTORY = BoxHelper.legendFactory(true)
 
         private fun clientRectByDataPoint(
             ctx: GeomContext,
