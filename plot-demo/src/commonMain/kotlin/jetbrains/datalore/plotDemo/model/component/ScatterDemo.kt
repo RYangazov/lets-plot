@@ -7,33 +7,33 @@ package jetbrains.datalore.plotDemo.model.component
 
 import org.jetbrains.letsPlot.commons.intern.gcommon.collect.Ordering
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
-import jetbrains.datalore.base.random.RandomGaussian.Companion.normal
+import org.jetbrains.letsPlot.commons.intern.random.RandomGaussian.Companion.normal
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.DataFrame
-import jetbrains.datalore.plot.base.Scale
-import jetbrains.datalore.plot.base.ScaleMapper
-import jetbrains.datalore.plot.base.aes.AestheticsBuilder
-import jetbrains.datalore.plot.base.aes.AestheticsBuilder.Companion.constant
-import jetbrains.datalore.plot.base.coord.Coords
-import jetbrains.datalore.plot.base.data.DataFrameUtil
-import jetbrains.datalore.plot.base.data.TransformVar
-import jetbrains.datalore.plot.base.geom.PointGeom
-import jetbrains.datalore.plot.base.pos.PositionAdjustments
-import jetbrains.datalore.plot.base.render.point.NamedShape
-import jetbrains.datalore.plot.base.render.svg.GroupComponent
-import jetbrains.datalore.plot.base.scale.Mappers
-import jetbrains.datalore.plot.base.scale.Scales
-import jetbrains.datalore.plot.base.scale.breaks.QuantizeScale
-import jetbrains.datalore.plot.base.scale.transform.Transforms
-import jetbrains.datalore.plot.builder.AxisUtil
-import jetbrains.datalore.plot.builder.defaultTheme.DefaultTheme
-import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeValuesRClassic
-import jetbrains.datalore.plot.builder.guide.AxisComponent
-import jetbrains.datalore.plot.builder.guide.Orientation
-import jetbrains.datalore.plot.common.color.ColorPalette
-import jetbrains.datalore.plot.common.color.ColorScheme
-import jetbrains.datalore.plot.common.color.PaletteUtil.schemeColors
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.DataFrame
+import org.jetbrains.letsPlot.core.plot.base.Scale
+import org.jetbrains.letsPlot.core.plot.base.ScaleMapper
+import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsBuilder
+import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsBuilder.Companion.constant
+import org.jetbrains.letsPlot.core.plot.base.coord.Coords
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
+import org.jetbrains.letsPlot.core.plot.base.data.TransformVar
+import org.jetbrains.letsPlot.core.plot.base.geom.PointGeom
+import org.jetbrains.letsPlot.core.plot.base.pos.PositionAdjustments
+import org.jetbrains.letsPlot.core.plot.base.render.point.NamedShape
+import org.jetbrains.letsPlot.core.plot.base.render.svg.GroupComponent
+import org.jetbrains.letsPlot.core.plot.base.scale.Mappers
+import org.jetbrains.letsPlot.core.plot.base.scale.Scales
+import org.jetbrains.letsPlot.core.plot.base.scale.breaks.QuantizeScale
+import org.jetbrains.letsPlot.core.plot.base.scale.transform.Transforms
+import org.jetbrains.letsPlot.core.plot.builder.AxisUtil
+import org.jetbrains.letsPlot.core.plot.builder.defaultTheme.DefaultTheme
+import org.jetbrains.letsPlot.core.plot.builder.defaultTheme.values.ThemeValuesRClassic
+import org.jetbrains.letsPlot.core.plot.builder.guide.AxisComponent
+import org.jetbrains.letsPlot.core.plot.builder.guide.Orientation
+import org.jetbrains.letsPlot.core.commons.color.ColorPalette
+import org.jetbrains.letsPlot.core.commons.color.ColorScheme
+import org.jetbrains.letsPlot.core.commons.color.PaletteUtil.schemeColors
 import jetbrains.datalore.plotDemo.model.SimpleDemoBase
 
 open class ScatterDemo : SimpleDemoBase() {
@@ -154,7 +154,7 @@ open class ScatterDemo : SimpleDemoBase() {
 
             val pos = PositionAdjustments.identity()
             val layer =
-                jetbrains.datalore.plot.builder.SvgLayerRenderer(
+                org.jetbrains.letsPlot.core.plot.builder.SvgLayerRenderer(
                     aes,
                     PointGeom(), pos, coord, EMPTY_GEOM_CONTEXT
                 )
@@ -339,7 +339,7 @@ open class ScatterDemo : SimpleDemoBase() {
 
             val pos = PositionAdjustments.identity()
             val layer =
-                jetbrains.datalore.plot.builder.SvgLayerRenderer(
+                org.jetbrains.letsPlot.core.plot.builder.SvgLayerRenderer(
                     aes,
                     PointGeom(), pos, coord, EMPTY_GEOM_CONTEXT
                 )
@@ -464,7 +464,7 @@ open class ScatterDemo : SimpleDemoBase() {
 
             val pos = PositionAdjustments.identity()
             val layer =
-                jetbrains.datalore.plot.builder.SvgLayerRenderer(
+                org.jetbrains.letsPlot.core.plot.builder.SvgLayerRenderer(
                     aes,
                     PointGeom(), pos, coord, EMPTY_GEOM_CONTEXT
                 )

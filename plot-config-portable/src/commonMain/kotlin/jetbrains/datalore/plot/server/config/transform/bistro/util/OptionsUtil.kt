@@ -6,11 +6,11 @@
 package jetbrains.datalore.plot.server.config.transform.bistro.util
 
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.GeomKind
-import jetbrains.datalore.plot.base.render.linetype.LineType
-import jetbrains.datalore.plot.base.render.linetype.NamedLineType
-import jetbrains.datalore.plot.base.render.point.PointShape
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.base.render.linetype.LineType
+import org.jetbrains.letsPlot.core.plot.base.render.linetype.NamedLineType
+import org.jetbrains.letsPlot.core.plot.base.render.point.PointShape
 import jetbrains.datalore.plot.config.Option
 
 object OptionsUtil {

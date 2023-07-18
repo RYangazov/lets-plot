@@ -6,12 +6,12 @@
 package jetbrains.datalore.plot.server.config
 
 import org.jetbrains.letsPlot.commons.intern.function.Consumer
-import jetbrains.datalore.plot.base.DataFrame
-import jetbrains.datalore.plot.builder.assemble.geom.DefaultSampling.SAFETY_SAMPLING
-import jetbrains.datalore.plot.builder.sampling.GroupAwareSampling
-import jetbrains.datalore.plot.builder.sampling.PointSampling
-import jetbrains.datalore.plot.builder.sampling.Sampling
-import jetbrains.datalore.plot.builder.sampling.Samplings
+import org.jetbrains.letsPlot.core.plot.base.DataFrame
+import org.jetbrains.letsPlot.core.plot.builder.assemble.geom.DefaultSampling.SAFETY_SAMPLING
+import org.jetbrains.letsPlot.core.plot.builder.sampling.GroupAwareSampling
+import org.jetbrains.letsPlot.core.plot.builder.sampling.PointSampling
+import org.jetbrains.letsPlot.core.plot.builder.sampling.Sampling
+import org.jetbrains.letsPlot.core.plot.builder.sampling.Samplings
 
 internal object PlotSampling {
 

@@ -5,10 +5,10 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.builder.VarBinding
-import jetbrains.datalore.plot.builder.scale.ScaleProvider
-import jetbrains.datalore.plot.builder.scale.ScaleProviderHelper
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.builder.VarBinding
+import org.jetbrains.letsPlot.core.plot.builder.scale.ScaleProvider
+import org.jetbrains.letsPlot.core.plot.builder.scale.ScaleProviderHelper
 
 internal object PlotConfigScaleProviders {
 

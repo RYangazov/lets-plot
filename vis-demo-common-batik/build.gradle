@@ -16,10 +16,8 @@ kotlin {
             dependencies {
                 implementation kotlin('stdlib-common')
                 implementation project(':commons')
-                implementation project(':base-portable')
                 implementation project(':datamodel')
-                implementation project(':plot-base-portable')
-                implementation project(':plot-builder-portable')
+                implementation project(':plot-base')
                 implementation project(':plot-builder')
                 implementation project(':plot-config-portable')
             }
@@ -27,7 +25,7 @@ kotlin {
         jvmMain {
             dependencies {
                 implementation kotlin('stdlib-jdk8')
-                implementation project(':vis-canvas')
+                implementation project(':canvas')
                 implementation project(':platf-awt')
                 implementation project(':platf-batik')
                 implementation project(':vis-demo-common')

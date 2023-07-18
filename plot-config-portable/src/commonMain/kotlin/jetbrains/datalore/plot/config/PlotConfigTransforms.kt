@@ -5,13 +5,13 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.*
-import jetbrains.datalore.plot.base.scale.transform.Transforms
-import jetbrains.datalore.plot.builder.VarBinding
-import jetbrains.datalore.plot.builder.scale.ContinuousOnlyMapperProvider
-import jetbrains.datalore.plot.builder.scale.DiscreteOnlyMapperProvider
-import jetbrains.datalore.plot.builder.scale.MapperProvider
-import jetbrains.datalore.plot.builder.scale.ScaleProvider
+import org.jetbrains.letsPlot.core.plot.base.*
+import org.jetbrains.letsPlot.core.plot.base.scale.transform.Transforms
+import org.jetbrains.letsPlot.core.plot.builder.VarBinding
+import org.jetbrains.letsPlot.core.plot.builder.scale.ContinuousOnlyMapperProvider
+import org.jetbrains.letsPlot.core.plot.builder.scale.DiscreteOnlyMapperProvider
+import org.jetbrains.letsPlot.core.plot.builder.scale.MapperProvider
+import org.jetbrains.letsPlot.core.plot.builder.scale.ScaleProvider
 import jetbrains.datalore.plot.config.PlotConfigUtil.createPlotAesBindingSetup
 
 internal object PlotConfigTransforms {

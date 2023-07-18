@@ -9,15 +9,15 @@ import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.intern.math.toDegrees
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.vis.canvas.*
-import jetbrains.datalore.vis.canvas.Canvas
-import jetbrains.datalore.vis.canvas.Font
+import org.jetbrains.letsPlot.core.canvas.*
+import org.jetbrains.letsPlot.core.canvas.Canvas
 import java.awt.*
 import java.awt.AlphaComposite.SRC_OVER
 import java.awt.font.GlyphVector
 import java.awt.geom.*
 import java.awt.geom.Arc2D.OPEN
 import java.awt.Color as AwtColor
+import java.awt.Font as AwtFont
 
 typealias AwtFont = java.awt.Font
 
@@ -337,7 +337,7 @@ internal class AwtContext2d(private val graphics: Graphics2D) : Context2d {
     private companion object {
 
         // path already transformed, to draw it correctly Graphics2D transform should be reset.
-        private fun Graphics2D.paintPath(path: Path2D, painter: (Graphics2D, Shape) ->Unit) {
+        private fun Graphics2D.paintPath(path: Path2D, painter: (Graphics2D, Shape) -> Unit) {
             val currentTransform = transform
             transform = AffineTransform()
             painter(this, path)

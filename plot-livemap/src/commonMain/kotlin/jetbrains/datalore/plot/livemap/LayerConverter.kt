@@ -8,16 +8,16 @@ package jetbrains.datalore.plot.livemap
 import org.jetbrains.letsPlot.commons.intern.typedGeometry.createMultiPolygon
 import org.jetbrains.letsPlot.commons.values.Color
 import org.jetbrains.letsPlot.commons.values.FontFace
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.GeomKind
-import jetbrains.datalore.plot.base.GeomKind.*
-import jetbrains.datalore.plot.base.aes.AestheticsUtil
-import jetbrains.datalore.plot.base.geom.PieGeom
-import jetbrains.datalore.plot.base.geom.PointGeom
-import jetbrains.datalore.plot.base.geom.SegmentGeom
-import jetbrains.datalore.plot.builder.LayerRendererUtil.LayerRendererData
-import jetbrains.datalore.vis.canvas.FontStyle
-import jetbrains.datalore.vis.canvas.FontWeight
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.base.GeomKind.*
+import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsUtil
+import org.jetbrains.letsPlot.core.plot.base.geom.PieGeom
+import org.jetbrains.letsPlot.core.plot.base.geom.PointGeom
+import org.jetbrains.letsPlot.core.plot.base.geom.SegmentGeom
+import org.jetbrains.letsPlot.core.plot.builder.LayerRendererUtil.LayerRendererData
+import org.jetbrains.letsPlot.core.canvas.FontStyle
+import org.jetbrains.letsPlot.core.canvas.FontWeight
 import jetbrains.livemap.api.*
 
 

@@ -5,10 +5,10 @@
 
 package jetbrains.datalore.plot.server.config.transform.bistro.util
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.GeomKind
-import jetbrains.datalore.plot.base.render.linetype.LineType
-import jetbrains.datalore.plot.base.render.point.PointShape
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.base.render.linetype.LineType
+import org.jetbrains.letsPlot.core.plot.base.render.point.PointShape
 import jetbrains.datalore.plot.config.Option.Geom
 import jetbrains.datalore.plot.config.Option.Layer
 import jetbrains.datalore.plot.config.Option.PlotBase

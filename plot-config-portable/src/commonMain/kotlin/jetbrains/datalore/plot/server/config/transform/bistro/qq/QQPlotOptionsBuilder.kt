@@ -6,8 +6,8 @@
 package jetbrains.datalore.plot.server.config.transform.bistro.qq
 
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.GeomKind
 import jetbrains.datalore.plot.config.Option
 import jetbrains.datalore.plot.config.aes.LineTypeOptionConverter
 import jetbrains.datalore.plot.config.aes.ShapeOptionConverter

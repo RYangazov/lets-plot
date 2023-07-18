@@ -17,9 +17,10 @@ import javafx.scene.text.TextAlignment
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.intern.math.toDegrees
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.vis.canvas.*
+import org.jetbrains.letsPlot.core.canvas.*
+import org.jetbrains.letsPlot.core.canvas.*
 
-typealias JfxFont = javafx.scene.text.Font
+typealias JfxFont = Font
 typealias JfxFontWeight = javafx.scene.text.FontWeight
 
 internal class JavafxContext2d(private val myContext2d: GraphicsContext) : Context2d {
@@ -176,7 +177,7 @@ internal class JavafxContext2d(private val myContext2d: GraphicsContext) : Conte
         myContext2d.globalAlpha = alpha
     }
 
-    private fun jetbrains.datalore.vis.canvas.Font.toJavaFxFont(): JfxFont {
+    private fun org.jetbrains.letsPlot.core.canvas.Font.toJavaFxFont(): JfxFont {
         val weight: JfxFontWeight = when (fontWeight) {
             FontWeight.NORMAL -> JfxFontWeight.NORMAL
             FontWeight.BOLD -> JfxFontWeight.BOLD
@@ -191,7 +192,7 @@ internal class JavafxContext2d(private val myContext2d: GraphicsContext) : Conte
         return Font.font(fontFamily, weight, posture, fontSize)
     }
 
-    override fun setFont(f: jetbrains.datalore.vis.canvas.Font) {
+    override fun setFont(f: org.jetbrains.letsPlot.core.canvas.Font) {
         myContext2d.font = f.toJavaFxFont()
     }
 

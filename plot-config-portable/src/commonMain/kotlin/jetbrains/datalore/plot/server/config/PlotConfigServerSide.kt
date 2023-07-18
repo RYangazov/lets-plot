@@ -5,16 +5,16 @@
 
 package jetbrains.datalore.plot.server.config
 
-import jetbrains.datalore.plot.base.*
-import jetbrains.datalore.plot.base.DataFrame.Variable
-import jetbrains.datalore.plot.base.data.DataFrameUtil
-import jetbrains.datalore.plot.base.stat.Stats
-import jetbrains.datalore.plot.builder.VarBinding
-import jetbrains.datalore.plot.builder.assemble.PlotFacets
-import jetbrains.datalore.plot.builder.data.DataProcessing
-import jetbrains.datalore.plot.builder.data.OrderOptionUtil.OrderOption
-import jetbrains.datalore.plot.builder.data.YOrientationUtil
-import jetbrains.datalore.plot.builder.tooltip.DataFrameField
+import org.jetbrains.letsPlot.core.plot.base.*
+import org.jetbrains.letsPlot.core.plot.base.DataFrame.Variable
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
+import org.jetbrains.letsPlot.core.plot.base.stat.Stats
+import org.jetbrains.letsPlot.core.plot.builder.VarBinding
+import org.jetbrains.letsPlot.core.plot.builder.assemble.PlotFacets
+import org.jetbrains.letsPlot.core.plot.builder.data.DataProcessing
+import org.jetbrains.letsPlot.core.plot.builder.data.OrderOptionUtil.OrderOption
+import org.jetbrains.letsPlot.core.plot.builder.data.YOrientationUtil
+import org.jetbrains.letsPlot.core.plot.builder.tooltip.data.DataFrameField
 import jetbrains.datalore.plot.config.*
 import jetbrains.datalore.plot.config.Option.Meta.DATA_META
 import jetbrains.datalore.plot.config.Option.Meta.GeoDataFrame.GDF

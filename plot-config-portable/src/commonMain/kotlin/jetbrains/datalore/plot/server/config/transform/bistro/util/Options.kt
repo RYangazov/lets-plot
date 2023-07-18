@@ -5,7 +5,7 @@
 
 package jetbrains.datalore.plot.server.config.transform.bistro.util
 
-import jetbrains.datalore.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.Aes
 import jetbrains.datalore.plot.config.Option
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty

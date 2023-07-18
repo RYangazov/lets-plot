@@ -5,16 +5,15 @@
 
 package jetbrains.datalore.plot.server.config
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.DataFrame
-import jetbrains.datalore.plot.base.StatContext
-import jetbrains.datalore.plot.base.Transform
-import jetbrains.datalore.plot.base.stat.Stats
-import jetbrains.datalore.plot.builder.data.DataProcessing
-import jetbrains.datalore.plot.builder.data.GroupingContext
-import jetbrains.datalore.plot.builder.data.OrderOptionUtil
-import jetbrains.datalore.plot.builder.data.StatInput
-import jetbrains.datalore.plot.builder.tooltip.DataFrameField
+import org.jetbrains.letsPlot.core.plot.base.DataFrame
+import org.jetbrains.letsPlot.core.plot.base.StatContext
+import org.jetbrains.letsPlot.core.plot.base.Transform
+import org.jetbrains.letsPlot.core.plot.base.stat.Stats
+import org.jetbrains.letsPlot.core.plot.builder.data.DataProcessing
+import org.jetbrains.letsPlot.core.plot.builder.data.GroupingContext
+import org.jetbrains.letsPlot.core.plot.builder.data.OrderOptionUtil
+import org.jetbrains.letsPlot.core.plot.builder.data.StatInput
+import org.jetbrains.letsPlot.core.plot.builder.tooltip.data.DataFrameField
 import jetbrains.datalore.plot.config.LayerConfig
 
 internal object BackendDataProcUtil {
@@ -39,7 +38,7 @@ internal object BackendDataProcUtil {
         data: DataFrame,
         layerConfig: LayerConfig,
         statCtx: StatContext,
-        transformByAes: Map<Aes<*>, Transform>,
+        transformByAes: Map<org.jetbrains.letsPlot.core.plot.base.Aes<*>, Transform>,
         facetVariables: List<DataFrame.Variable>,
         groupingContext: GroupingContext,
         messageHandler: (String) -> Unit

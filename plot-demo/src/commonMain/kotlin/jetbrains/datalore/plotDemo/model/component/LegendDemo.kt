@@ -5,22 +5,23 @@
 
 package jetbrains.datalore.plotDemo.model.component
 
+import org.jetbrains.letsPlot.core.plot.builder.assemble.ColorBarAssembler
+import org.jetbrains.letsPlot.core.plot.builder.assemble.LegendAssembler
+import org.jetbrains.letsPlot.core.plot.builder.guide.ColorBarComponent
+import org.jetbrains.letsPlot.core.plot.builder.guide.LegendBreak
+import org.jetbrains.letsPlot.core.plot.builder.guide.LegendComponent
+import org.jetbrains.letsPlot.core.plot.builder.scale.mapper.ColorMapper
+import jetbrains.datalore.plotDemo.model.SimpleDemoBase
 import org.jetbrains.letsPlot.commons.interval.DoubleSpan
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.plot.base.aes.AestheticsBuilder
-import jetbrains.datalore.plot.base.aes.AestheticsBuilder.Companion.array
-import jetbrains.datalore.plot.base.geom.legend.GenericLegendKeyElementFactory
-import jetbrains.datalore.plot.base.render.svg.GroupComponent
-import jetbrains.datalore.plot.base.scale.ScaleBreaks
-import jetbrains.datalore.plot.base.scale.Scales
-import jetbrains.datalore.plot.base.scale.transform.Transforms
-import jetbrains.datalore.plot.builder.assemble.ColorBarAssembler
-import jetbrains.datalore.plot.builder.assemble.LegendAssembler
-import jetbrains.datalore.plot.builder.guide.ColorBarComponent
-import jetbrains.datalore.plot.builder.guide.LegendBreak
-import jetbrains.datalore.plot.builder.guide.LegendComponent
-import jetbrains.datalore.plot.builder.scale.mapper.ColorMapper
-import jetbrains.datalore.plotDemo.model.SimpleDemoBase
+import org.jetbrains.letsPlot.core.plot.base.ScaleMapper
+import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsBuilder
+import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsBuilder.Companion.array
+import org.jetbrains.letsPlot.core.plot.base.geom.legend.GenericLegendKeyElementFactory
+import org.jetbrains.letsPlot.core.plot.base.render.svg.GroupComponent
+import org.jetbrains.letsPlot.core.plot.base.scale.ScaleBreaks
+import org.jetbrains.letsPlot.core.plot.base.scale.Scales
+import org.jetbrains.letsPlot.core.plot.base.scale.transform.Transforms
 
 open class LegendDemo : SimpleDemoBase() {
 
@@ -62,7 +63,7 @@ open class LegendDemo : SimpleDemoBase() {
     private fun colorBar(): GroupComponent {
         val domain = DoubleSpan(0.0, 4.0)
 
-        val mapper = jetbrains.datalore.plot.base.ScaleMapper.wrap(ColorMapper.gradientDefault(domain))
+        val mapper = ScaleMapper.wrap(ColorMapper.gradientDefault(domain))
         val scale = Scales.continuousDomain("color", /*mapper,*/ true)
             .with()
 //            .lowerLimit(domain.lowerEnd)

@@ -5,10 +5,10 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.builder.VarBinding
-import jetbrains.datalore.plot.builder.annotation.AnnotationLine
-import jetbrains.datalore.plot.builder.annotation.AnnotationSpecification
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.builder.VarBinding
+import org.jetbrains.letsPlot.core.plot.builder.annotation.AnnotationLine
+import org.jetbrains.letsPlot.core.plot.builder.annotation.AnnotationSpecification
 
 class AnnotationConfig(
     opts: Map<String, Any>,

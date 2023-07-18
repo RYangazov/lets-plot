@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.data.DataFrameUtil
-import jetbrains.datalore.plot.builder.GeomLayer
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
+import org.jetbrains.letsPlot.core.plot.builder.GeomLayer
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

@@ -21,8 +21,7 @@ kotlin {
                 implementation kotlin('test-common')
 
                 api project(':commons')
-                api project(':base-portable')
-                api project(':plot-base-portable')
+                api project(':plot-base')
                 api project(':plot-config-portable')
             }
         }

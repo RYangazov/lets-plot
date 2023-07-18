@@ -40,7 +40,9 @@ See: [example notebook](https://nbviewer.org/github/JetBrains/lets-plot/blob/mas
 
 - Reduce the default `width`/`height` values for `geom_errorbar()`.
 
-- Change the default `position` value from `'identity'` to `'dodge'` for `geom_errorbar()`, `geom_pointrange()` and `geom_linerange()`. 
+- Change the default `position` value from `'identity'` to `'dodge'` for `geom_errorbar()`, `geom_pointrange()` and `geom_linerange()`.
+
+- `geom_boxplot()`: the `size` and `stroke` parameters started to affect outliers.
 
 
 ### Fixed
@@ -54,4 +56,6 @@ See: [example notebook](https://nbviewer.org/github/JetBrains/lets-plot/blob/mas
 - Add `stat_summary`, `stat_summary_bin` to ggplot [[#316](https://github.com/JetBrains/lets-plot/issues/316)].
 - `geom_boxplot()` doesn't apply alpha to outliers [[#754](https://github.com/JetBrains/lets-plot/issues/754)].
 - ggsave() doesn't save geom_raster() layer to a file [[#778](https://github.com/JetBrains/lets-plot/issues/778)].
-- geom_crossbar aesthetics take `middle` argument insteadof `y` [[#804](https://github.com/JetBrains/lets-plot/issues/804)].
+- geom_crossbar aesthetics take `middle` argument instead of `y` [[#804](https://github.com/JetBrains/lets-plot/issues/804)].
+- panning on interactive map should be more responsive [[#336](https://github.com/JetBrains/lets-plot/issues/336)].
+

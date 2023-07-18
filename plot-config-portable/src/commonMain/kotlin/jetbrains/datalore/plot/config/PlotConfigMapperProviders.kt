@@ -5,9 +5,9 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.builder.scale.DefaultMapperProvider
-import jetbrains.datalore.plot.builder.scale.MapperProvider
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.builder.scale.DefaultMapperProvider
+import org.jetbrains.letsPlot.core.plot.builder.scale.MapperProvider
 
 internal object PlotConfigMapperProviders {
     internal fun createMapperProviders(

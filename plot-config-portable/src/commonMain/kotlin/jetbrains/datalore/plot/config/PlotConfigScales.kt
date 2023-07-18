@@ -5,10 +5,10 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.*
-import jetbrains.datalore.plot.builder.scale.GuideMapper
-import jetbrains.datalore.plot.builder.scale.ScaleProvider
-import jetbrains.datalore.plot.builder.scale.WithGuideBreaks
+import org.jetbrains.letsPlot.core.plot.base.*
+import org.jetbrains.letsPlot.core.plot.builder.scale.GuideMapper
+import org.jetbrains.letsPlot.core.plot.builder.scale.ScaleProvider
+import org.jetbrains.letsPlot.core.plot.builder.scale.WithGuideBreaks
 
 /**
  * Front-end.

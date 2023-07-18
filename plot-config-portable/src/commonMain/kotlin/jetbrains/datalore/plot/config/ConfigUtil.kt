@@ -6,11 +6,11 @@
 package jetbrains.datalore.plot.config
 
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.DataFrame
-import jetbrains.datalore.plot.base.data.DataFrameUtil
-import jetbrains.datalore.plot.base.data.DataFrameUtil.findVariableOrFail
-import jetbrains.datalore.plot.base.data.DataFrameUtil.variables
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.DataFrame
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil.findVariableOrFail
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil.variables
 import jetbrains.datalore.plot.config.Option.Meta
 
 object ConfigUtil {

@@ -32,13 +32,11 @@ kotlin {
                 implementation kotlin('stdlib-common')
 
                 implementation project(':commons')
-                implementation project(':base-portable')
                 implementation project(':datamodel')
-                implementation project(':plot-base-portable')
-                implementation project(':plot-builder-portable')
+                implementation project(':plot-base')
                 implementation project(':plot-builder')
                 implementation project(':plot-config-portable')
-                implementation project(':plot-config')
+//                implementation project(':plot-config')
 //                implementation project(':plot-image-export')
                 implementation project(':plot-demo-common')
                 implementation project(':vis-demo-common')
@@ -68,7 +66,7 @@ kotlin {
             dependsOn allJvm
             dependsOn jvmMain
             dependencies {
-                implementation project(':vis-canvas')
+                implementation project(':canvas')
                 implementation project(':vis-demo-common-jfx')
                 implementation project(':platf-awt')
                 implementation project(':platf-jfx-swing')

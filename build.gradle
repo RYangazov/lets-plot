@@ -19,15 +19,13 @@ project.ext.letsPlotTaskGroup = 'lets-plot'
 
 def include_sources_letsPlotJvmCommon = [
         'commons',
-        'base-portable',
         'base',
-        'vis-canvas',
+        'canvas',
         'datamodel',
-        'plot-base-portable',
-        'plot-builder-portable',
+        'plot-base',
         'plot-builder',
         'plot-config-portable',
-        'plot-config',
+//        'plot-config',
 ]
 
 def include_sources_letsPlotJvmJfx = [
@@ -45,7 +43,7 @@ def include_sources_letsPlotJvmBatik = [
 ]
 
 def include_sources_letsPlotGIS = [
-        'vis-canvas',
+        'canvas',
         'gis',
         'livemap',
         ':plot-livemap',
@@ -237,9 +235,8 @@ subprojects {
     // Configure Kotlin targets.
     if (name in [
             'commons',
-            'base-portable',
-            'plot-base-portable',
-            'plot-builder-portable',
+            'plot-base',
+            'plot-builder',
             'plot-config-portable',
             'test-common',
             'datamodel',
@@ -278,11 +275,10 @@ subprojects {
     // Configure publishing for projects which "Lets-Plot Kotlin API" depends on.
     if (name in [
             'commons',
-            'base-portable',
             'datamodel',
-            'plot-base-portable',
+            'plot-base',
             'plot-config-portable',
-            'plot-builder-portable',
+            'plot-builder',
     ]) {
         apply plugin: "maven-publish"
         apply plugin: "signing"

@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.server.config.transform.bistro.corr
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.GeomKind
 import jetbrains.datalore.plot.config.Option
 import jetbrains.datalore.plot.config.Option.Scale.MapperKind
 import jetbrains.datalore.plot.config.Option.Scale.MapperKind.COLOR_GRADIENT2

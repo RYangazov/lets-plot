@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plot.server.config
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.data.TransformVar
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.data.TransformVar
 import jetbrains.datalore.plot.config.GeoConfig.Companion.POINT_X
 import jetbrains.datalore.plot.config.GeoConfig.Companion.POINT_Y
 import jetbrains.datalore.plot.config.TestUtil

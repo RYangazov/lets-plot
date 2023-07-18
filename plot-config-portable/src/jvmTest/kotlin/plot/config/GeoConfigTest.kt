@@ -6,12 +6,12 @@
 package jetbrains.datalore.plot.config
 
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.DataPointAesthetics
-import jetbrains.datalore.plot.base.data.DataFrameUtil
-import jetbrains.datalore.plot.base.data.DataFrameUtil.findVariableOrFail
-import jetbrains.datalore.plot.builder.GeomLayer
-import jetbrains.datalore.plot.builder.LayerRendererUtil.createLayerRendererData
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.DataPointAesthetics
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil.findVariableOrFail
+import org.jetbrains.letsPlot.core.plot.builder.GeomLayer
+import org.jetbrains.letsPlot.core.plot.builder.LayerRendererUtil.createLayerRendererData
 import jetbrains.datalore.plot.config.GeoConfig.Companion.MAP_JOIN_REQUIRED_MESSAGE
 import jetbrains.datalore.plot.config.GeoConfig.Companion.POINT_X
 import jetbrains.datalore.plot.config.GeoConfig.Companion.POINT_Y

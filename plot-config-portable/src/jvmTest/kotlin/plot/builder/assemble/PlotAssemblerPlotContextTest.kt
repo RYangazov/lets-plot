@@ -6,10 +6,11 @@
 package jetbrains.datalore.plot.builder.assemble
 
 import org.jetbrains.letsPlot.commons.interval.DoubleSpan
-import jetbrains.datalore.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.Aes
 import jetbrains.datalore.plot.config.TestUtil.buildGeomLayer
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import org.jetbrains.letsPlot.core.plot.builder.assemble.TestingPlotContext
 
 
 class PlotAssemblerPlotContextTest {

@@ -5,15 +5,14 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.interact.TooltipAnchor
-import jetbrains.datalore.plot.builder.VarBinding
-import jetbrains.datalore.plot.builder.tooltip.TooltipLine
-import jetbrains.datalore.plot.builder.tooltip.TooltipSpecification
+import org.jetbrains.letsPlot.core.plot.base.tooltip.TooltipAnchor
+import org.jetbrains.letsPlot.core.plot.builder.VarBinding
+import org.jetbrains.letsPlot.core.plot.builder.tooltip.TooltipLine
+import org.jetbrains.letsPlot.core.plot.builder.tooltip.TooltipSpecification
 
 class TooltipConfig(
     opts: Map<String, Any>,
-    constantsMap: Map<Aes<*>, Any>,
+    constantsMap: Map<org.jetbrains.letsPlot.core.plot.base.Aes<*>, Any>,
     groupingVarName: String?,
     varBindings: List<VarBinding>
 ) : LineSpecConfigParser(opts, constantsMap, groupingVarName, varBindings) {

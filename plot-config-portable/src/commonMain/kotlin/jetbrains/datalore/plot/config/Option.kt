@@ -5,9 +5,9 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.GeomKind
-import jetbrains.datalore.plot.builder.defaultTheme.values.ThemeOption.ELEMENT_BLANK_SHORTHAND
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.builder.defaultTheme.values.ThemeOption.ELEMENT_BLANK_SHORTHAND
 
 object Option {
 
@@ -268,10 +268,10 @@ object Option {
             // Parameters in GeomImage.
             // It's "rendered" aesthetics at the same time but "geom image" doesn't use aes to actually render image.
             // The constants are used to compute limits on x/y-axis and the image bbox.
-            val XMIN = Aes.XMIN.name
-            val XMAX = Aes.XMAX.name
-            val YMIN = Aes.YMIN.name
-            val YMAX = Aes.YMAX.name
+            val XMIN = org.jetbrains.letsPlot.core.plot.base.Aes.XMIN.name
+            val XMAX = org.jetbrains.letsPlot.core.plot.base.Aes.XMAX.name
+            val YMIN = org.jetbrains.letsPlot.core.plot.base.Aes.YMIN.name
+            val YMAX = org.jetbrains.letsPlot.core.plot.base.Aes.YMAX.name
         }
 
         object Text {
@@ -650,7 +650,7 @@ object Option {
         const val FLAVOR = "flavor"
 
         // All other options were moved to
-        // jetbrains.datalore.plot.builder.theme2.values.ThemeOption
+        // org.jetbrains.letsPlot.core.plot.builder.theme2.values.ThemeOption
 
         // view element
         const val ELEMENT_BLANK = ELEMENT_BLANK_SHORTHAND

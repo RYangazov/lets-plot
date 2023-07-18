@@ -24,7 +24,6 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(project(":commons"))
-//                implementation(project(":base-portable"))
             }
         }
 

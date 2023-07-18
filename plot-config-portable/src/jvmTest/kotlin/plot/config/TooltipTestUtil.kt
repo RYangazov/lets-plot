@@ -9,19 +9,19 @@ import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.commons.values.Color
 import org.jetbrains.letsPlot.commons.values.FontFace
 import org.jetbrains.letsPlot.commons.values.FontFamily
-import jetbrains.datalore.plot.base.PlotContext
-import jetbrains.datalore.plot.base.interact.ContextualMapping
-import jetbrains.datalore.plot.base.interact.GeomTarget
-import jetbrains.datalore.plot.base.interact.TipLayoutHint
-import jetbrains.datalore.plot.builder.GeomLayer
-import jetbrains.datalore.plot.builder.assemble.TestingPlotContext
-import jetbrains.datalore.plot.builder.interact.TooltipSpec
-import jetbrains.datalore.plot.builder.interact.TooltipSpecFactory
-import jetbrains.datalore.plot.builder.layout.Margins
-import jetbrains.datalore.plot.builder.layout.TextJustification
-import jetbrains.datalore.plot.builder.presentation.Defaults
-import jetbrains.datalore.plot.builder.theme.AxisTheme
-import jetbrains.datalore.plot.builder.theme.ThemeTextStyle
+import org.jetbrains.letsPlot.core.plot.base.PlotContext
+import org.jetbrains.letsPlot.core.plot.base.tooltip.ContextualMapping
+import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTarget
+import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint
+import org.jetbrains.letsPlot.core.plot.builder.GeomLayer
+import org.jetbrains.letsPlot.core.plot.builder.assemble.TestingPlotContext
+import org.jetbrains.letsPlot.core.plot.builder.tooltip.spec.TooltipSpec
+import org.jetbrains.letsPlot.core.plot.builder.tooltip.spec.TooltipSpecFactory
+import org.jetbrains.letsPlot.core.plot.base.layout.Margins
+import org.jetbrains.letsPlot.core.plot.base.layout.TextJustification
+import org.jetbrains.letsPlot.core.plot.builder.presentation.Defaults
+import org.jetbrains.letsPlot.core.plot.base.theme.AxisTheme
+import org.jetbrains.letsPlot.core.plot.base.theme.ThemeTextStyle
 import kotlin.test.assertEquals
 
 object TooltipTestUtil {

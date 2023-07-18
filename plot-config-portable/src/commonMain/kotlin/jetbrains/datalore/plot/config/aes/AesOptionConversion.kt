@@ -5,7 +5,7 @@
 
 package jetbrains.datalore.plot.config.aes
 
-import jetbrains.datalore.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.Aes
 
 object AesOptionConversion {
     private val CONVERTERS_MAP = TypedOptionConverterMap()

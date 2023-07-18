@@ -7,16 +7,16 @@ package jetbrains.datalore.plot;
 
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
-import jetbrains.datalore.base.random.RandomGaussian
+import org.jetbrains.letsPlot.commons.intern.random.RandomGaussian
 import org.jetbrains.letsPlot.commons.unsupported.UNSUPPORTED
-import jetbrains.datalore.plot.base.*
-import jetbrains.datalore.plot.base.interact.NullGeomTargetCollector
-import jetbrains.datalore.plot.base.render.LegendKeyElementFactory
-import jetbrains.datalore.plot.base.render.SvgRoot
-import jetbrains.datalore.plot.base.util.afterOrientation
-import jetbrains.datalore.plot.builder.DemoAndTest
-import jetbrains.datalore.plot.builder.GeomLayer
-import jetbrains.datalore.plot.builder.coord.CoordProviders
+import org.jetbrains.letsPlot.core.plot.base.*
+import org.jetbrains.letsPlot.core.plot.base.tooltip.NullGeomTargetCollector
+import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
+import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
+import org.jetbrains.letsPlot.core.plot.base.util.afterOrientation
+import org.jetbrains.letsPlot.core.plot.builder.DemoAndTest
+import org.jetbrains.letsPlot.core.plot.builder.GeomLayer
+import org.jetbrains.letsPlot.core.plot.builder.coord.CoordProviders
 import jetbrains.datalore.plot.config.TestUtil
 import org.junit.Test
 import kotlin.math.round

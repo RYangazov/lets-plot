@@ -7,14 +7,12 @@ dependencies {
 
     implementation project(':commons')
     implementation project(':platf-w3c')
-    implementation project(':base-portable')
     implementation project(':datamodel')
-    implementation project(':vis-canvas')
-    implementation project(':plot-base-portable')
-    implementation project(':plot-builder-portable')
+    implementation project(':canvas')
+    implementation project(':plot-base')
     implementation project(':plot-builder')
     implementation project(':plot-config-portable')
-    implementation project(':plot-config')
+//    implementation project(':plot-config')
     implementation project(':gis')
     implementation project(':plot-livemap')
 //    implementation "io.github.microutils:kotlin-logging-js:$kotlinLogging_version"

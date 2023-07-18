@@ -14,13 +14,11 @@ kotlin {
                 api kotlin('stdlib-common')
 
                 api project(':commons')
-                api project(':base-portable')
                 api project(':datamodel')
-                api project(':plot-base-portable')
-                api project(':plot-builder-portable')
+                api project(':plot-base')
                 api project(':plot-builder')
                 api project(':plot-config-portable')
-                api project(':plot-config')
+//                api project(':plot-config')
             }
         }
         jvmMain {

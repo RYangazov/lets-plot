@@ -5,16 +5,16 @@
 
 package jetbrains.datalore.plot.config
 
-import jetbrains.datalore.base.collections.filterNotNullKeys
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.DataFrame
-import jetbrains.datalore.plot.base.GeomKind
-import jetbrains.datalore.plot.base.Stat
-import jetbrains.datalore.plot.base.data.DataFrameUtil
-import jetbrains.datalore.plot.base.stat.Stats
-import jetbrains.datalore.plot.base.util.YOrientationBaseUtil
-import jetbrains.datalore.plot.builder.VarBinding
-import jetbrains.datalore.plot.builder.data.OrderOptionUtil
+import org.jetbrains.letsPlot.commons.intern.filterNotNullKeys
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.DataFrame
+import org.jetbrains.letsPlot.core.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.base.Stat
+import org.jetbrains.letsPlot.core.plot.base.data.DataFrameUtil
+import org.jetbrains.letsPlot.core.plot.base.stat.Stats
+import org.jetbrains.letsPlot.core.plot.base.util.YOrientationBaseUtil
+import org.jetbrains.letsPlot.core.plot.builder.VarBinding
+import org.jetbrains.letsPlot.core.plot.builder.data.OrderOptionUtil
 
 internal object DataConfigUtil {
 

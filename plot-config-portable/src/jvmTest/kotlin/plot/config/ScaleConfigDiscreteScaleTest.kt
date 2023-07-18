@@ -6,13 +6,13 @@
 package jetbrains.datalore.plot.config
 
 import org.jetbrains.letsPlot.commons.values.Color
-import jetbrains.datalore.plot.base.Aes
-import jetbrains.datalore.plot.base.scale.ScaleUtil
-import jetbrains.datalore.plot.builder.scale.mapper.ColorMapper
-import jetbrains.datalore.plot.common.color.ColorPalette
-import jetbrains.datalore.plot.common.color.ColorScheme
-import jetbrains.datalore.plot.common.color.PaletteUtil
-import jetbrains.datalore.plot.common.data.SeriesUtil
+import org.jetbrains.letsPlot.core.plot.base.Aes
+import org.jetbrains.letsPlot.core.plot.base.scale.ScaleUtil
+import org.jetbrains.letsPlot.core.plot.builder.scale.mapper.ColorMapper
+import org.jetbrains.letsPlot.core.commons.color.ColorPalette
+import org.jetbrains.letsPlot.core.commons.color.ColorScheme
+import org.jetbrains.letsPlot.core.commons.color.PaletteUtil
+import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized

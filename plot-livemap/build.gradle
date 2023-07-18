@@ -26,12 +26,10 @@ kotlin {
             dependencies {
                 implementation kotlin('stdlib-common')
                 implementation project(':commons')
-                implementation project(':base-portable')
-                implementation project(':plot-base-portable')
-                implementation project(':plot-builder-portable')
+                implementation project(':plot-base')
                 implementation project(':plot-builder')
                 implementation project(':plot-config-portable')
-                implementation project(':vis-canvas')
+                implementation project(':canvas')
                 implementation project(':gis')
                 implementation project(':livemap')
             }
@@ -40,7 +38,7 @@ kotlin {
             dependencies {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
-                implementation project(':plot-config')
+//                implementation project(':plot-config')
 //                implementation project(':plot-config-portable')
             }
         }
