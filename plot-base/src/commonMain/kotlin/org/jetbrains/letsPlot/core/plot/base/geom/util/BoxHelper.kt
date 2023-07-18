@@ -38,26 +38,14 @@ object BoxHelper {
         fatten: Double
     ) {
         val elementHelper = geomHelper.createSvgElementHelper()
-<<<<<<<< HEAD:plot-base/src/commonMain/kotlin/org/jetbrains/letsPlot/core/plot/base/geom/util/BoxHelper.kt
         for (p in dataPoints) {
             val x = p.x()!!
             val middle = if (p.defined(Aes.MIDDLE)) p.middle()!! else p.y()!!
-========
-
-        for (p in GeomUtil.withDefined(
-            aesthetics.dataPoints(),
-            Aes.X,
-            Aes.Y,
-            Aes.WIDTH
-        )) {
-            val x = p.x()!!
-            val y = p.y()!!
->>>>>>>> 76cee34b37b4bb5dd59476b9908860b403e29d29:plot-base/src/commonMain/kotlin/org/jetbrains/letsPlot/core/plot/base/geom/util/CrossBarHelper.kt
             val width = p.width()!! * ctx.getResolution(Aes.X)
 
             val line = elementHelper.createLine(
-                DoubleVector(x - width / 2, y),
-                DoubleVector(x + width / 2, y),
+                DoubleVector(x - width / 2, middle),
+                DoubleVector(x + width / 2, middle),
                 p
             )!!
 
