@@ -28,10 +28,16 @@ class CrossBarGeom : GeomBase() {
         val geomHelper = GeomHelper(pos, coord, ctx)
         BoxHelper.buildBoxes(
             root, aesthetics, pos, coord, ctx,
-            clientRectByDataPoint(ctx, geomHelper, isHintRect = false)
+            rectFactory = clientRectByDataPoint(ctx, geomHelper, isHintRect = false)
         )
-        val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.Y, Aes.WIDTH)
-        BoxHelper.buildMidlines(root, dataPoints, ctx, geomHelper, fattenMidline)
+        BoxHelper.buildMidlines(
+            root = root,
+            aesthetics = aesthetics,
+            middleAesthetic = Aes.Y,
+            ctx = ctx,
+            geomHelper = geomHelper,
+            fatten = fattenMidline
+        )
         BarTooltipHelper.collectRectangleTargets(
             listOf(Aes.YMAX, Aes.YMIN),
             aesthetics, pos, coord, ctx,

@@ -32,15 +32,21 @@ object BoxHelper {
 
     fun buildMidlines(
         root: SvgRoot,
-        dataPoints: Iterable<DataPointAesthetics>,
+        aesthetics: Aesthetics,
+        middleAesthetic: Aes<Double>,
         ctx: GeomContext,
         geomHelper: GeomHelper,
         fatten: Double
     ) {
         val elementHelper = geomHelper.createSvgElementHelper()
-        for (p in dataPoints) {
+        for (p in GeomUtil.withDefined(
+            aesthetics.dataPoints(),
+            Aes.X,
+            middleAesthetic,
+            Aes.WIDTH
+        )) {
             val x = p.x()!!
-            val middle = if (p.defined(Aes.MIDDLE)) p.middle()!! else p.y()!!
+            val middle = p[middleAesthetic]!!
             val width = p.width()!! * ctx.getResolution(Aes.X)
 
             val line = elementHelper.createLine(
