@@ -30,14 +30,7 @@ class CrossBarGeom : GeomBase() {
             root, aesthetics, pos, coord, ctx,
             rectFactory = clientRectByDataPoint(ctx, geomHelper, isHintRect = false)
         )
-        BoxHelper.buildMidlines(
-            root = root,
-            aesthetics = aesthetics,
-            middleAesthetic = Aes.Y,
-            ctx = ctx,
-            geomHelper = geomHelper,
-            fatten = fattenMidline
-        )
+        BoxHelper.buildMidlines(root, aesthetics, middleAesthetic = Aes.Y, ctx, geomHelper, fatten = fattenMidline)
         BarTooltipHelper.collectRectangleTargets(
             listOf(Aes.YMAX, Aes.YMIN),
             aesthetics, pos, coord, ctx,

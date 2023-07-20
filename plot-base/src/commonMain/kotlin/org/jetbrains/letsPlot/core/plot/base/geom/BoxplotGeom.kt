@@ -52,14 +52,7 @@ class BoxplotGeom : GeomBase() {
         ctx: GeomContext,
         geomHelper: GeomHelper
     ) {
-        BoxHelper.buildMidlines(
-            root = root,
-            aesthetics = aesthetics,
-            middleAesthetic = Aes.MIDDLE,
-            ctx = ctx,
-            geomHelper = geomHelper,
-            fatten = fattenMidline
-        )
+        BoxHelper.buildMidlines(root, aesthetics, middleAesthetic = Aes.MIDDLE, ctx, geomHelper, fatten = fattenMidline)
 
         val elementHelper = geomHelper.createSvgElementHelper()
         for (p in GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X)) {
