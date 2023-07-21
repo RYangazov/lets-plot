@@ -4,7 +4,7 @@
 #
 from lets_plot.geo_data_internals.utils import is_geocoder
 
-from .core import FeatureSpec, LayerSpec
+from .core import FeatureSpec, LayerSpec, aes
 from .util import as_annotated_data, is_geo_data_frame, geo_data_frame_to_crs, get_geo_data_frame_meta
 
 #
@@ -24,7 +24,8 @@ __all__ = ['geom_point', 'geom_path', 'geom_line',
            'geom_density2d', 'geom_density2df', 'geom_jitter',
            'geom_qq', 'geom_qq2', 'geom_qq_line', 'geom_qq2_line',
            'geom_freqpoly', 'geom_step', 'geom_rect', 'geom_segment',
-           'geom_text', 'geom_label', 'geom_pie', 'geom_lollipop']
+           'geom_text', 'geom_label', 'geom_pie', 'geom_lollipop',
+           'geom_function']
 
 
 def geom_point(mapping=None, *, data=None, stat=None, position=None, show_legend=None, sampling=None, tooltips=None,
@@ -6066,7 +6067,10 @@ def geom_label(mapping=None, *, data=None, stat=None, position=None, show_legend
 
 def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=None, sampling=None, tooltips=None, labels=None,
              map=None, map_join=None, use_crs=None,
-             hole=None, fill_by=None,
+             hole=None,
+             stroke_side=None,
+             spacer_width=None, spacer_color=None,
+             fill_by=None,
              **other_args):
     """
     Draw pie chart.
@@ -6112,6 +6116,13 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
     hole : float, default=0.0
         A multiplicative factor applied to the pie diameter to draw donut-like chart.
         Accept values between 0 and 1.
+    stroke_side : {'outer', 'inner', 'both'}, default='outer'
+        Define which arcs of pie sector should have a stroke.
+    spacer_width : float, default=0.75
+        Line width between sectors.
+        Spacers are not applied to exploded sectors and to sides of adjacent sectors.
+    spacer_color : str
+        Color for spacers between sectors. By default, the plot background color is used.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the source aesthetic for geometry filling.
     other_args
@@ -6144,8 +6155,8 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
     - fill : fill color. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red").
     - alpha : transparency level of the pie. Accept values between 0 and 1.
     - weight : used by 'count2d' stat to compute weighted sum instead of simple count.
-    - stroke : width of slice borders.
-    - color : color of slice borders.
+    - stroke : width of inner and outer arcs of pie sector.
+    - color : color of inner and outer arcs of pie sector.
 
     |
 
@@ -6194,6 +6205,19 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
 
     .. jupyter-execute::
         :linenos:
+        :emphasize-lines: 4-6
+
+        from lets_plot import *
+        LetsPlot.setup_html()
+        data = {'name': ['a', 'b', 'c', 'd', 'b'], 'value': [40, 90, 10, 50, 20], 'explode': [0, 0, 0.2, 0, 0]}
+        ggplot(data) + geom_pie(aes(fill='name', weight='value', explode='explode'), \\
+                                size=15, hole=0.2, color='black', stroke=2, stroke_side='both', \\
+                                spacer_color='black', spacer_width=2)
+
+    |
+
+    .. jupyter-execute::
+        :linenos:
         :emphasize-lines: 5-9
 
         from lets_plot import *
@@ -6201,7 +6225,7 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
         LetsPlot.setup_html()
         data = {'name': ['a', 'b', 'c', 'd', 'b'], 'value': [40, 90, 10, 50, 20]}
         ggplot(data) + geom_pie(aes(fill=as_discrete('name', order_by='..count..'), weight='value'), \\
-                                size=15, hole=0.2, color='white', stroke=1.0, \\
+                                size=15, hole=0.2, \\
                                 tooltips=layer_tooltips().format('@{..prop..}', '.0%') \\
                                                          .line('count|@{..count..} (@{..prop..})') \\
                                                          .line('total|@{..sum..}'))
@@ -6217,7 +6241,7 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
         LetsPlot.setup_html()
         data = {'name': ['a', 'b', 'c', 'd', 'b'], 'value': [40, 90, 10, 50, 20]}
         ggplot(data) + geom_pie(aes(fill=as_discrete('name', order_by='..count..'), weight='value'), \\
-                                size=15, hole=0.2, stroke=1.0, \\
+                                size=15, hole=0.2, \\
                                 labels=layer_labels(['..proppct..']).format('..proppct..', '{.1f}%'))
 
     |
@@ -6240,8 +6264,7 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
 
     """
     if 'stroke_color' in other_args:
-        print("WARN: The parameter 'stroke_color' for pie is no longer supported. "
-              "Use 'color' for color of slice borders.")
+        print("WARN: The parameter 'stroke_color' for pie is no longer supported.")
         other_args.pop('stroke_color')
 
     return _geom('pie',
@@ -6254,7 +6277,11 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
                  tooltips=tooltips,
                  labels=labels,
                  map=map, map_join=map_join, use_crs=use_crs,
-                 hole=hole, fill_by=fill_by,
+                 hole=hole,
+                 stroke_side=stroke_side,
+                 spacer_width=spacer_width,
+                 spacer_color=spacer_color,
+                 fill_by=fill_by,
                  **other_args)
 
 
@@ -6401,6 +6428,180 @@ def geom_lollipop(mapping=None, *, data=None, stat=None, position=None, show_leg
                  orientation=orientation,
                  dir=dir, fatten=fatten, slope=slope, intercept=intercept,
                  color_by=color_by, fill_by=fill_by,
+                 **other_args)
+
+
+def geom_function(mapping=None, *, data=None, stat=None, geom=None, position=None, show_legend=None, tooltips=None,
+                  fun=None, xlim=None, n=None,
+                  color_by=None,
+                  **other_args):
+    """
+    Compute and draw a function.
+
+    Parameters
+    ----------
+    mapping : `FeatureSpec`
+        Set of aesthetic mappings created by `aes()` function.
+        Aesthetic mappings describe the way that variables in the data are
+        mapped to plot "aesthetics".
+    data : dict or `DataFrame`
+        The data to be used in this layer. Specify to describe the definition area of a function.
+        If None, the default, the data will not be used at all.
+    stat : str, default='identity'
+        The statistical transformation to use on the data generated by the function.
+        Supported transformations: 'identity' (leaves the data unchanged),
+        'smooth' (performs smoothing - linear default),
+        'density2d' (computes and draws 2D kernel density estimate).
+    geom : str, default='line'
+        The geometry to display the function, as a string.
+    position : str or `FeatureSpec`, default='identity'
+        Position adjustment, either as a string ('identity', 'stack', 'dodge', ...),
+        or the result of a call to a position adjustment function.
+    show_legend : bool, default=True
+        False - do not show legend for this layer.
+    tooltips : `layer_tooltips`
+        Result of the call to the `layer_tooltips()` function.
+        Specify appearance, style and content.
+    fun : function
+        A function of one variable in Python syntax.
+    xlim : list of float, default=[0.0, 1.0]
+        Range of the function. Float array of length 2.
+    n : int, default=512
+        Number of points to interpolate along the x axis.
+    color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
+        Define the color aesthetic for the geometry.
+    other_args
+        Other arguments passed on to the layer.
+        These are often aesthetics settings used to set an aesthetic to a fixed value,
+        like color='red', fill='blue', size=3 or shape=21.
+        They may also be parameters to the paired geom/stat.
+
+    Returns
+    -------
+    `LayerSpec`
+        Geom object specification.
+
+    Notes
+    -----
+    `geom_function()` understands the following aesthetics mappings:
+
+    - x : x-axis value.
+    - alpha : transparency level of a layer. Accept values between 0 and 1.
+    - color (colour) : color of the geometry. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red").
+    - linetype : type of the line. Codes and names: 0 = 'blank', 1 = 'solid', 2 = 'dashed', 3 = 'dotted', 4 = 'dotdash', 5 = 'longdash', 6 = 'twodash.
+    - size : line width.
+
+    Examples
+    --------
+    .. jupyter-execute::
+        :linenos:
+        :emphasize-lines: 9
+
+        import numpy as np
+        from scipy.stats import norm
+        from lets_plot import *
+        LetsPlot.setup_html()
+        np.random.seed(42)
+        x = np.random.normal(size=500)
+        ggplot() + \\
+            geom_density(aes(x='x'), data={'x': x}) + \\
+            geom_function(fun=norm.pdf, xlim=[-4, 4], color="red")
+
+    |
+
+    .. jupyter-execute::
+        :linenos:
+        :emphasize-lines: 5-6
+
+        from lets_plot import *
+        LetsPlot.setup_html()
+        data = {'x': list(range(-5, 6))}
+        ggplot() + \\
+            geom_function(aes(x='x', color='y', size='y'), \\
+                          data=data, fun=lambda t: t**2, show_legend=False) + \\
+            scale_color_gradient(low="red", high="green") + \\
+            scale_size(range=[1, 4], trans='reverse')
+
+    |
+
+    .. jupyter-execute::
+        :linenos:
+        :emphasize-lines: 4-5
+
+        from math import sqrt
+        from lets_plot import *
+        LetsPlot.setup_html()
+        fun_layer = lambda fun: geom_function(fun=fun, xlim=[-2, 2], n=9, \\
+                                              stat='density2d', geom='density2d')
+        gggrid([
+            ggplot() + fun_layer(lambda t: t),
+            ggplot() + fun_layer(lambda t: t**2),
+            ggplot() + fun_layer(lambda t: 2**t),
+            ggplot() + fun_layer(lambda t: sqrt(4 - t**2)) + coord_fixed(ratio=2),
+        ], ncol=2)
+
+    """
+    fun_x_name, fun_y_name = 'x', 'y'
+
+    def linspace(start, stop, num):
+        if num == 1:
+            return [start]
+
+        step = (stop - start) / (num - 1)
+
+        return [start + step * i for i in range(num)]
+
+    def get_default_xrange():
+        default_xlim = [0.0, 1.0]
+        default_size = 512
+
+        start, stop = xlim if xlim is not None else default_xlim
+        size = n if n is not None else default_size
+
+        return linspace(start, stop, size)
+
+    def get_fun_data():
+        aes_x_value = None
+        if mapping is not None and 'x' in mapping.as_dict():
+            aes_x_value = mapping.as_dict()['x']
+
+        if isinstance(aes_x_value, str) and data is not None:
+            xs = data[aes_x_value]
+        elif hasattr(aes_x_value, '__iter__'):
+            xs = aes_x_value
+        else:
+            xs = get_default_xrange()
+
+        if fun is None:
+            ys = [None] * len(xs)
+        else:
+            ys = [fun(x) for x in xs]
+
+        if data is None:
+            return {fun_x_name: xs, fun_y_name: ys}
+        else:
+            data[fun_y_name] = ys
+            return data
+
+    def get_mapping():
+        mapping_dict = mapping.as_dict() if mapping is not None else {}
+        x_mapping_dict = {'x': fun_x_name}
+        y_mapping_dict = {'y': fun_y_name}
+
+        return aes(**{**x_mapping_dict, **mapping_dict, **y_mapping_dict})
+
+    fun_stat = stat if stat is not None else 'identity'
+    fun_geom = geom if geom is not None else 'line'
+
+    return _geom(fun_geom,
+                 mapping=get_mapping(),
+                 data=get_fun_data(),
+                 stat=fun_stat,
+                 position=position,
+                 show_legend=show_legend,
+                 sampling=None,
+                 tooltips=tooltips,
+                 color_by=color_by,
                  **other_args)
 
 

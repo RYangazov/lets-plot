@@ -10,7 +10,7 @@ plugins {
 
 kotlin {
     jvm()
-    js () {
+    js() {
         browser {}
         // browser {}
         // /\
@@ -28,7 +28,7 @@ kotlin {
                 implementation project(':commons')
                 implementation project(':plot-base')
                 implementation project(':plot-builder')
-                implementation project(':plot-config-portable')
+                implementation project(':plot-stem')
                 implementation project(':canvas')
                 implementation project(':gis')
                 implementation project(':livemap')
@@ -38,8 +38,7 @@ kotlin {
             dependencies {
                 implementation kotlin('test-common')
                 implementation kotlin('test-annotations-common')
-//                implementation project(':plot-config')
-//                implementation project(':plot-config-portable')
+                implementation project(':demo-and-test-shared')
             }
         }
         jvmMain {

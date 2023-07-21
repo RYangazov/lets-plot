@@ -5,8 +5,8 @@
 
 package jetbrains.datalore.plotDemo.plotConfig
 
-import jetbrains.datalore.plot.MonolithicCommon
-import jetbrains.datalore.plot.parsePlotSpec
+import org.jetbrains.letsPlot.core.util.MonolithicCommon
+import demoAndTestShared.parsePlotSpec
 import org.jetbrains.letsPlot.platf.batik.plot.component.DefaultPlotPanelBatik
 import java.awt.Dimension
 import java.awt.Rectangle

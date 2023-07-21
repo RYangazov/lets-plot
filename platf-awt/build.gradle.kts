@@ -9,9 +9,6 @@ plugins {
 
 kotlin {
     jvm()
-//    js {
-//        browser()
-//    }
 
     sourceSets {
         commonMain {
@@ -22,21 +19,20 @@ kotlin {
                 implementation(project(":canvas"))
                 implementation(project(":plot-base"))
                 implementation(project(":plot-builder"))
-                implementation(project(":plot-config-portable"))
+                implementation(project(":plot-stem"))
+            }
+        }
+
+        commonTest {
+            dependencies {
+                implementation(project(":demo-and-test-shared"))
             }
         }
 
         jvmTest {
             dependencies {
-//                implementation kotlin('test')
                 implementation(kotlin("test-junit"))
-//                implementation("org.hamcrest:hamcrest-core:$hamcrestVersion")
-//                implementation("org.hamcrest:hamcrest-library:$hamcrestVersion")
-//                implementation("org.mockito:mockito-core:$mockitoVersion")
-//                implementation("org.assertj:assertj-core:$assertjVersion")
-//                implementation("io.mockk:mockk:$mockkVersion")
             }
         }
-
     }
 }
