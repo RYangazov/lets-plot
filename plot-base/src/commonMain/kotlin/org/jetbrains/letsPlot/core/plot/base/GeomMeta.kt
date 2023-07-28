@@ -170,8 +170,13 @@ object GeomMeta {
             )
 
             GeomKind.LINE_RANGE -> listOf(
+                // vertical representation
                 Aes.X,
                 Aes.YMIN, Aes.YMAX,
+                // horizontal
+                Aes.Y,
+                Aes.XMIN, Aes.XMAX,
+
                 Aes.ALPHA,
                 Aes.COLOR,
                 Aes.LINETYPE,

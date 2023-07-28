@@ -27,7 +27,6 @@ internal object GeomProviderFactory {
         PROVIDER[GeomKind.HISTOGRAM] = GeomProvider.histogram()
         PROVIDER[GeomKind.TILE] = GeomProvider.tile()
         PROVIDER[GeomKind.BIN_2D] = GeomProvider.bin2d()
-        PROVIDER[GeomKind.LINE_RANGE] = GeomProvider.lineRange()
         PROVIDER[GeomKind.CONTOUR] = GeomProvider.contour()
         PROVIDER[GeomKind.CONTOURF] = GeomProvider.contourf()
         PROVIDER[GeomKind.POLYGON] = GeomProvider.polygon()
@@ -104,6 +103,16 @@ internal object GeomProviderFactory {
                 }
 
                 ErrorBarGeom(isVertical)
+            }
+
+            GeomKind.LINE_RANGE -> GeomProvider.lineRange { ctx ->
+                // Horizontal or vertical
+                val isVertical = setOf(Aes.YMIN, Aes.YMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
+                val isHorizontal = setOf(Aes.XMIN, Aes.XMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
+                require(!(isVertical && isHorizontal)) {
+                     "Either ymin, ymax or xmin, xmax must be specified for the linerange."
+                }
+                LineRangeGeom(isVertical)
             }
 
             GeomKind.CROSS_BAR -> GeomProvider.crossBar {

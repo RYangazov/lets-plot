@@ -7,18 +7,17 @@ package org.jetbrains.letsPlot.core.plot.base.geom
 
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.values.Color
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
-import org.jetbrains.letsPlot.core.plot.base.geom.util.BarTooltipHelper
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomHelper
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil.extendWidth
-import org.jetbrains.letsPlot.core.plot.base.geom.util.HintColorUtil
+import org.jetbrains.letsPlot.core.plot.base.geom.util.*
+import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil.extend
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
-import kotlin.math.max
+import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetCollector
+import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint
 
-class LineRangeGeom : GeomBase() {
+class LineRangeGeom(private val isVertical: Boolean = true) : GeomBase() {
 
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = VLineGeom.LEGEND_KEY_ELEMENT_FACTORY
@@ -33,53 +32,98 @@ class LineRangeGeom : GeomBase() {
         val geomHelper = GeomHelper(pos, coord, ctx)
         val helper = geomHelper.createSvgElementHelper()
         helper.setStrokeAlphaEnabled(true)
-        val colorsByDataPoint = HintColorUtil.createColorMarkerMapper(GeomKind.LINE_RANGE, ctx)
-        for (p in GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.YMIN, Aes.YMAX)) {
-            val x = p.x()!!
-            val ymin = p.ymin()!!
-            val ymax = p.ymax()!!
 
-            val start = DoubleVector(x, ymin)
-            val end = DoubleVector(x, ymax)
+        val colorsByDataPoint = HintColorUtil.createColorMarkerMapper(GeomKind.LINE_RANGE, ctx)
+        val xAes = if (isVertical) Aes.X else Aes.Y
+        val minAes = if (isVertical) Aes.YMIN else Aes.XMIN
+        val maxAes = if (isVertical) Aes.YMAX else Aes.XMAX
+
+        val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, minAes, maxAes)
+
+        for (p in dataPoints) {
+            val x = p[xAes]!!
+            val ymin = p[minAes]!!
+            val ymax = p[maxAes]!!
+            // line
+            val start = DoubleVector(x, ymin).let { if (isVertical) it else it.flip() }
+            val end = DoubleVector(x, ymax).let { if (isVertical) it else it.flip() }
             val line = helper.createLine(start, end, p)
             if (line != null) {
                 root.add(line)
             }
-        }
-
-        BarTooltipHelper.collectRectangleTargets(
-            listOf(Aes.YMAX, Aes.YMIN),
-            aesthetics, pos, coord, ctx,
-            clientRectByDataPoint(ctx, geomHelper),
-            { HintColorUtil.colorWithAlpha(it) },
-            colorMarkerMapper = colorsByDataPoint
-        )
-    }
-
-    companion object {
-        const val HANDLES_GROUPS = false
-
-        private fun clientRectByDataPoint(ctx: GeomContext, geomHelper: GeomHelper): (DataPointAesthetics) -> DoubleRectangle? {
-            return { p ->
-                if (p.defined(Aes.X) &&
-                    p.defined(Aes.YMIN) &&
-                    p.defined(Aes.YMAX)
-                ) {
-                    val x = p.x()!!
-                    val ymin = p.ymin()!!
-                    val ymax = p.ymax()!!
-                    val height = ymax - ymin
-
-                    val rect = geomHelper.toClient(
-                        DoubleRectangle(DoubleVector(x, ymax - height / 2), DoubleVector.ZERO),
-                        p
-                    )!!
-                    val width = max(AesScaling.strokeWidth(p), 2.0)
-                    extendWidth(rect, width, ctx.flipped)
-                } else {
-                    null
+            // tooltip
+            val hintRect = DoubleRectangle(DoubleVector(x, ymin), DoubleVector.ZERO).let {
+                when (isVertical) {
+                    true -> it
+                    false -> it.flip()
                 }
             }
+            buildHints(
+                hintRect,
+                p,
+                ctx,
+                geomHelper,
+                colorsByDataPoint,
+                isVerticalGeom = isVertical
+            )
         }
+    }
+    private fun buildHints(
+        rect: DoubleRectangle?,
+        p: DataPointAesthetics,
+        ctx: GeomContext,
+        geomHelper: GeomHelper,
+        colorsByDataPoint: (DataPointAesthetics) -> List<Color>,
+        isVerticalGeom: Boolean
+    ) {
+        val isVerticallyOriented = if (isVerticalGeom) !ctx.flipped else ctx.flipped
+
+        val clientRect = geomHelper.toClient(rect!!, p)
+        val objectRadius = clientRect?.run {
+            if (isVerticallyOriented) {
+                width / 2.0
+            } else {
+                height / 2.0
+            }
+        }!!
+        val widthExpand = AesScaling.strokeWidth(p)
+        val targetRect = extend(clientRect, isVerticalGeom, widthExpand, widthExpand)
+
+        val aes = if (isVerticalGeom) Aes.X else Aes.Y
+        val hint = HintsCollection.HintConfigFactory()
+            .defaultObjectRadius(objectRadius)
+            .defaultCoord(p[aes]!!)
+            .defaultKind(
+                if (isVerticallyOriented) {
+                    TipLayoutHint.Kind.HORIZONTAL_TOOLTIP
+                } else {
+                    TipLayoutHint.Kind.VERTICAL_TOOLTIP
+                }
+            )
+
+        val minAes = if (isVerticalGeom) Aes.YMIN else Aes.XMIN
+        val maxAes = if (isVerticalGeom) Aes.YMAX else Aes.XMAX
+        val hints = HintsCollection(p, geomHelper)
+            .addHint(hint.create(minAes))
+            .addHint(hint.create(maxAes))
+            .hints
+
+        ctx.targetCollector.addRectangle(
+            p.index(),
+            targetRect,
+            GeomTargetCollector.TooltipParams(
+                tipLayoutHints = hints,
+                markerColors = colorsByDataPoint(p),
+                fillColor = HintColorUtil.colorWithAlpha(p)
+            ),
+            tooltipKind = if (isVerticallyOriented) {
+                TipLayoutHint.Kind.HORIZONTAL_TOOLTIP
+            } else {
+                TipLayoutHint.Kind.VERTICAL_TOOLTIP
+            }
+        )
+    }
+    companion object {
+        const val HANDLES_GROUPS = false
     }
 }
