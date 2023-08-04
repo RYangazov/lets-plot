@@ -95,24 +95,11 @@ internal object GeomProviderFactory {
             }
 
             GeomKind.ERROR_BAR -> GeomProvider.errorBar { ctx ->
-                // Horizontal or vertical
-                val isVertical = setOf(Aes.YMIN, Aes.YMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
-                val isHorizontal = setOf(Aes.XMIN, Aes.XMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
-                require(!(isVertical && isHorizontal)) {
-                    "Either ymin, ymax or xmin, xmax must be specified for the errorbar."
-                }
-
-                ErrorBarGeom(isVertical)
+                ErrorBarGeom(ctx.isVertical(geomKind.name))
             }
 
             GeomKind.LINE_RANGE -> GeomProvider.lineRange { ctx ->
-                // Horizontal or vertical
-                val isVertical = setOf(Aes.YMIN, Aes.YMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
-                val isHorizontal = setOf(Aes.XMIN, Aes.XMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
-                require(!(isVertical && isHorizontal)) {
-                     "Either ymin, ymax or xmin, xmax must be specified for the linerange."
-                }
-                LineRangeGeom(isVertical)
+                LineRangeGeom(ctx.isVertical(geomKind.name))
             }
 
             GeomKind.CROSS_BAR -> GeomProvider.crossBar {
@@ -123,8 +110,8 @@ internal object GeomProviderFactory {
                 geom
             }
 
-            GeomKind.POINT_RANGE -> GeomProvider.pointRange {
-                val geom = PointRangeGeom()
+            GeomKind.POINT_RANGE -> GeomProvider.pointRange {ctx ->
+                val geom = PointRangeGeom(ctx.isVertical(geomKind.name))
                 if (layerConfig.hasOwn(Option.Geom.PointRange.FATTEN)) {
                     geom.fattenMidPoint = layerConfig.getDouble(Option.Geom.PointRange.FATTEN)!!
                 }
@@ -357,4 +344,15 @@ internal object GeomProviderFactory {
         opts.getString(Option.Geom.Text.NA_TEXT)?.let { geom.naValue = it }
         geom.sizeUnit = opts.getString(Option.Geom.Text.SIZE_UNIT)?.lowercase()
     }
+
+    private fun GeomProvider.Context.isVertical(geomName: String): Boolean {
+        // Horizontal or vertical
+        val isVertical = setOf(Aes.YMIN, Aes.YMAX).any { aes -> this.hasBinding(aes) || this.hasConstant(aes) }
+        val isHorizontal = setOf(Aes.XMIN, Aes.XMAX).any { aes -> this.hasBinding(aes) || this.hasConstant(aes) }
+        require(!(isVertical && isHorizontal)) {
+            "Either ymin, ymax or xmin, xmax must be specified for the $geomName."
+        }
+        return isVertical
+    }
+
 }

@@ -184,8 +184,13 @@ object GeomMeta {
             )
 
             GeomKind.POINT_RANGE -> listOf(
+                // vertical representation
                 Aes.X, Aes.Y,
                 Aes.YMIN, Aes.YMAX,
+                // horizontal
+                Aes.X, Aes.Y,
+                Aes.XMIN, Aes.XMAX,
+
                 Aes.ALPHA,
                 Aes.COLOR,
                 Aes.FILL,

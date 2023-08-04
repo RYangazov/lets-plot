@@ -11,18 +11,16 @@ import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
 import org.jetbrains.letsPlot.core.plot.base.geom.legend.CompositeLegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.geom.legend.VLineLegendKeyElementFactory
-import org.jetbrains.letsPlot.core.plot.base.geom.util.BarTooltipHelper
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomHelper
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil.extendWidth
-import org.jetbrains.letsPlot.core.plot.base.geom.util.HintColorUtil
+import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.core.plot.base.render.point.PointShapeSvg
+import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil.extend
+import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.flip
+import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getFlippedAes
 
-class PointRangeGeom : GeomBase() {
-    var fattenMidPoint: Double =
-        DEF_FATTEN
+class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
+    var fattenMidPoint: Double = DEF_FATTEN
 
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = CompositeLegendKeyElementFactory(
@@ -30,6 +28,13 @@ class PointRangeGeom : GeomBase() {
             PointLegendKeyElementFactory(DEF_FATTEN)
         )
 
+    override val wontRender: List<Aes<*>>
+        get() {
+            return listOf(
+                getFlippedAes(Aes.YMIN, !isVertical),
+                getFlippedAes(Aes.YMAX, !isVertical)
+            )
+        }
 
     override fun buildIntern(
         root: SvgRoot,
@@ -43,36 +48,35 @@ class PointRangeGeom : GeomBase() {
         helper.setStrokeAlphaEnabled(true)
         val colorsByDataPoint = HintColorUtil.createColorMarkerMapper(GeomKind.POINT_RANGE, ctx)
 
-        for (p in GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.Y, Aes.YMIN, Aes.YMAX)) {
-            val x = p.x()!!
-            val y = p.y()!!
-            val ymin = p.ymin()!!
-            val ymax = p.ymax()!!
+        val flipHelper = FlippableGeomHelper(aesthetics, pos, coord, ctx, isVertical)
+        val xAes = flipHelper.getFlippedAes(Aes.X)
+        val yAes = flipHelper.getFlippedAes(Aes.Y)
+        val minAes = flipHelper.getFlippedAes(Aes.YMIN)
+        val maxAes = flipHelper.getFlippedAes(Aes.YMAX)
+
+        val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, yAes, minAes, maxAes)
+        for (p in dataPoints) {
+            val x = p[xAes]!!
+            val y = p[yAes]!!
+            val ymin = p[minAes]!!
+            val ymax = p[maxAes]!!
 
             // vertical line
-            val start = DoubleVector(x, ymin)
-            val end = DoubleVector(x, ymax)
-            val line = helper.createLine(start, end, p, strokeScaler = AesScaling::lineWidth)
-            if (line == null) continue
-            root.add(line)
+            val start = DoubleVector(x, ymin).flip(isVertical)
+            val end = DoubleVector(x, ymax).flip(isVertical)
+            helper.createLine(start, end, p, strokeScaler = AesScaling::lineWidth)
+                ?.let { root.add(it) }
 
             // mid-point
-            val location = geomHelper.toClient(DoubleVector(x, y), p)!!
+            val location = geomHelper.toClient(DoubleVector(x, y).flip(isVertical), p)!!
             val shape = p.shape()!!
             val o = PointShapeSvg.create(shape, location, p, fattenMidPoint)
             root.add(wrap(o))
-//            ctx.targetCollector.addPoint(
-//                p.index(),
-//                location,
-//                shape.size(p) * fattenMidline / 2,
-//                PointGeom.tooltipParams(p)
-//            )
         }
 
-        BarTooltipHelper.collectRectangleTargets(
-            listOf(Aes.YMAX, Aes.YMIN),
-            aesthetics, pos, coord, ctx,
-            clientRectByDataPoint(ctx, geomHelper, fattenMidPoint),
+        flipHelper.buildHints(
+            listOf(minAes, maxAes),
+            clientRectByDataPoint(ctx, geomHelper, flipHelper, fattenMidPoint),
             { HintColorUtil.colorWithAlpha(it) },
             colorMarkerMapper = colorsByDataPoint
         )
@@ -80,31 +84,39 @@ class PointRangeGeom : GeomBase() {
 
     companion object {
         const val HANDLES_GROUPS = false
-
         const val DEF_FATTEN = 5.0
 
         private fun clientRectByDataPoint(
             ctx: GeomContext,
             geomHelper: GeomHelper,
+            flipHelper: FlippableGeomHelper,
             fatten: Double
         ): (DataPointAesthetics) -> DoubleRectangle? {
             return { p ->
-                if (p.defined(Aes.X) &&
-                    p.defined(Aes.Y)
+                val xAes = flipHelper.getFlippedAes(Aes.X)
+                val yAes = flipHelper.getFlippedAes(Aes.Y)
+                if (p.defined(xAes) &&
+                    p.defined(yAes)
                 ) {
-                    val x = p.x()!!
-                    val y = p.y()!!
+                    val x = p[xAes]!!
+                    val y = p[yAes]!!
                     val shape = p.shape()!!
 
                     val rect = geomHelper.toClient(
-                        DoubleRectangle(DoubleVector(x, y), DoubleVector.ZERO),
+                        DoubleRectangle(
+                            DoubleVector(x, y),
+                            DoubleVector.ZERO
+                        ).flip(flipHelper.isVertical),
                         p
                     )!!
-
                     val shapeSize = shape.size(p, fatten)
                     val strokeWidth = shape.strokeWidth(p)
                     val width = shapeSize + strokeWidth
-                    extendWidth(rect, width, ctx.flipped)
+                    val isNeedToFlip = when {
+                        flipHelper.isVertical -> ctx.flipped
+                        else -> !ctx.flipped
+                    }
+                    GeomUtil.extendWidth(rect, width, isNeedToFlip)
                 } else {
                     null
                 }

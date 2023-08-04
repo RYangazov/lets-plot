@@ -179,13 +179,13 @@ object GeomInteractionUtil {
             GeomKind.AREA,
             GeomKind.BAR,
             GeomKind.CROSS_BAR,
-            GeomKind.POINT_RANGE,
             GeomKind.SEGMENT,
             GeomKind.STEP,
             GeomKind.V_LINE -> return GeomTooltipSetup.xUnivariateFunction(
                 GeomTargetLocator.LookupStrategy.HOVER,
                 axisTooltipVisibilityFromConfig = true
             )
+            GeomKind.POINT_RANGE,
             GeomKind.LINE_RANGE,
             GeomKind.ERROR_BAR -> {
                 return if (definedAesList.containsAll(listOf(Aes.YMIN, Aes.YMAX))) {
@@ -269,14 +269,7 @@ object GeomInteractionUtil {
             GeomKind.BOX_PLOT -> listOf(Aes.Y)
             GeomKind.RECT -> listOf(Aes.XMIN, Aes.YMIN, Aes.XMAX, Aes.YMAX)
             GeomKind.SEGMENT -> listOf(Aes.X, Aes.Y, Aes.XEND, Aes.YEND)
-            GeomKind.LINE_RANGE ->
-            {
-                when (axisAes.singleOrNull()) {
-                    Aes.X -> listOf(Aes.Y)
-                    Aes.Y -> listOf(Aes.X)
-                    else -> emptyList()
-                }
-            }
+            GeomKind.LINE_RANGE,
             GeomKind.ERROR_BAR -> {
                 // ToDo Need refactoring...
                 // Error bar supports a dual set of aesthetics (vertical and horizontal representation).
@@ -374,8 +367,8 @@ object GeomInteractionUtil {
     private fun createSideTooltipAesList(geomKind: GeomKind): List<Aes<*>> {
         return when (geomKind) {
             GeomKind.CROSS_BAR,
-            GeomKind.POINT_RANGE,
             GeomKind.RIBBON -> listOf(Aes.YMAX, Aes.YMIN)
+            GeomKind.POINT_RANGE,
             GeomKind.LINE_RANGE,
             GeomKind.ERROR_BAR -> listOf(Aes.YMAX, Aes.YMIN, Aes.XMAX, Aes.XMIN)
             GeomKind.BOX_PLOT -> listOf(Aes.YMAX, Aes.UPPER, Aes.MIDDLE, Aes.LOWER, Aes.YMIN)

@@ -8,33 +8,28 @@ package org.jetbrains.letsPlot.core.plot.base.geom
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleSegment
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
-import org.jetbrains.letsPlot.commons.values.Color
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomHelper
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil
-import org.jetbrains.letsPlot.core.plot.base.geom.util.HintColorUtil
-import org.jetbrains.letsPlot.core.plot.base.geom.util.HintsCollection
-import org.jetbrains.letsPlot.core.plot.base.geom.util.HintsCollection.HintConfigFactory
-import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetCollector
-import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint
+import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgGElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgLineElement
+import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.flip
+import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getFlippedAes
 
 class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
-
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = ErrorBarLegendKeyElementFactory()
 
     override val wontRender: List<Aes<*>>
         get() {
-            return if (isVertical) {
-                listOf(Aes.Y, Aes.XMIN, Aes.XMAX, Aes.HEIGHT)
-            } else {
-                listOf(Aes.X, Aes.YMIN, Aes.YMAX, Aes.WIDTH)
-            }
+            return listOf(
+                getFlippedAes(Aes.X, !isVertical),
+                getFlippedAes(Aes.YMIN, !isVertical),
+                getFlippedAes(Aes.YMAX, !isVertical),
+                getFlippedAes(Aes.WIDTH, !isVertical),
+            )
         }
 
     override fun buildIntern(
@@ -44,15 +39,15 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
         coord: CoordinateSystem,
         ctx: GeomContext
     ) {
+        val flipHelper = FlippableGeomHelper(aesthetics, pos, coord, ctx, isVertical)
+        val xAes = flipHelper.getFlippedAes(Aes.X)
+        val minAes = flipHelper.getFlippedAes(Aes.YMIN)
+        val maxAes = flipHelper.getFlippedAes(Aes.YMAX)
+        val widthAes = flipHelper.getFlippedAes(Aes.WIDTH)
+        val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, minAes, maxAes, widthAes)
+
         val geomHelper = GeomHelper(pos, coord, ctx)
         val colorsByDataPoint = HintColorUtil.createColorMarkerMapper(GeomKind.ERROR_BAR, ctx)
-
-        val xAes = if (isVertical) Aes.X else Aes.Y
-        val minAes = if (isVertical) Aes.YMIN else Aes.XMIN
-        val maxAes = if (isVertical) Aes.YMAX else Aes.XMAX
-        val widthAes = if (isVertical) Aes.WIDTH else Aes.HEIGHT
-
-        val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, minAes, maxAes, widthAes)
 
         for (p in dataPoints) {
             val x = p[xAes]!!
@@ -63,83 +58,16 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
             val height = ymax - ymin
 
             val rect = DoubleRectangle(x - width / 2, ymin, width, height)
-            val segments = errorBarShapeSegments(rect).map {
-                when (isVertical) {
-                    true -> it
-                    false -> DoubleSegment(it.start.flip(), it.end.flip())
-                }
-            }
+            val segments = errorBarShapeSegments(rect).map { it.flip(isVertical) }
             val g = errorBarShape(segments, p, geomHelper)
             root.add(g)
-
-            val hintRect = DoubleRectangle(rect.left, rect.center.y, rect.width, 0.0).let {
-                when (isVertical) {
-                    true -> it
-                    false -> it.flip()
-                }
-            }
-            buildHints(
-                hintRect,
-                p,
-                ctx,
-                geomHelper,
-                colorsByDataPoint,
-                isVerticalGeom = isVertical
-            )
         }
-    }
-
-    private fun buildHints(
-        rect: DoubleRectangle,
-        p: DataPointAesthetics,
-        ctx: GeomContext,
-        geomHelper: GeomHelper,
-        colorsByDataPoint: (DataPointAesthetics) -> List<Color>,
-        isVerticalGeom: Boolean
-    ) {
-        val isVerticallyOriented = if (isVerticalGeom) !ctx.flipped else ctx.flipped
-
-        val clientRect = geomHelper.toClient(rect, p)
-        val objectRadius = clientRect?.run {
-            if (isVerticallyOriented) {
-                width / 2.0
-            } else {
-                height / 2.0
-            }
-        }!!
-
-        val aes = if (isVerticalGeom) Aes.X else Aes.Y
-        val hint = HintConfigFactory()
-            .defaultObjectRadius(objectRadius)
-            .defaultCoord(p[aes]!!)
-            .defaultKind(
-                if (isVerticallyOriented) {
-                    TipLayoutHint.Kind.HORIZONTAL_TOOLTIP
-                } else {
-                    TipLayoutHint.Kind.ROTATED_TOOLTIP
-                }
-            )
-
-        val minAes = if (isVerticalGeom) Aes.YMIN else Aes.XMIN
-        val maxAes = if (isVerticalGeom) Aes.YMAX else Aes.XMAX
-        val hints = HintsCollection(p, geomHelper)
-            .addHint(hint.create(minAes))
-            .addHint(hint.create(maxAes))
-            .hints
-
-        ctx.targetCollector.addRectangle(
-            p.index(),
-            clientRect,
-            GeomTargetCollector.TooltipParams(
-                tipLayoutHints = hints,
-                markerColors = colorsByDataPoint(p),
-                fillColor = HintColorUtil.colorWithAlpha(p)
-            ),
-            tooltipKind = if (isVerticallyOriented) {
-                TipLayoutHint.Kind.HORIZONTAL_TOOLTIP
-            } else {
-                TipLayoutHint.Kind.VERTICAL_TOOLTIP
-            }
+        // tooltip
+        flipHelper.buildHints(
+            listOf(minAes, maxAes),
+            clientRectByDataPoint(ctx, geomHelper, flipHelper),
+            { HintColorUtil.colorWithAlpha(it) },
+            colorMarkerMapper = colorsByDataPoint
         )
     }
 
@@ -153,14 +81,44 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
             val x = (size.x - width) / 2
             val y = strokeWidth / 2
             return errorBarLegendShape(
-                errorBarShapeSegments(DoubleRectangle(x, y, width, height)),
-                p
+                errorBarShapeSegments(DoubleRectangle(x, y, width, height)), p
             )
         }
     }
 
     companion object {
-        const val HANDLES_GROUPS = false
+        private fun clientRectByDataPoint(
+            ctx: GeomContext,
+            geomHelper: GeomHelper,
+            flipHelper: FlippableGeomHelper
+        ): (DataPointAesthetics) -> DoubleRectangle? {
+            return { p ->
+                val xAes = flipHelper.getFlippedAes(Aes.X)
+                val minAes = flipHelper.getFlippedAes(Aes.YMIN)
+                val maxAes = flipHelper.getFlippedAes(Aes.YMAX)
+                val widthAes = flipHelper.getFlippedAes(Aes.WIDTH)
+                if (p.defined(xAes) &&
+                    p.defined(minAes) &&
+                    p.defined(maxAes) &&
+                    p.defined(widthAes)
+                ) {
+                    val x = p[xAes]!!
+                    val ymin = p[minAes]!!
+                    val ymax = p[maxAes]!!
+                    val width = p[widthAes]!! * ctx.getResolution(xAes)
+                    val height = ymax - ymin
+                    val rect = geomHelper.toClient(
+                        DoubleRectangle(
+                            x - width / 2.0, ymin - height / 2.0, width, 0.0
+                        ).flip(flipHelper.isVertical),
+                        p
+                    )!!
+                    rect
+                } else {
+                    null
+                }
+            }
+        }
 
         private fun errorBarLegendShape(segments: List<DoubleSegment>, p: DataPointAesthetics): SvgGElement {
             val g = SvgGElement()
@@ -198,5 +156,7 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
             }
             return g
         }
+
+        const val HANDLES_GROUPS = false
     }
 }
