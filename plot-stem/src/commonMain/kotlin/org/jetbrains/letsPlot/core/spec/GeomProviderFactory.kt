@@ -95,11 +95,11 @@ internal object GeomProviderFactory {
             }
 
             GeomKind.ERROR_BAR -> GeomProvider.errorBar { ctx ->
-                ErrorBarGeom(ctx.isVertical(geomKind.name))
+                ErrorBarGeom(isVertical(ctx, geomKind.name))
             }
 
             GeomKind.LINE_RANGE -> GeomProvider.lineRange { ctx ->
-                LineRangeGeom(ctx.isVertical(geomKind.name))
+                LineRangeGeom(isVertical(ctx, geomKind.name))
             }
 
             GeomKind.CROSS_BAR -> GeomProvider.crossBar {
@@ -111,7 +111,7 @@ internal object GeomProviderFactory {
             }
 
             GeomKind.POINT_RANGE -> GeomProvider.pointRange {ctx ->
-                val geom = PointRangeGeom(ctx.isVertical(geomKind.name))
+                val geom = PointRangeGeom(isVertical(ctx, geomKind.name))
                 if (layerConfig.hasOwn(Option.Geom.PointRange.FATTEN)) {
                     geom.fattenMidPoint = layerConfig.getDouble(Option.Geom.PointRange.FATTEN)!!
                 }
@@ -348,10 +348,10 @@ internal object GeomProviderFactory {
         geom.sizeUnit = opts.getString(Option.Geom.Text.SIZE_UNIT)?.lowercase()
     }
 
-    private fun GeomProvider.Context.isVertical(geomName: String): Boolean {
+    private fun isVertical(ctx: GeomProvider.Context, geomName: String): Boolean {
         // Horizontal or vertical
-        val isVertical = setOf(Aes.YMIN, Aes.YMAX).any { aes -> this.hasBinding(aes) || this.hasConstant(aes) }
-        val isHorizontal = setOf(Aes.XMIN, Aes.XMAX).any { aes -> this.hasBinding(aes) || this.hasConstant(aes) }
+        val isVertical = setOf(Aes.YMIN, Aes.YMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
+        val isHorizontal = setOf(Aes.XMIN, Aes.XMAX).any { aes -> ctx.hasBinding(aes) || ctx.hasConstant(aes) }
         require(!(isVertical && isHorizontal)) {
             "Either ymin, ymax or xmin, xmax must be specified for the $geomName."
         }

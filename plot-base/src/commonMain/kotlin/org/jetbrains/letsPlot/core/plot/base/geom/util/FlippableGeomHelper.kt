@@ -14,21 +14,23 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetCollector
 import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint
 
 class FlippableGeomHelper(
-    private val aesthetics: Aesthetics,
-    private val pos: PositionAdjustment,
-    private val coord: CoordinateSystem,
-    private val ctx: GeomContext,
     internal val isVertical: Boolean
 ) {
 
-    fun getFlippedAes(aes: Aes<Double>): Aes<Double> {
-        return getFlippedAes(aes, isVertical)
+    fun getEffectiveAes(aes: Aes<Double>): Aes<Double> {
+        return getEffectiveAes(aes, isVertical)
     }
+
     fun buildHints(
         hintAesList: List<Aes<Double>>,
+        aesthetics: Aesthetics,
+        pos: PositionAdjustment,
+        coord: CoordinateSystem,
+        ctx: GeomContext,
         clientRectFactory: (DataPointAesthetics) -> DoubleRectangle?,
         fillColorMapper: (DataPointAesthetics) -> Color? = { null },
-        colorMarkerMapper: (DataPointAesthetics) -> List<Color> = HintColorUtil.createColorMarkerMapper(null, ctx),
+        colorMarkerMapper: (DataPointAesthetics) -> List<Color> =
+            HintColorUtil.createColorMarkerMapper(null, ctx),
         defaultTooltipKind: TipLayoutHint.Kind? = null
     ) {
         val helper = GeomHelper(pos, coord, ctx)
@@ -49,7 +51,7 @@ class FlippableGeomHelper(
 
             val hintFactory = HintsCollection.HintConfigFactory()
                 .defaultObjectRadius(objectRadius)
-                .defaultCoord(p[getFlippedAes(Aes.X)]!!)
+                .defaultCoord(p[getEffectiveAes(Aes.X)]!!)
                 .defaultKind(
                     if (isVerticallyOriented) {
                         TipLayoutHint.Kind.HORIZONTAL_TOOLTIP
@@ -82,7 +84,7 @@ class FlippableGeomHelper(
     }
 
     companion object {
-        fun getFlippedAes(aes: Aes<Double>, isVertical: Boolean): Aes<Double> {
+        fun getEffectiveAes(aes: Aes<Double>, isVertical: Boolean): Aes<Double> {
             if (!isVertical) {
                 when (aes) {
                     Aes.X -> return Aes.Y
@@ -90,7 +92,7 @@ class FlippableGeomHelper(
                     Aes.YMIN -> return Aes.XMIN
                     Aes.YMAX -> return Aes.XMAX
                     Aes.WIDTH -> return Aes.HEIGHT
-                    else -> error("Could not find aesthetic ${aes.name}")
+                    else -> error("Aes ${aes.name} not allowed for function getFlippedAes")
                 }
             } else {
                 return aes

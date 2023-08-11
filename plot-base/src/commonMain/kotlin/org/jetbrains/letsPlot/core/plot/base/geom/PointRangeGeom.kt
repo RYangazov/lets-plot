@@ -15,9 +15,8 @@ import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.core.plot.base.render.point.PointShapeSvg
-import org.jetbrains.letsPlot.core.plot.base.geom.util.GeomUtil.extend
 import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.flip
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getFlippedAes
+import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getEffectiveAes
 
 class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
     var fattenMidPoint: Double = DEF_FATTEN
@@ -31,8 +30,8 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
     override val wontRender: List<Aes<*>>
         get() {
             return listOf(
-                getFlippedAes(Aes.YMIN, !isVertical),
-                getFlippedAes(Aes.YMAX, !isVertical)
+                getEffectiveAes(Aes.YMIN, !isVertical),
+                getEffectiveAes(Aes.YMAX, !isVertical)
             )
         }
 
@@ -48,11 +47,11 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
         helper.setStrokeAlphaEnabled(true)
         val colorsByDataPoint = HintColorUtil.createColorMarkerMapper(GeomKind.POINT_RANGE, ctx)
 
-        val flipHelper = FlippableGeomHelper(aesthetics, pos, coord, ctx, isVertical)
-        val xAes = flipHelper.getFlippedAes(Aes.X)
-        val yAes = flipHelper.getFlippedAes(Aes.Y)
-        val minAes = flipHelper.getFlippedAes(Aes.YMIN)
-        val maxAes = flipHelper.getFlippedAes(Aes.YMAX)
+        val flipHelper = FlippableGeomHelper(isVertical)
+        val xAes = flipHelper.getEffectiveAes(Aes.X)
+        val yAes = flipHelper.getEffectiveAes(Aes.Y)
+        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
+        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
 
         val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, yAes, minAes, maxAes)
         for (p in dataPoints) {
@@ -76,6 +75,7 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
 
         flipHelper.buildHints(
             listOf(minAes, maxAes),
+            aesthetics, pos, coord, ctx,
             clientRectByDataPoint(ctx, geomHelper, flipHelper, fattenMidPoint),
             { HintColorUtil.colorWithAlpha(it) },
             colorMarkerMapper = colorsByDataPoint
@@ -93,8 +93,8 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
             fatten: Double
         ): (DataPointAesthetics) -> DoubleRectangle? {
             return { p ->
-                val xAes = flipHelper.getFlippedAes(Aes.X)
-                val yAes = flipHelper.getFlippedAes(Aes.Y)
+                val xAes = flipHelper.getEffectiveAes(Aes.X)
+                val yAes = flipHelper.getEffectiveAes(Aes.Y)
                 if (p.defined(xAes) &&
                     p.defined(yAes)
                 ) {

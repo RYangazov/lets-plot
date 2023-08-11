@@ -12,21 +12,20 @@ import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.flip
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getFlippedAes
+import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getEffectiveAes
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import kotlin.math.max
 
 class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
-
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = VLineGeom.LEGEND_KEY_ELEMENT_FACTORY
 
     override val wontRender: List<Aes<*>>
         get() {
             return listOf(
-                getFlippedAes(Aes.X, !isVertical),
-                getFlippedAes(Aes.YMIN, !isVertical),
-                getFlippedAes(Aes.YMAX, !isVertical)
+                getEffectiveAes(Aes.X, !isVertical),
+                getEffectiveAes(Aes.YMIN, !isVertical),
+                getEffectiveAes(Aes.YMAX, !isVertical)
             )
         }
 
@@ -37,10 +36,10 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
         coord: CoordinateSystem,
         ctx: GeomContext
     ) {
-        val flipHelper = FlippableGeomHelper(aesthetics, pos, coord, ctx, isVertical)
-        val xAes = flipHelper.getFlippedAes(Aes.X)
-        val minAes = flipHelper.getFlippedAes(Aes.YMIN)
-        val maxAes = flipHelper.getFlippedAes(Aes.YMAX)
+        val flipHelper = FlippableGeomHelper(isVertical)
+        val xAes = flipHelper.getEffectiveAes(Aes.X)
+        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
+        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
         val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, minAes, maxAes)
 
         val geomHelper = GeomHelper(pos, coord, ctx)
@@ -59,6 +58,7 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
         // tooltip
         flipHelper.buildHints(
             listOf(minAes, maxAes),
+            aesthetics, pos, coord, ctx,
             clientRectByDataPoint(ctx, geomHelper, flipHelper),
             { HintColorUtil.colorWithAlpha(it) },
             colorMarkerMapper = colorsByDataPoint
@@ -72,9 +72,9 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
             flipHelper: FlippableGeomHelper
         ): (DataPointAesthetics) -> DoubleRectangle? {
             return { p ->
-                val xAes = flipHelper.getFlippedAes(Aes.X)
-                val minAes = flipHelper.getFlippedAes(Aes.YMIN)
-                val maxAes = flipHelper.getFlippedAes(Aes.YMAX)
+                val xAes = flipHelper.getEffectiveAes(Aes.X)
+                val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
+                val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
                 if (p.defined(xAes) &&
                     p.defined(minAes) &&
                     p.defined(maxAes)
