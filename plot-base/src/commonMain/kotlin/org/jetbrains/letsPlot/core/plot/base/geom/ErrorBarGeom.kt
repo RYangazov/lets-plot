@@ -15,20 +15,20 @@ import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgGElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgLineElement
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.flip
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getEffectiveAes
 
 class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
+    private val flipHelper = FlippableGeomHelper(isVertical)
+
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = ErrorBarLegendKeyElementFactory()
 
     override val wontRender: List<Aes<*>>
         get() {
             return listOf(
-                getEffectiveAes(Aes.X, !isVertical),
-                getEffectiveAes(Aes.YMIN, !isVertical),
-                getEffectiveAes(Aes.YMAX, !isVertical),
-                getEffectiveAes(Aes.WIDTH, !isVertical),
+                flipHelper.getOppositeAes(Aes.X),
+                flipHelper.getOppositeAes(Aes.YMIN),
+                flipHelper.getOppositeAes(Aes.YMAX),
+                flipHelper.getOppositeAes(Aes.WIDTH)
             )
         }
 
@@ -39,7 +39,6 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
         coord: CoordinateSystem,
         ctx: GeomContext
     ) {
-        val flipHelper = FlippableGeomHelper(isVertical)
         val xAes = flipHelper.getEffectiveAes(Aes.X)
         val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
         val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
@@ -58,7 +57,7 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
             val height = ymax - ymin
 
             val rect = DoubleRectangle(x - width / 2, ymin, width, height)
-            val segments = errorBarShapeSegments(rect).map { it.flip(isVertical) }
+            val segments = errorBarShapeSegments(rect).map { flipHelper.flip(it) }
             val g = errorBarShape(segments, p, geomHelper)
             root.add(g)
         }
@@ -109,9 +108,9 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
                     val width = p[widthAes]!! * ctx.getResolution(xAes)
                     val height = ymax - ymin
                     val rect = geomHelper.toClient(
-                        DoubleRectangle(
-                            x - width / 2.0, ymin - height / 2.0, width, 0.0
-                        ).flip(flipHelper.isVertical),
+                        flipHelper.flip(
+                            DoubleRectangle(x - width / 2.0, ymin - height / 2.0, width, 0.0)
+                        ),
                         p
                     )!!
                     rect

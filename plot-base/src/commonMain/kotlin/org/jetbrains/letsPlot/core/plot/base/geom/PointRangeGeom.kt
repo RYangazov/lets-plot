@@ -15,11 +15,10 @@ import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.core.plot.base.render.point.PointShapeSvg
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.flip
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getEffectiveAes
 
 class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
     var fattenMidPoint: Double = DEF_FATTEN
+    private val flipHelper = FlippableGeomHelper(isVertical)
 
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = CompositeLegendKeyElementFactory(
@@ -30,8 +29,8 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
     override val wontRender: List<Aes<*>>
         get() {
             return listOf(
-                getEffectiveAes(Aes.YMIN, !isVertical),
-                getEffectiveAes(Aes.YMAX, !isVertical)
+                flipHelper.getOppositeAes(Aes.YMIN),
+                flipHelper.getOppositeAes(Aes.YMAX),
             )
         }
 
@@ -47,7 +46,6 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
         helper.setStrokeAlphaEnabled(true)
         val colorsByDataPoint = HintColorUtil.createColorMarkerMapper(GeomKind.POINT_RANGE, ctx)
 
-        val flipHelper = FlippableGeomHelper(isVertical)
         val xAes = flipHelper.getEffectiveAes(Aes.X)
         val yAes = flipHelper.getEffectiveAes(Aes.Y)
         val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
@@ -61,13 +59,13 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
             val ymax = p[maxAes]!!
 
             // vertical line
-            val start = DoubleVector(x, ymin).flip(isVertical)
-            val end = DoubleVector(x, ymax).flip(isVertical)
+            val start = flipHelper.flip(DoubleVector(x, ymin))
+            val end = flipHelper.flip(DoubleVector(x, ymax))
             helper.createLine(start, end, p, strokeScaler = AesScaling::lineWidth)
                 ?.let { root.add(it) }
 
             // mid-point
-            val location = geomHelper.toClient(DoubleVector(x, y).flip(isVertical), p)!!
+            val location = geomHelper.toClient(flipHelper.flip(DoubleVector(x, y)), p)!!
             val shape = p.shape()!!
             val o = PointShapeSvg.create(shape, location, p, fattenMidPoint)
             root.add(wrap(o))
@@ -103,10 +101,7 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
                     val shape = p.shape()!!
 
                     val rect = geomHelper.toClient(
-                        DoubleRectangle(
-                            DoubleVector(x, y),
-                            DoubleVector.ZERO
-                        ).flip(flipHelper.isVertical),
+                        flipHelper.flip(DoubleRectangle(DoubleVector(x, y), DoubleVector.ZERO)),
                         p
                     )!!
                     val shapeSize = shape.size(p, fatten)

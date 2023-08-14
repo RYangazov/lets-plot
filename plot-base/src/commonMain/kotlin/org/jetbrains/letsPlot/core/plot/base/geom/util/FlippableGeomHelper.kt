@@ -16,9 +16,44 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint
 class FlippableGeomHelper(
     internal val isVertical: Boolean
 ) {
+    fun getEffectiveAes(aes: Aes<Double>, isVertical: Boolean = this.isVertical): Aes<Double> {
+        if (!isVertical) {
+            when (aes) {
+                Aes.X -> return Aes.Y
+                Aes.Y -> return Aes.X
+                Aes.YMIN -> return Aes.XMIN
+                Aes.YMAX -> return Aes.XMAX
+                Aes.WIDTH -> return Aes.HEIGHT
+                else -> error("Aes ${aes.name} not allowed for function getEffectiveAes")
+            }
+        } else {
+            return aes
+        }
+    }
 
-    fun getEffectiveAes(aes: Aes<Double>): Aes<Double> {
-        return getEffectiveAes(aes, isVertical)
+    fun getOppositeAes(aes: Aes<Double>): Aes<Double> {
+        return getEffectiveAes(aes, !isVertical)
+    }
+
+    fun flip(point: DoubleVector): DoubleVector {
+        return when {
+            isVertical -> point
+            else -> point.flip()
+        }
+    }
+
+    fun flip(clientRect: DoubleRectangle): DoubleRectangle {
+        return when {
+            isVertical -> clientRect
+            else -> clientRect.flip()
+        }
+    }
+
+    fun flip(doubleSegment: DoubleSegment): DoubleSegment {
+        return when {
+            isVertical -> doubleSegment
+            else -> DoubleSegment(doubleSegment.start.flip(), doubleSegment.end.flip())
+        }
     }
 
     fun buildHints(
@@ -80,44 +115,6 @@ class FlippableGeomHelper(
                     TipLayoutHint.Kind.VERTICAL_TOOLTIP
                 }
             )
-        }
-    }
-
-    companion object {
-        fun getEffectiveAes(aes: Aes<Double>, isVertical: Boolean): Aes<Double> {
-            if (!isVertical) {
-                when (aes) {
-                    Aes.X -> return Aes.Y
-                    Aes.Y -> return Aes.X
-                    Aes.YMIN -> return Aes.XMIN
-                    Aes.YMAX -> return Aes.XMAX
-                    Aes.WIDTH -> return Aes.HEIGHT
-                    else -> error("Aes ${aes.name} not allowed for function getFlippedAes")
-                }
-            } else {
-                return aes
-            }
-        }
-
-        fun DoubleVector.flip(isVertical: Boolean): DoubleVector {
-            return when {
-                isVertical -> this
-                else -> this.flip()
-            }
-        }
-
-        fun DoubleRectangle.flip(isVertical: Boolean): DoubleRectangle {
-            return when {
-                isVertical -> this
-                else -> this.flip()
-            }
-        }
-
-        fun DoubleSegment.flip(isVertical: Boolean): DoubleSegment {
-            return when {
-                isVertical -> this
-                else -> DoubleSegment(this.start.flip(), this.end.flip())
-            }
         }
     }
 }

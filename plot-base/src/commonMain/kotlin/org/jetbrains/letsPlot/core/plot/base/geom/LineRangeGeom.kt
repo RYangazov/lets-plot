@@ -11,21 +11,21 @@ import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.flip
-import org.jetbrains.letsPlot.core.plot.base.geom.util.FlippableGeomHelper.Companion.getEffectiveAes
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import kotlin.math.max
 
 class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
+    private val flipHelper = FlippableGeomHelper(isVertical)
+
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = VLineGeom.LEGEND_KEY_ELEMENT_FACTORY
 
     override val wontRender: List<Aes<*>>
         get() {
             return listOf(
-                getEffectiveAes(Aes.X, !isVertical),
-                getEffectiveAes(Aes.YMIN, !isVertical),
-                getEffectiveAes(Aes.YMAX, !isVertical)
+                flipHelper.getOppositeAes(Aes.X),
+                flipHelper.getOppositeAes(Aes.YMIN),
+                flipHelper.getOppositeAes(Aes.YMAX)
             )
         }
 
@@ -36,7 +36,6 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
         coord: CoordinateSystem,
         ctx: GeomContext
     ) {
-        val flipHelper = FlippableGeomHelper(isVertical)
         val xAes = flipHelper.getEffectiveAes(Aes.X)
         val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
         val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
@@ -51,8 +50,8 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
             val ymin = p[minAes]!!
             val ymax = p[maxAes]!!
             // line
-            val start = DoubleVector(x, ymin).flip(isVertical)
-            val end = DoubleVector(x, ymax).flip(isVertical)
+            val start = flipHelper.flip(DoubleVector(x, ymin))
+            val end = flipHelper.flip(DoubleVector(x, ymax))
             helper.createLine(start, end, p)?.let { root.add(it) }
         }
         // tooltip
@@ -85,10 +84,9 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
                     val height = ymax - ymin
 
                     val rect = geomHelper.toClient(
-                        DoubleRectangle(
-                            DoubleVector(x, ymax - height / 2.0),
-                            DoubleVector.ZERO
-                        ).flip(flipHelper.isVertical),
+                        flipHelper.flip(
+                            DoubleRectangle(DoubleVector(x, ymax - height / 2.0), DoubleVector.ZERO)
+                        ),
                         p
                     )!!
                     val width = max(AesScaling.strokeWidth(p), MIN_TOOLTIP_RECTANGLE_WIDTH)
