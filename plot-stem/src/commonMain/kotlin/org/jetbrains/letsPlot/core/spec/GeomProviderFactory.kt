@@ -102,8 +102,8 @@ internal object GeomProviderFactory {
                 LineRangeGeom(isVertical(ctx, geomKind.name))
             }
 
-            GeomKind.CROSS_BAR -> GeomProvider.crossBar {
-                val geom = CrossBarGeom()
+            GeomKind.CROSS_BAR -> GeomProvider.crossBar { ctx ->
+                val geom = CrossBarGeom(isVertical(ctx, geomKind.name))
                 if (layerConfig.hasOwn(Option.Geom.CrossBar.FATTEN)) {
                     geom.fattenMidline = layerConfig.getDouble(Option.Geom.CrossBar.FATTEN)!!
                 }
@@ -118,7 +118,7 @@ internal object GeomProviderFactory {
                 geom
             }
 
-            GeomKind.BOX_PLOT -> GeomProvider.boxplot {
+            GeomKind.BOX_PLOT -> GeomProvider.boxplot { ctx ->
                 val geom = BoxplotGeom()
                 if (layerConfig.hasOwn(Option.Geom.Boxplot.FATTEN)) {
                     geom.fattenMidline = layerConfig.getDouble(Option.Geom.Boxplot.FATTEN)!!

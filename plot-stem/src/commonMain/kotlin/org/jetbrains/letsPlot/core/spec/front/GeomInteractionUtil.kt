@@ -178,13 +178,13 @@ object GeomInteractionUtil {
             GeomKind.LINE,
             GeomKind.AREA,
             GeomKind.BAR,
-            GeomKind.CROSS_BAR,
             GeomKind.SEGMENT,
             GeomKind.STEP,
             GeomKind.V_LINE -> return GeomTooltipSetup.xUnivariateFunction(
                 GeomTargetLocator.LookupStrategy.HOVER,
                 axisTooltipVisibilityFromConfig = true
             )
+            GeomKind.CROSS_BAR,
             GeomKind.POINT_RANGE,
             GeomKind.LINE_RANGE,
             GeomKind.ERROR_BAR -> {
@@ -366,8 +366,8 @@ object GeomInteractionUtil {
 
     private fun createSideTooltipAesList(geomKind: GeomKind): List<Aes<*>> {
         return when (geomKind) {
-            GeomKind.CROSS_BAR,
             GeomKind.RIBBON -> listOf(Aes.YMAX, Aes.YMIN)
+            GeomKind.CROSS_BAR,
             GeomKind.POINT_RANGE,
             GeomKind.LINE_RANGE,
             GeomKind.ERROR_BAR -> listOf(Aes.YMAX, Aes.YMIN, Aes.XMAX, Aes.XMIN)

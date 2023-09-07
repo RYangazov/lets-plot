@@ -9,6 +9,7 @@ import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
+import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsUtil.orthogonal
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
@@ -23,9 +24,9 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
     override val wontRender: List<Aes<*>>
         get() {
             return listOf(
-                flipHelper.getOppositeAes(Aes.X),
-                flipHelper.getOppositeAes(Aes.YMIN),
-                flipHelper.getOppositeAes(Aes.YMAX)
+                flipHelper.getEffectiveAes(Aes.X.orthogonal()),
+                flipHelper.getEffectiveAes(Aes.YMIN.orthogonal()),
+                flipHelper.getEffectiveAes(Aes.YMAX.orthogonal())
             )
         }
 

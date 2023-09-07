@@ -158,9 +158,13 @@ object GeomMeta {
             )
 
             GeomKind.CROSS_BAR -> listOf(
-                Aes.X,
-                Aes.YMIN, Aes.YMAX, Aes.Y,
+                Aes.X, Aes.Y,
+                // vertical representation
+                Aes.YMIN, Aes.YMAX,
                 Aes.WIDTH,
+                // horizontal
+                Aes.XMIN, Aes.XMAX,
+                Aes.HEIGHT,
 
                 Aes.ALPHA,
                 Aes.COLOR,
@@ -184,11 +188,10 @@ object GeomMeta {
             )
 
             GeomKind.POINT_RANGE -> listOf(
-                // vertical representation
                 Aes.X, Aes.Y,
+                // vertical representation
                 Aes.YMIN, Aes.YMAX,
                 // horizontal
-                Aes.X, Aes.Y,
                 Aes.XMIN, Aes.XMAX,
 
                 Aes.ALPHA,

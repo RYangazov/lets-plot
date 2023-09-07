@@ -16,25 +16,23 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint
 class FlippableGeomHelper(
     internal val isVertical: Boolean
 ) {
-    fun getEffectiveAes(aes: Aes<Double>, isVertical: Boolean = this.isVertical): Aes<Double> {
+    fun getEffectiveAes(aes: Aes<Double>): Aes<Double> {
         if (!isVertical) {
             when (aes) {
                 Aes.X -> return Aes.Y
                 Aes.Y -> return Aes.X
                 Aes.YMIN -> return Aes.XMIN
                 Aes.YMAX -> return Aes.XMAX
+                Aes.XMIN -> return Aes.YMIN
+                Aes.XMAX -> return Aes.YMAX
                 Aes.WIDTH -> return Aes.HEIGHT
+                Aes.HEIGHT -> return Aes.WIDTH
                 else -> error("Aes ${aes.name} not allowed for function getEffectiveAes")
             }
         } else {
             return aes
         }
     }
-
-    fun getOppositeAes(aes: Aes<Double>): Aes<Double> {
-        return getEffectiveAes(aes, !isVertical)
-    }
-
     fun flip(point: DoubleVector): DoubleVector {
         return when {
             isVertical -> point
