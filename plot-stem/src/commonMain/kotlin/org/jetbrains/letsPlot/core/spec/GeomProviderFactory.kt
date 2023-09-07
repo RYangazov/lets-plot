@@ -306,6 +306,7 @@ internal object GeomProviderFactory {
                         )
                     }
                 }
+                geom.sizeUnit = layerConfig.getString(Option.Geom.Pie.SIZE_UNIT)?.lowercase()
                 geom
             }
 

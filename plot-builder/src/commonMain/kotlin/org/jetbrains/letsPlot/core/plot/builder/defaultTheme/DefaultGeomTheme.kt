@@ -8,6 +8,7 @@ package org.jetbrains.letsPlot.core.plot.builder.defaultTheme
 import org.jetbrains.letsPlot.commons.values.Color
 import org.jetbrains.letsPlot.commons.values.Colors
 import org.jetbrains.letsPlot.core.plot.base.GeomKind
+import org.jetbrains.letsPlot.core.plot.base.aes.AesInitValue.DEFAULT_ALPHA
 import org.jetbrains.letsPlot.core.plot.base.aes.GeomTheme
 import org.jetbrains.letsPlot.core.plot.base.theme.ColorTheme
 
@@ -16,7 +17,8 @@ internal class DefaultGeomTheme private constructor(
     private val fill: Color,
     private val alpha: Double,
     private val size: Double,
-    private val lineWidth: Double
+    private val lineWidth: Double,
+    private val pen: Color
 ) : GeomTheme {
     override fun color() = color
 
@@ -28,151 +30,104 @@ internal class DefaultGeomTheme private constructor(
 
     override fun lineWidth() = lineWidth
 
+    override fun pen() = pen
+
     companion object {
-        private class FixedColors(geomKind: GeomKind) {
-            val color = if (geomKind == GeomKind.SMOOTH) {
-                Color.MAGENTA
-            } else {
-                Color.PACIFIC_BLUE
-            }
-            val fill = Color.PACIFIC_BLUE
-        }
+        private const val COMMON_POINT_SIZE = 3.0
+        private const val COMMON_LINE_WIDTH = 0.75
+        private const val THIN_LINE_WIDTH = 0.5
+        private const val ZERO_LINE_WIDTH = 0.0
+
+        private const val LOLLIPOP_SIZE = 2.0
+        private const val PIE_SIZE = 10.0
+        private const val TEXT_SIZE = 7.0
 
         // defaults for geomKind
         fun forGeomKind(geomKind: GeomKind, colorTheme: ColorTheme): GeomTheme {
-            val fixedColors = FixedColors(geomKind)
 
-            var color = fixedColors.color
-            var fill = fixedColors.fill
-            var alpha = 1.0
-            var size = 0.5
-            var lineWidth = 0.5
+            // Size: point size or line width - depending on the geom kind.
+            val size = when (geomKind) {
+                GeomKind.POINT,
+                GeomKind.JITTER,
+                GeomKind.Q_Q,
+                GeomKind.Q_Q_2 -> COMMON_POINT_SIZE
 
-            val sizeMultiplier = 1.5
-
-            when (geomKind) {
-                GeomKind.PATH,
-                GeomKind.LINE,
-                GeomKind.AB_LINE,
-                GeomKind.H_LINE,
-                GeomKind.V_LINE,
-                GeomKind.SEGMENT,
-                GeomKind.STEP,
-                GeomKind.FREQPOLY,
-                GeomKind.Q_Q_LINE,
-                GeomKind.Q_Q_2_LINE,
-                GeomKind.ERROR_BAR,
-                GeomKind.LINE_RANGE -> {
-                    color = colorTheme.pen()
-                    size *= sizeMultiplier
-                }
-
+                GeomKind.HISTOGRAM,
                 GeomKind.CONTOUR,
-                GeomKind.DENSITY2D -> {
-                    color = colorTheme.pen()
+                GeomKind.DENSITY2D -> THIN_LINE_WIDTH
+
+                GeomKind.POINT_RANGE -> {
+                    // Actually, the "mid-point" size which is
+                    // later multiplied by the "fatten" factor (def 5).
+                    COMMON_LINE_WIDTH
                 }
 
+                GeomKind.LOLLIPOP -> LOLLIPOP_SIZE            // point size
+
+                GeomKind.TEXT,
+                GeomKind.LABEL -> TEXT_SIZE
+
+                GeomKind.PIE -> PIE_SIZE
+
+                GeomKind.TILE,
+                GeomKind.BIN_2D -> ZERO_LINE_WIDTH
+
+                else -> COMMON_LINE_WIDTH
+            }
+
+            // Linewidth (also used for "stroke")
+            val lineWidth = COMMON_LINE_WIDTH
+
+            // Color
+            val color = when (geomKind) {
+                GeomKind.POLYGON,
+                GeomKind.DOT_PLOT,
+                GeomKind.Y_DOT_PLOT,
+                GeomKind.BAR,
+                GeomKind.PIE,
+                GeomKind.TILE,
+                GeomKind.BIN_2D -> colorTheme.paper()
+
+                GeomKind.CONTOURF,
+                GeomKind.DENSITY2DF -> Color.TRANSPARENT
+
+                GeomKind.SMOOTH -> Color.MAGENTA
+
+                else -> colorTheme.pen()
+            }
+
+            // Fill
+            val fill = when (geomKind) {
                 GeomKind.AREA_RIDGES,
                 GeomKind.AREA,
                 GeomKind.DENSITY,
                 GeomKind.RECT,
                 GeomKind.RIBBON,
-                GeomKind.MAP -> {
-                    color = colorTheme.pen()
-                    fill = Colors.withOpacity(colorTheme.pen(), 0.1)
-                    size *= sizeMultiplier
-                }
+                GeomKind.MAP -> Colors.withOpacity(color, 0.1)
 
-                GeomKind.VIOLIN,
-                GeomKind.CROSS_BAR,
-                GeomKind.BOX_PLOT -> {
-                    color = colorTheme.pen()
-                    fill = colorTheme.paper()
-                    size *= sizeMultiplier
-                }
-
-                GeomKind.POINT,
-                GeomKind.JITTER,
-                GeomKind.Q_Q,
-                GeomKind.Q_Q_2 -> {
-                    color = colorTheme.pen()
-                    fill = colorTheme.paper()
-                    size = 2.0 * sizeMultiplier
-                    lineWidth *= sizeMultiplier
-                }
-
-                GeomKind.DOT_PLOT,
-                GeomKind.Y_DOT_PLOT -> {
-                    color = colorTheme.paper()
-                }
-
-                GeomKind.POINT_RANGE -> {
-                    color = colorTheme.pen()
-                    fill = colorTheme.paper()
-                    size *= sizeMultiplier              // mid-point size
-                    lineWidth = 1.0 * sizeMultiplier    // line width and stroke for point
-                }
-
-                GeomKind.LOLLIPOP -> {
-                    color = colorTheme.pen()
-                    fill = colorTheme.paper()
-                    size = 2.0                          // point size
-                    lineWidth = 1.0 * sizeMultiplier    // line width and stroke for point
-                }
-
-                GeomKind.SMOOTH -> {
-                    fill = colorTheme.pen()
-                    alpha = 0.15
-                    size *= sizeMultiplier
-                }
-
-                GeomKind.BAR -> {
-                    color = Color.TRANSPARENT
-                    size *= sizeMultiplier
-                }
-
-                GeomKind.HISTOGRAM -> {
-                    color = colorTheme.pen()
-                    fill = colorTheme.pen()
-                }
-
-                GeomKind.POLYGON -> {
-                    color = colorTheme.paper()
-                    size *= sizeMultiplier
-                }
-
-                GeomKind.TILE,
-                GeomKind.BIN_2D -> {
-                    color = Color.TRANSPARENT
-                    fill = colorTheme.pen()
-                    size *= sizeMultiplier
-                }
-
+                GeomKind.BAR,
+                GeomKind.PIE,
+                GeomKind.POLYGON,
                 GeomKind.CONTOURF,
-                GeomKind.DENSITY2DF -> {
-                    color = Color.TRANSPARENT
-                    size *= sizeMultiplier
-                }
+                GeomKind.DENSITY2DF,
+                GeomKind.DOT_PLOT,
+                GeomKind.Y_DOT_PLOT -> colorTheme.brush()
 
-                GeomKind.TEXT, GeomKind.LABEL -> {
-                    color = colorTheme.pen()
-                    fill = colorTheme.paper() // background for label
-                    size = 7.0
-                }
+                GeomKind.HISTOGRAM,
+                GeomKind.SMOOTH,
+                GeomKind.TILE,
+                GeomKind.BIN_2D -> colorTheme.pen()
 
-                GeomKind.PIE -> {
-                    color = Color.TRANSPARENT
-                    size = 10.0
-                    lineWidth *= sizeMultiplier
-                }
-
-                GeomKind.RASTER,
-                GeomKind.IMAGE,
-                GeomKind.LIVE_MAP -> {
-                }
+                else -> colorTheme.paper()
             }
 
-            return DefaultGeomTheme(color, fill, alpha, size, lineWidth)
+            // Alpha
+            val alpha = when (geomKind) {
+                GeomKind.SMOOTH -> 0.15
+                else -> DEFAULT_ALPHA
+            }
+
+            return DefaultGeomTheme(color, fill, alpha, size, lineWidth, colorTheme.pen())
         }
     }
 }

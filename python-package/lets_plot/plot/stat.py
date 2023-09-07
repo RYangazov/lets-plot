@@ -5,7 +5,7 @@ from .geom import _geom
 #
 # Stats - functions, drawing attention to the statistical transformation rather than the visual appearance.
 #
-__all__ = ['stat_summary', 'stat_summary_bin', 'stat_ecdf']
+__all__ = ['stat_summary', 'stat_summary_bin', 'stat_ecdf', 'stat_sum']
 
 
 def stat_summary(mapping=None, *, data=None, geom=None,
@@ -16,7 +16,7 @@ def stat_summary(mapping=None, *, data=None, geom=None,
                  color_by=None, fill_by=None,
                  **other_args):
     """
-    Visualise the aggregated values of a single continuous variable grouped along the x axis.
+    Display the aggregated values of a single continuous variable grouped along the x axis.
 
     Parameters
     ----------
@@ -44,19 +44,16 @@ def stat_summary(mapping=None, *, data=None, geom=None,
         Specify the axis that the layer's stat and geom should run along.
         Possible values: 'x', 'y'.
     fun : {'count', 'sum', 'mean', 'median', 'min', 'max', 'lq', 'mq', 'uq'}, default='mean'
-        A name of a function that get a vector of values and should return a single number.
-        Values 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles,
-        which are determined by the probabilities passed in the `quantiles` parameter.
+        Name of function computing stat variable '..y..'.
+        Names 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles, default=[0.25, 0.5, 0.75].
     fun_min : {'count', 'sum', 'mean', 'median', 'min', 'max', 'lq', 'mq', 'uq'}, default='min'
-        A name of a function that get a vector of values and should return a single number.
-        Values 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles,
-        which are determined by the probabilities passed in the `quantiles` parameter.
+        Name of function computing stat variable '..ymin..'.
+        Names 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles, default=[0.25, 0.5, 0.75].
     fun_max : {'count', 'sum', 'mean', 'median', 'min', 'max', 'lq', 'mq', 'uq'}, default='max'
-        A name of a function that get a vector of values and should return a single number.
-        Values 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles,
-        which are determined by the probabilities passed in the `quantiles` parameter.
+        Name of function computing stat variable '..ymax..'.
+        Names 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles, default=[0.25, 0.5, 0.75].
     quantiles : list of float, default=[0.25, 0.5, 0.75]
-        The list of probabilities defining the quantile functions 'lq', 'mq' and 'uq'.
+        A list of probabilities defining the quantile functions 'lq', 'mq' and 'uq'.
         Must contain exactly 3 values between 0 and 1.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
         Define the color aesthetic for the geometry.
@@ -77,28 +74,20 @@ def stat_summary(mapping=None, *, data=None, geom=None,
     -----
     Computed variables:
 
-    - ..ymin.. : smallest observation.
-    - ..ymax.. : largest observation.
-
-    `stat_summary()` understands the following aesthetics mappings:
-
-    - x : x-axis coordinates.
-    - y : mean.
-    - ymin : lower bound.
-    - ymax : upper bound.
-
-    In addition, you can use any aesthetics, available for the geometry defined by the `geom` parameter.
-    They can be mapped to the following variables, which will be immediately computed:
-
+    - ..y.. : result of calculating of `fun`.
+    - ..ymin.. : result of calculating of `fun_min`.
+    - ..ymax.. : result of calculating of `fun_max`.
     - ..count.. : number of observations.
     - ..sum.. : sum of observations.
     - ..mean.. : mean of observations.
     - ..median.. : median of observations.
-    - ..ymin.. : smallest observation.
-    - ..ymax.. : largest observation.
     - ..lq.. : lower quantile defined by first element of the `quantiles` parameter.
     - ..mq.. : middle quantile defined by first element of the `quantiles` parameter.
     - ..uq.. : upper quantile defined by first element of the `quantiles` parameter.
+
+    |
+
+    Variables ..count.., ..sum.., ..mean.., ..median.., ..lq.., ..mq.., ..uq.. would not be computed without mappings.
 
     Examples
     --------
@@ -148,7 +137,7 @@ def stat_summary(mapping=None, *, data=None, geom=None,
         y = np.random.normal(size=n)
         ggplot({'x': x, 'y': y}, aes(x='x', y='y')) + \\
             stat_summary(position=position_nudge(x=-.1), color="red") + \\
-            stat_summary(fun_min='lq', fun_max='uq', quantiles=[.1, .5, .9], \\
+            stat_summary(fun='mq', fun_min='lq', fun_max='uq', quantiles=[.1, .5, .9], \\
                          position=position_nudge(x=.1), color="blue")
 
     """
@@ -207,19 +196,16 @@ def stat_summary_bin(mapping=None, *, data=None, geom=None,
         Specify the axis that the layer's stat and geom should run along.
         Possible values: 'x', 'y'.
     fun : {'count', 'sum', 'mean', 'median', 'min', 'max', 'lq', 'mq', 'uq'}, default='mean'
-        A name of a function that get a vector of values and should return a single number.
-        Values 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles,
-        which are determined by the probabilities passed in the `quantiles` parameter.
+        Name of function computing stat variable '..y..'.
+        Names 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles, default=[0.25, 0.5, 0.75].
     fun_min : {'count', 'sum', 'mean', 'median', 'min', 'max', 'lq', 'mq', 'uq'}, default='min'
-        A name of a function that get a vector of values and should return a single number.
-        Values 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles,
-        which are determined by the probabilities passed in the `quantiles` parameter.
+        Name of function computing stat variable '..ymin..'.
+        Names 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles, default=[0.25, 0.5, 0.75].
     fun_max : {'count', 'sum', 'mean', 'median', 'min', 'max', 'lq', 'mq', 'uq'}, default='max'
-        A name of a function that get a vector of values and should return a single number.
-        Values 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles,
-        which are determined by the probabilities passed in the `quantiles` parameter.
+        Name of function computing stat variable '..ymax..'.
+        Names 'lq', 'mq', 'uq' corresponds to lower, middle and upper quantiles, default=[0.25, 0.5, 0.75].
     quantiles : list of float, default=[0.25, 0.5, 0.75]
-        The list of probabilities defining the quantile functions 'lq', 'mq' and 'uq'.
+        A list of probabilities defining the quantile functions 'lq', 'mq' and 'uq'.
         Must contain exactly 3 values between 0 and 1.
     bins : int, default=30
         Number of bins. Overridden by `binwidth`.
@@ -250,28 +236,20 @@ def stat_summary_bin(mapping=None, *, data=None, geom=None,
     -----
     Computed variables:
 
-    - ..ymin.. : smallest observation.
-    - ..ymax.. : largest observation.
-
-    `stat_summary_bin()` understands the following aesthetics mappings:
-
-    - x : x-axis coordinates.
-    - y : mean.
-    - ymin : lower bound.
-    - ymax : upper bound.
-
-    In addition, you can use any aesthetics, available for the geometry defined by the `geom` parameter.
-    They can be mapped to the following variables, which will be immediately computed:
-
+    - ..y.. : result of calculating of `fun`.
+    - ..ymin.. : result of calculating of `fun_min`.
+    - ..ymax.. : result of calculating of `fun_max`.
     - ..count.. : number of observations.
     - ..sum.. : sum of observations.
     - ..mean.. : mean of observations.
     - ..median.. : median of observations.
-    - ..ymin.. : smallest observation.
-    - ..ymax.. : largest observation.
     - ..lq.. : lower quantile defined by first element of the `quantiles` parameter.
     - ..mq.. : middle quantile defined by first element of the `quantiles` parameter.
     - ..uq.. : upper quantile defined by first element of the `quantiles` parameter.
+
+    |
+
+    Variables ..count.., ..sum.., ..mean.., ..median.., ..lq.., ..mq.., ..uq.. would not be computed without mappings.
 
     Examples
     --------
@@ -321,7 +299,7 @@ def stat_summary_bin(mapping=None, *, data=None, geom=None,
         x = np.random.uniform(size=n)
         y = np.random.normal(size=n)
         ggplot({'x': x, 'y': y}, aes(x='x', y='y')) + \\
-            stat_summary_bin(fun_min='lq', fun_max='uq', geom='crossbar', \\
+            stat_summary_bin(fun='mq', fun_min='lq', fun_max='uq', geom='crossbar', \\
                              bins=11, width=1, quantiles=[.05, .5, .95], boundary=0) + \\
             geom_point()
 
@@ -351,7 +329,7 @@ def stat_ecdf(mapping=None, *, data=None, geom=None,
               color_by=None,
               **other_args):
     """
-    Visualise the empirical cumulative distribution function.
+    Display the empirical cumulative distribution function.
 
     Parameters
     ----------
@@ -474,4 +452,96 @@ def stat_ecdf(mapping=None, *, data=None, geom=None,
                  n=n,
                  pad=ecdf_pad,
                  color_by=color_by,
+                 **other_args)
+
+
+def stat_sum(mapping=None, *, data=None, geom=None,
+             position=None, show_legend=None, sampling=None, tooltips=None,
+             **other_args):
+    """
+    Sum unique values
+
+    Parameters
+    ----------
+    mapping : `FeatureSpec`
+        Set of aesthetic mappings created by `aes()` function.
+        Aesthetic mappings describe the way that variables in the data are
+        mapped to plot "aesthetics".
+    data : dict or Pandas or Polars `DataFrame`
+        The data to be displayed in this layer. If None, the default, the data
+        is inherited from the plot data as specified in the call to ggplot.
+    geom : str, default='point'
+        The geometry to display the sum stat for this layer, as a string.
+    position : str or `FeatureSpec`, default='identity'
+        Position adjustment, either as a string ('identity', 'stack', 'dodge', ...),
+        or the result of a call to a position adjustment function.
+    show_legend : bool, default=True
+        False - do not show legend for this layer.
+    sampling : `FeatureSpec`
+        Result of the call to the `sampling_xxx()` function.
+        To prevent any sampling for this layer pass value "none" (string "none").
+    tooltips : `layer_tooltips`
+        Result of the call to the `layer_tooltips()` function.
+        Specify appearance, style and content.
+    other_args
+        Other arguments passed on to the layer.
+        These are often aesthetics settings used to set an aesthetic to a fixed value,
+        like color='red', fill='blue', size=3 or shape=21.
+        They may also be parameters to the paired geom/stat.
+
+    Returns
+    -------
+    `LayerSpec`
+        Geom object specification.
+
+    Notes
+    -----
+    `stat_sum()` understands the following aesthetics mappings:
+
+    - x : x-axis coordinates.
+    - y : y-axis coordinates.
+
+    In addition, you can use any aesthetics, available for the geometry defined by the `geom` parameter.
+
+    Examples
+    --------
+    .. jupyter-execute::
+        :linenos:
+        :emphasize-lines: 7
+
+        import numpy as np
+        from lets_plot import *
+        from lets_plot.mapping import as_discrete
+        LetsPlot.setup_html()
+        n = 50
+        np.random.seed(42)
+        x = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        y = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + stat_sum()
+
+    |
+
+    .. jupyter-execute::
+        :linenos:
+        :emphasize-lines: 14-15
+
+        import numpy as np
+        from lets_plot import *
+        from lets_plot.mapping import as_discrete
+        LetsPlot.setup_html()
+        n = 50
+        np.random.seed(42)
+        x = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        y = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + stat_sum(aes(size='..prop..', group='x'))
+"""
+    sum_geom = 'point' if geom is None else geom
+    return _geom(sum_geom,
+                 mapping=mapping,
+                 data=data,
+                 stat='sum',
+                 position=position,
+                 show_legend=show_legend,
+                 sampling=sampling,
+                 tooltips=tooltips,
                  **other_args)

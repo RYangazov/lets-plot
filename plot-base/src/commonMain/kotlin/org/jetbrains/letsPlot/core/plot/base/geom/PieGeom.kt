@@ -5,36 +5,36 @@
 
 package org.jetbrains.letsPlot.core.plot.base.geom
 
-import org.jetbrains.letsPlot.commons.intern.typedGeometry.algorithms.AdaptiveResampler
-import org.jetbrains.letsPlot.commons.intern.filterNotNullKeys
 import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.commons.intern.typedGeometry.algorithms.AdaptiveResampler
 import org.jetbrains.letsPlot.commons.interval.DoubleSpan
 import org.jetbrains.letsPlot.commons.values.Color
 import org.jetbrains.letsPlot.commons.values.Colors
+import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
 import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsBuilder
 import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsUtil
 import org.jetbrains.letsPlot.core.plot.base.annotations.Annotations
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
-import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetCollector
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.core.plot.base.render.svg.LinePath
-import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
-import org.jetbrains.letsPlot.datamodel.svg.style.TextStyle
+import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetCollector
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgCircleElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgGElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgLineElement
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgPathDataBuilder
+import org.jetbrains.letsPlot.datamodel.svg.style.TextStyle
 import kotlin.math.*
 
 class PieGeom : GeomBase(), WithWidth, WithHeight {
     var holeSize: Double = 0.0
     var spacerWidth: Double = 0.75
-    var spacerColor: Color? = null
-    var strokeSide: StrokeSide = StrokeSide.OUTER
+    var spacerColor: Color = Color.WHITE
+    var strokeSide: StrokeSide = StrokeSide.BOTH
+    var sizeUnit: String? = null
 
     enum class StrokeSide {
         OUTER, INNER, BOTH;
@@ -58,22 +58,26 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
     ) {
         val geomHelper = GeomHelper(pos, coord, ctx)
         GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.Y, Aes.SLICE)
-            .groupBy { p -> geomHelper.toClient(p.x()!!, p.y()!!, p) }
-            .filterNotNullKeys()
-            .forEach { (pieCenter, dataPoints) ->
-                val pieSectors = computeSectors(pieCenter, dataPoints)
+            .groupBy { p -> DoubleVector(p.x()!!, p.y()!!) }
+            .forEach { (point, dataPoints) ->
+                val sizeUnitRatio = when (sizeUnit) {
+                    null -> 1.0
+                    else -> getSizeUnitRatio(point, coord, sizeUnit!!)
+                }
+                val toLocation = { p: DataPointAesthetics -> geomHelper.toClient(point, p) }
+                val pieSectors = computeSectors(dataPoints, toLocation, sizeUnitRatio, ctx.backgroundColor)
 
                 root.appendNodes(pieSectors.map(::buildSvgSector))
                 root.appendNodes(pieSectors.map(::buildSvgArcs))
                 if (spacerWidth > 0) {
                     root.appendNodes(
-                        buildSvgSpacerLines(pieSectors, width = spacerWidth, color = spacerColor ?: ctx.backgroundColor)
+                        buildSvgSpacerLines(pieSectors, width = spacerWidth, color = spacerColor)
                     )
                 }
 
                 pieSectors.forEach { buildHint(it, ctx.targetCollector) }
 
-                ctx.annotations?.let { buildAnnotations(root, pieCenter, pieSectors, ctx) }
+                ctx.annotations?.let { buildAnnotations(root, pieSectors, ctx) }
             }
     }
 
@@ -137,7 +141,7 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
         }
     }
 
-    private fun buildSvgSpacerLines(pieSectors: List<Sector>, width: Double, color: Color?): List<LinePath> {
+    private fun buildSvgSpacerLines(pieSectors: List<Sector>, width: Double, color: Color): List<LinePath> {
         fun svgSpacerLines(sector: Sector, atStart: Boolean, atEnd: Boolean): LinePath {
             return LinePath(
                 SvgPathDataBuilder().apply {
@@ -225,7 +229,12 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
         )
     }
 
-    private fun computeSectors(pieCenter: DoubleVector, dataPoints: List<DataPointAesthetics>): List<Sector> {
+    private fun computeSectors(
+        dataPoints: List<DataPointAesthetics>,
+        toLocation: (DataPointAesthetics) -> DoubleVector?,
+        sizeUnitRatio: Double,
+        backgroundColor: Color
+    ): List<Sector> {
         val sum = dataPoints.sumOf { abs(it.slice()!!) }
         fun angle(p: DataPointAesthetics) = when (sum) {
             0.0 -> 1.0 / dataPoints.size
@@ -236,12 +245,15 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
         var currentAngle = -PI / 2.0
         currentAngle -= angle(dataPoints.first())
 
-        return dataPoints.map { p ->
+        return dataPoints.mapNotNull { p ->
+            val pieCenter = toLocation(p) ?: return@mapNotNull null
             Sector(
                 p = p,
                 pieCenter = pieCenter,
                 startAngle = currentAngle,
-                endAngle = currentAngle + angle(p)
+                endAngle = currentAngle + angle(p),
+                sizeUnitRatio = sizeUnitRatio,
+                backgroundColor = backgroundColor
             ).also { sector -> currentAngle = sector.endAngle }
         }
     }
@@ -250,18 +262,15 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
         val pieCenter: DoubleVector,
         val p: DataPointAesthetics,
         val startAngle: Double,
-        val endAngle: Double
+        val endAngle: Double,
+        sizeUnitRatio: Double,
+        backgroundColor: Color
     ) {
         val angle = endAngle - startAngle
         val strokeWidth = p.stroke() ?: 0.0
-        private val hasVisibleStroke = strokeWidth > 0.0 && p.color() != Color.TRANSPARENT
-        val radius: Double = AesScaling.pieDiameter(p) / 2
-        val holeRadius = if (holeSize == 0.0 && strokeSide.hasInner && hasVisibleStroke) {
-            // Add a hole if an inner stroke is needed
-            strokeWidth + spacerWidth
-        } else {
-            radius * holeSize
-        }
+        private val hasVisibleStroke = strokeWidth > 0.0 && p.color()?.alpha != 0 && p.color() != backgroundColor
+        val radius: Double = sizeUnitRatio * AesScaling.pieDiameter(p) / 2
+        val holeRadius = radius * holeSize
         val direction = startAngle + angle / 2
         private val explode = p.explode()?.let { radius * it } ?: 0.0
         val position = pieCenter.add(DoubleVector(explode * cos(direction), explode * sin(direction)))
@@ -286,8 +295,9 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
             },
             angle = angle
         )
+
         fun innerArcPointWithStroke(angle: Double) = arcPoint(
-            radius = when (strokeSide.hasInner && hasVisibleStroke) {
+            radius = when (strokeSide.hasInner && hasVisibleStroke && holeSize > 0 ){
                 true -> holeRadius - strokeWidth / 2
                 false -> holeRadius
             },
@@ -314,12 +324,8 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
                         size.y / 2,
                         shapeSize(p) / 2
                     ).apply {
-                        val fill = p.fill()
-                        val color = p.color()
-                        fillColor().set(fill)
-                        strokeColor().set(
-                            if (color == Color.TRANSPARENT && fill == Color.TRANSPARENT) Color.BLACK else color
-                        )
+                        fillColor().set(p.fill())
+                        strokeColor().set(p.color())
                         strokeWidth().set(p.stroke())
                     }
                 )
@@ -339,11 +345,12 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
 
     private fun buildAnnotations(
         root: SvgRoot,
-        pieCenter: DoubleVector,
         sectors: List<Sector>,
         ctx: GeomContext
     ) {
         if (ctx.annotations == null || sectors.isEmpty()) return
+
+        val pieCenter = sectors.map(Sector::pieCenter).distinct().singleOrNull() ?: return
 
         // split sectors into left and right...
         val leftSectors = sectors
@@ -450,6 +457,20 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
 
     companion object {
         const val HANDLES_GROUPS = false
+
+        private fun getSizeUnitRatio(
+            p: DoubleVector,
+            coord: CoordinateSystem,
+            axis: String
+        ): Double {
+            val unitSquareSize = coord.unitSize(p)
+            val unitSize = when (axis.lowercase()) {
+                "x" -> unitSquareSize.x
+                "y" -> unitSquareSize.y
+                else -> error("Size unit value must be either 'x' or 'y', but was $axis.")
+            }
+            return unitSize / AesScaling.PIE_UNIT_SIZE
+        }
 
         // For annotations
 
@@ -626,12 +647,22 @@ class PieGeom : GeomBase(), WithWidth, WithHeight {
         }
     }
 
-    override fun widthSpan(p: DataPointAesthetics, coordAes: Aes<Double>, resolution: Double, isDiscrete: Boolean): DoubleSpan? {
+    override fun widthSpan(
+        p: DataPointAesthetics,
+        coordAes: Aes<Double>,
+        resolution: Double,
+        isDiscrete: Boolean
+    ): DoubleSpan? {
         if (!isDiscrete) return null
         return dimensionSpan(p, coordAes)
     }
 
-    override fun heightSpan(p: DataPointAesthetics, coordAes: Aes<Double>, resolution: Double, isDiscrete: Boolean): DoubleSpan? {
+    override fun heightSpan(
+        p: DataPointAesthetics,
+        coordAes: Aes<Double>,
+        resolution: Double,
+        isDiscrete: Boolean
+    ): DoubleSpan? {
         if (!isDiscrete) return null
         return dimensionSpan(p, coordAes)
     }

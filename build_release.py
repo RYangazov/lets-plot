@@ -36,7 +36,7 @@ file as argument (EXAMPLE):
 import platform
 import sys
 import subprocess
-import yaml # PyYAML package is required. `pip install pyyaml`
+import yaml  # PyYAML package is required. `pip install pyyaml`
 
 
 def print_message(message):
@@ -106,12 +106,8 @@ elif system == "Linux" or system == "Darwin":
 else:
     print_error_and_exit(f"Unsupported platform: {system}")
 
-gradle_build_command = [gradle_script_name, "build", "-Pbuild_release=true"]
 python_extension_clean_command = [gradle_script_name, "python-extension:clean"]
 
-# Run project build. JS and JVM artifacts will be built only:
-print_message("Started main Gradle build...")
-run_command(gradle_build_command)
 
 # Run Python artifacts build.
 if system == "Linux":
@@ -137,6 +133,10 @@ if system == "Linux":
         f"-Penable_python_package={enable_python_package}",
         f"-Pbuild_python_extension={build_python_extension}"
     ]
+
+    # Run JS artifact build first:
+    gradle_js_build_command = [gradle_script_name, "js-package:jsBrowserProductionWebpack"]
+    run_command(gradle_js_build_command + build_parameters)
 
     # Run Python 'manylinux' packages build for x64 arch:
     build_python_packages(python_package_build_command, "x86_64")

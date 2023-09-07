@@ -16,6 +16,7 @@ object ThemeOption {
     const val PLOT_TITLE = "plot_title"
     const val PLOT_SUBTITLE = "plot_subtitle"
     const val PLOT_CAPTION = "plot_caption"
+    const val PLOT_MESSAGE = "plot_message"
 
     // ToDo: "text_width_scale" is used Violin demo - update.
 //    const val TEXT_WIDTH_FACTOR = "text_width_scale"
@@ -83,7 +84,6 @@ object ThemeOption {
     const val TOOLTIP_TEXT = "tooltip_text"
     const val TOOLTIP_TITLE_TEXT = "tooltip_title_text"
 
-    const val FLAVOR = "flavor"
     const val GEOM = "geom"
 
     // view element

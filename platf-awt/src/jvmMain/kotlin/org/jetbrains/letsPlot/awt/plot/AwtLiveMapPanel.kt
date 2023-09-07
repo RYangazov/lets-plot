@@ -5,15 +5,15 @@
 
 package org.jetbrains.letsPlot.awt.plot
 
+import org.jetbrains.letsPlot.awt.canvas.AwtAnimationTimerPeer
+import org.jetbrains.letsPlot.awt.canvas.AwtCanvasControl
+import org.jetbrains.letsPlot.awt.canvas.AwtMouseEventMapper
 import org.jetbrains.letsPlot.awt.util.AwtContainerDisposer
 import org.jetbrains.letsPlot.commons.registration.Disposable
 import org.jetbrains.letsPlot.commons.registration.Registration
 import org.jetbrains.letsPlot.commons.values.SomeFig
-import org.jetbrains.letsPlot.core.plot.livemap.CursorServiceConfig
-import org.jetbrains.letsPlot.awt.canvas.AwtAnimationTimerPeer
-import org.jetbrains.letsPlot.awt.canvas.AwtCanvasControl
-import org.jetbrains.letsPlot.awt.canvas.AwtEventPeer
 import org.jetbrains.letsPlot.core.canvasFigure.CanvasFigure
+import org.jetbrains.letsPlot.core.plot.livemap.CursorServiceConfig
 import java.awt.Color
 import java.awt.Cursor
 import java.awt.Rectangle
@@ -22,9 +22,9 @@ import java.awt.event.ComponentEvent
 import javax.swing.JComponent
 import javax.swing.JLayeredPane
 
-
-internal class AwtLiveMapPanel(
-    private val liveMapFigures: List<SomeFig>,
+// Have to be 'public' because "Lets-plot IDEA plugin" must access: `if (plotComponent is AwtLiveMapPanel)`
+/*internal*/ class AwtLiveMapPanel(
+    liveMapFigures: List<SomeFig>,
     private val plotOverlayComponent: JComponent,
     private val executor: (() -> Unit) -> Unit,
     private val cursorServiceConfig: CursorServiceConfig
@@ -52,15 +52,16 @@ internal class AwtLiveMapPanel(
 //        plotContainer.liveMapFigures
         liveMapFigures
             .map { it as CanvasFigure }
-            .forEach { liveMapFigures ->
-                val liveMapBounds = liveMapFigures.bounds().get()
-                val livemapCanvasControl = AwtCanvasControl(
-                    liveMapBounds.dimension,
-                    AwtEventPeer(plotOverlayComponent, liveMapBounds),
-                    org.jetbrains.letsPlot.awt.canvas.AwtAnimationTimerPeer(executor).also { registrations.add(Registration.from(it)) }
+            .forEach { liveMapFigure ->
+                val liveMapBounds = liveMapFigure.bounds().get()
+                val liveMapCanvasControl = AwtCanvasControl(
+                    size = liveMapBounds.dimension,
+                    animationTimerPeer = AwtAnimationTimerPeer(executor).also { registrations.add(Registration.from(it)) },
+                    mouseEventSource = AwtMouseEventMapper(plotOverlayComponent, liveMapBounds)
                 )
+
                 mappers.add {
-                    liveMapFigures.mapToCanvas(livemapCanvasControl).also(registrations::add)
+                    liveMapFigure.mapToCanvas(liveMapCanvasControl).also(registrations::add)
                 }
 
                 add(
@@ -70,7 +71,7 @@ internal class AwtLiveMapPanel(
                         .apply {
                             background = Color.WHITE
                             bounds = liveMapBounds.run { Rectangle(origin.x, origin.y, dimension.x, dimension.y) }
-                            add(livemapCanvasControl.component())
+                            add(liveMapCanvasControl.component())
                         }
                 )
             }

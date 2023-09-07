@@ -49,7 +49,8 @@ def geom_point(mapping=None, *, data=None, stat=None, position=None, show_legend
         'count' (counts number of points with same x-axis coordinate),
         'bin' (counts number of points with x-axis coordinate in the same bin),
         'smooth' (performs smoothing - linear default),
-        'density' (computes and draws kernel density estimate).
+        'density' (computes and draws kernel density estimate),
+        'sum' (counts the number of points at each location - might help to workaround overplotting).
     position : str or `FeatureSpec`, default='identity'
         Position adjustment, either as a string ('identity', 'stack', 'dodge', ...),
         or the result of a call to a position adjustment function.
@@ -244,7 +245,8 @@ def geom_path(mapping=None, *, data=None, stat=None, position=None, show_legend=
         will be projected to this CRS.
         Specify "provided" to disable any further re-projection and to keep the `GeoDataFrame’s` original CRS.
     flat : bool, default=False.
-        True - keeps a line flat, False - allows projection to curve a line.
+        True - keep a line straight (corresponding to a loxodrome in case of Mercator projection).
+        False - allow a line to be reprojected, so it can become a curve.
     geodesic : bool, default=False
         Draw geodesic. Coordinates expected to be in WGS84. Works only with `geom_livemap()`.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
@@ -1112,8 +1114,7 @@ def geom_bin2d(mapping=None, *, data=None, stat=None, position=None, show_legend
                color_by=None, fill_by=None,
                **other_args):
     """
-    Display a 1d distribution by dividing variable mapped to x axis into bins
-    and counting the number of observations in each bin.
+    Divides the plane into a grid and color the bins by the count of cases in them.
 
     Parameters
     ----------
@@ -1175,7 +1176,7 @@ def geom_bin2d(mapping=None, *, data=None, stat=None, position=None, show_legend
     - alpha : transparency level of a layer. Accept values between 0 and 1.
     - color (colour) : color of the geometry lines. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
     - fill : fill color. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
-    - size : line width.
+    - size : line width. The default size is 0, so the stroke will be invisible.
     - weight : used by 'bin' stat to compute weighted sum instead of simple count.
 
     Examples
@@ -1231,7 +1232,7 @@ def geom_bin2d(mapping=None, *, data=None, stat=None, position=None, show_legend
         x, y = np.random.multivariate_normal(mean, cov, 500).T
         ggplot({'x': x, 'y': y}, aes(x='x', y='y')) + \\
             geom_bin2d(aes(alpha='..count..'), bins=[20, 20], \\
-                       color='white', fill='darkgreen') + \\
+                       fill='darkgreen') + \\
             geom_point(size=1.5, shape=21, color='white', \\
                        fill='darkgreen') + \\
             ggsize(600, 450)
@@ -1319,7 +1320,7 @@ def geom_tile(mapping=None, *, data=None, stat=None, position=None, show_legend=
     - alpha : transparency level of a layer. Accept values between 0 and 1.
     - color (colour) : color of the geometry lines. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
     - fill : fill color. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
-    - size : line width.
+    - size : line width. The default size is 0, so the stroke will be invisible.
     - width : width of a tile. Typically range between 0 and 1. Values that are greater than 1 lead to overlapping of the tiles.
     - height : height of a tile. Typically range between 0 and 1. Values that are greater than 1 lead to overlapping of the tiles.
     - linetype : type of the line of tile's border. Codes and names: 0 = 'blank', 1 = 'solid', 2 = 'dashed', 3 = 'dotted', 4 = 'dotdash', 5 = 'longdash', 6 = 'twodash'.
@@ -1341,7 +1342,7 @@ def geom_tile(mapping=None, *, data=None, stat=None, position=None, show_legend=
         X, Y = np.meshgrid(x, y)
         Z = np.exp(-5 * np.abs(Y ** 2 - X ** 3 - a * X - b))
         data = {'x': X.flatten(), 'y': Y.flatten(), 'z': Z.flatten()}
-        ggplot(data, aes(x='x', y='y', color='z', fill='z')) + geom_tile()
+        ggplot(data, aes(x='x', y='y', color='z', fill='z')) + geom_tile(size=.5)
 
     |
 
@@ -1365,7 +1366,7 @@ def geom_tile(mapping=None, *, data=None, stat=None, position=None, show_legend=
         Z = rv.pdf(np.dstack((X, Y)))
         data = {'x': X.flatten(), 'y': Y.flatten(), 'z': Z.flatten()}
         ggplot(data, aes(x='x', y='y')) + \\
-            geom_tile(aes(fill='z'), width=.8, height=.8, color='black') + \\
+            geom_tile(aes(fill='z'), width=.8, height=.8, color='black', size=.5) + \\
             scale_fill_gradient(low='yellow', high='darkgreen')
 
     |
@@ -5571,7 +5572,8 @@ def geom_segment(mapping=None, *, data=None, stat=None, position=None, show_lege
     arrow : `FeatureSpec`
         Specification for arrow head, as created by `arrow()` function.
     flat : bool, default=False.
-        True - keeps a line flat, False - allows projection to curve a line.
+        True - keep a line straight (corresponding to a loxodrome in case of Mercator projection).
+        False - allow a line to be reprojected, so it can become a curve.
     geodesic : bool, default=False
         Draw geodesic. Coordinates expected to be in WGS84. Works only with `geom_livemap()`.
     color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
@@ -6069,7 +6071,8 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
              hole=None,
              stroke_side=None,
              spacer_width=None, spacer_color=None,
-             fill_by=None,
+             size_unit=None,
+             color_by=None, fill_by=None,
              **other_args):
     """
     Draw pie chart.
@@ -6115,13 +6118,18 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
     hole : float, default=0.0
         A multiplicative factor applied to the pie diameter to draw donut-like chart.
         Accept values between 0 and 1.
-    stroke_side : {'outer', 'inner', 'both'}, default='outer'
+    stroke_side : {'outer', 'inner', 'both'}, default='both'
         Define which arcs of pie sector should have a stroke.
     spacer_width : float, default=0.75
         Line width between sectors.
         Spacers are not applied to exploded sectors and to sides of adjacent sectors.
     spacer_color : str
-        Color for spacers between sectors. By default, the plot background color is used.
+        Color for spacers between sectors. By default, the "paper" color is used.
+    size_unit : {'x', 'y'}
+        Relate the size of the pie chart to the length of the unit step along one of the axes.
+        If None, no fitting is performed.
+    color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
+        Define the color aesthetic for the geometry.
     fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
         Define the source aesthetic for geometry filling.
     other_args
@@ -6204,6 +6212,17 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
 
     .. jupyter-execute::
         :linenos:
+        :emphasize-lines: 4
+
+        from lets_plot import *
+        LetsPlot.setup_html()
+        data = {'name': ['a', 'b', 'c', 'd', 'b'], 'value': [40, 90, 10, 50, 20]}
+        ggplot(data) + geom_pie(aes(fill='name', weight='value'), size=.5, size_unit='x')
+
+    |
+
+    .. jupyter-execute::
+        :linenos:
         :emphasize-lines: 4-6
 
         from lets_plot import *
@@ -6280,7 +6299,8 @@ def geom_pie(mapping=None, *, data=None, stat=None, position=None, show_legend=N
                  stroke_side=stroke_side,
                  spacer_width=spacer_width,
                  spacer_color=spacer_color,
-                 fill_by=fill_by,
+                 size_unit=size_unit,
+                 color_by=color_by, fill_by=fill_by,
                  **other_args)
 
 
