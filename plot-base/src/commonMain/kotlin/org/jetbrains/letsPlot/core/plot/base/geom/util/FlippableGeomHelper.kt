@@ -33,24 +33,25 @@ class FlippableGeomHelper(
             return aes
         }
     }
+
     fun flip(point: DoubleVector): DoubleVector {
-        return when {
-            isVertical -> point
-            else -> point.flip()
+        return when (isVertical) {
+            true -> point
+            false -> point.flip()
         }
     }
 
     fun flip(clientRect: DoubleRectangle): DoubleRectangle {
-        return when {
-            isVertical -> clientRect
-            else -> clientRect.flip()
+        return when (isVertical) {
+            true -> clientRect
+            false -> clientRect.flip()
         }
     }
 
     fun flip(doubleSegment: DoubleSegment): DoubleSegment {
-        return when {
-            isVertical -> doubleSegment
-            else -> DoubleSegment(doubleSegment.start.flip(), doubleSegment.end.flip())
+        return when (isVertical) {
+            true -> doubleSegment
+            false -> DoubleSegment(doubleSegment.start.flip(), doubleSegment.end.flip())
         }
     }
 
@@ -67,18 +68,18 @@ class FlippableGeomHelper(
         defaultTooltipKind: TipLayoutHint.Kind? = null
     ) {
         val helper = GeomHelper(pos, coord, ctx)
-        val isVerticallyOriented = when {
-            isVertical -> !ctx.flipped
-            else -> ctx.flipped
+        val isVerticallyOriented = when (isVertical) {
+            true -> !ctx.flipped
+            false -> ctx.flipped
         }
 
         for (p in aesthetics.dataPoints()) {
             val clientRect = clientRectFactory(p) ?: continue
 
             val objectRadius = with(clientRect) {
-                when {
-                    isVerticallyOriented -> width / 2.0
-                    else -> height / 2.0
+                when (isVerticallyOriented) {
+                    true -> width / 2.0
+                    false -> height / 2.0
                 }
             }
 

@@ -34,7 +34,6 @@ internal object GeomProviderFactory {
         PROVIDER[GeomKind.AB_LINE] = GeomProvider.abline()
         PROVIDER[GeomKind.H_LINE] = GeomProvider.hline()
         PROVIDER[GeomKind.V_LINE] = GeomProvider.vline()
-        PROVIDER[GeomKind.RIBBON] = GeomProvider.ribbon()
         PROVIDER[GeomKind.AREA] = GeomProvider.area()
         PROVIDER[GeomKind.DENSITY2D] = GeomProvider.density2d()
         PROVIDER[GeomKind.DENSITY2DF] = GeomProvider.density2df()
@@ -100,6 +99,10 @@ internal object GeomProviderFactory {
 
             GeomKind.LINE_RANGE -> GeomProvider.lineRange { ctx ->
                 LineRangeGeom(isVertical(ctx, geomKind.name))
+            }
+
+            GeomKind.RIBBON -> GeomProvider.ribbon { ctx ->
+                RibbonGeom(isVertical(ctx, geomKind.name))
             }
 
             GeomKind.CROSS_BAR -> GeomProvider.crossBar { ctx ->

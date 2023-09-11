@@ -184,6 +184,7 @@ object GeomInteractionUtil {
                 GeomTargetLocator.LookupStrategy.HOVER,
                 axisTooltipVisibilityFromConfig = true
             )
+            GeomKind.RIBBON,
             GeomKind.CROSS_BAR,
             GeomKind.POINT_RANGE,
             GeomKind.LINE_RANGE,
@@ -203,7 +204,6 @@ object GeomInteractionUtil {
                 }
             }
 
-            GeomKind.RIBBON -> return GeomTooltipSetup.xUnivariateFunction(GeomTargetLocator.LookupStrategy.NEAREST)
             GeomKind.SMOOTH -> return if (isCrosshairEnabled) {
                 GeomTooltipSetup.xUnivariateFunction(GeomTargetLocator.LookupStrategy.NEAREST)
             } else {
@@ -269,6 +269,7 @@ object GeomInteractionUtil {
             GeomKind.BOX_PLOT -> listOf(Aes.Y)
             GeomKind.RECT -> listOf(Aes.XMIN, Aes.YMIN, Aes.XMAX, Aes.YMAX)
             GeomKind.SEGMENT -> listOf(Aes.X, Aes.Y, Aes.XEND, Aes.YEND)
+            GeomKind.RIBBON,
             GeomKind.LINE_RANGE,
             GeomKind.ERROR_BAR -> {
                 // ToDo Need refactoring...
@@ -366,7 +367,7 @@ object GeomInteractionUtil {
 
     private fun createSideTooltipAesList(geomKind: GeomKind): List<Aes<*>> {
         return when (geomKind) {
-            GeomKind.RIBBON -> listOf(Aes.YMAX, Aes.YMIN)
+            GeomKind.RIBBON,
             GeomKind.CROSS_BAR,
             GeomKind.POINT_RANGE,
             GeomKind.LINE_RANGE,

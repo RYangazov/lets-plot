@@ -211,11 +211,12 @@ class GeomProvider internal constructor(
             ) { LiveMapGeom() }
         }
 
-        fun ribbon(): GeomProvider {
+        fun ribbon(supplier: (Context) -> Geom): GeomProvider {
             return GeomProvider(
                 GeomKind.RIBBON,
-                RibbonGeom.HANDLES_GROUPS
-            ) { RibbonGeom() }
+                RibbonGeom.HANDLES_GROUPS,
+                supplier
+            )
         }
 
         fun area(): GeomProvider {

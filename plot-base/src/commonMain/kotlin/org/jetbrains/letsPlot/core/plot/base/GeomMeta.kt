@@ -299,8 +299,13 @@ object GeomMeta {
             )
 
             GeomKind.RIBBON -> listOf(
+                //vertical representation
                 Aes.X,
                 Aes.YMIN, Aes.YMAX,
+                //horizontal
+                Aes.Y,
+                Aes.XMIN, Aes.XMAX,
+
                 Aes.SIZE,
                 Aes.LINETYPE,
                 Aes.COLOR,

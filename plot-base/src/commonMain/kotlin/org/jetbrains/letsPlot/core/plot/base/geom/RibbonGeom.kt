@@ -8,16 +8,29 @@ package org.jetbrains.letsPlot.core.plot.base.geom
 
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.core.plot.base.*
+import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsUtil.orthogonal
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetCollector
 import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint.Kind.HORIZONTAL_TOOLTIP
 import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint.Kind.VERTICAL_TOOLTIP
 
-class RibbonGeom : GeomBase() {
+class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
+    private val flipHelper = FlippableGeomHelper(isVertical)
+
+    override val wontRender: List<Aes<*>>
+        get() {
+            return listOf(
+                flipHelper.getEffectiveAes(Aes.YMIN.orthogonal()),
+                flipHelper.getEffectiveAes(Aes.YMAX.orthogonal()),
+            )
+        }
 
     private fun dataPoints(aesthetics: Aesthetics): Iterable<DataPointAesthetics> {
-        val data = GeomUtil.withDefined(aesthetics.dataPoints(), Aes.X, Aes.YMIN, Aes.YMAX)
+        val xAes = flipHelper.getEffectiveAes(Aes.X)
+        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
+        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
+        val data = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, minAes, maxAes)
         return GeomUtil.ordered_X(data)
     }
 
@@ -28,15 +41,24 @@ class RibbonGeom : GeomBase() {
         coord: CoordinateSystem,
         ctx: GeomContext
     ) {
+        val xAes = flipHelper.getEffectiveAes(Aes.X)
+        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
+        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
         val dataPoints = dataPoints(aesthetics)
         val helper = LinesHelper(pos, coord, ctx)
-        val paths = helper.createBands(dataPoints, GeomUtil.TO_LOCATION_X_YMAX, GeomUtil.TO_LOCATION_X_YMIN)
+
+        val upper = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
+        val lower = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[minAes]!!)) }
+
+        val paths = helper.createBands(dataPoints, upper, lower)
         root.appendNodes(paths)
 
-        //if you want to retain the side edges of ribbon: comment out the following codes, and switch decorate method in LinesHelper.createbands
+        //if you want to retain the side edges of ribbon:
+        //comment out the following codes, and switch decorate method in LinesHelper.createbands
         helper.setAlphaEnabled(false)
-        root.appendNodes(helper.createLines(dataPoints, GeomUtil.TO_LOCATION_X_YMAX))
-        root.appendNodes(helper.createLines(dataPoints, GeomUtil.TO_LOCATION_X_YMIN))
+
+        root.appendNodes(helper.createLines(dataPoints, upper))
+        root.appendNodes(helper.createLines(dataPoints, lower))
 
         buildHints(aesthetics, pos, coord, ctx)
     }
@@ -44,21 +66,32 @@ class RibbonGeom : GeomBase() {
     private fun buildHints(aesthetics: Aesthetics, pos: PositionAdjustment, coord: CoordinateSystem, ctx: GeomContext) {
         val helper = GeomHelper(pos, coord, ctx)
         val colorMapper = HintColorUtil.createColorMarkerMapper(GeomKind.RIBBON, ctx)
+        val isVerticallyOriented = when(isVertical) {
+            true -> !ctx.flipped
+            false -> ctx.flipped
+        }
         val hint = HintsCollection.HintConfigFactory()
             .defaultObjectRadius(0.0)
-            .defaultKind(HORIZONTAL_TOOLTIP.takeIf { !ctx.flipped } ?: VERTICAL_TOOLTIP)
+            .defaultKind(HORIZONTAL_TOOLTIP.takeIf { isVerticallyOriented } ?: VERTICAL_TOOLTIP)
+
+        val xAes = flipHelper.getEffectiveAes(Aes.X)
+        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
+        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
+        val location = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, 0.0)) }
+        val upper = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
+        val lower = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[minAes]!!)) }
 
         for (p in aesthetics.dataPoints()) {
-            val x = GeomUtil.TO_LOCATION_X_ZERO(p)?.let { helper.toClient(it, p) }?.x ?: continue
-            val top = GeomUtil.TO_LOCATION_X_YMAX(p)?.let { helper.toClient(it, p) }?.y ?: continue
-            val bottom = GeomUtil.TO_LOCATION_X_YMIN(p)?.let { helper.toClient(it, p) }?.y ?: continue
+            val x = location(p)?.let { helper.toClient(it, p) }?.x ?: continue
+            val top = upper(p)?.let { helper.toClient(it, p) }?.y ?: continue
+            val bottom = lower(p)?.let { helper.toClient(it, p) }?.y ?: continue
 
-            hint.defaultCoord(p.x()!!)
+            hint.defaultCoord(p[xAes]!!)
                 .defaultColor(p.fill()!!, alpha = null)
 
             val hintsCollection = HintsCollection(p, helper)
-                .addHint(hint.create(Aes.YMAX))
-                .addHint(hint.create(Aes.YMIN))
+                .addHint(hint.create(maxAes))
+                .addHint(hint.create(minAes))
 
             val tooltipParams = GeomTargetCollector.TooltipParams(
                 tipLayoutHints = hintsCollection.hints,
