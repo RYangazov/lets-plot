@@ -6,9 +6,9 @@
 package org.jetbrains.letsPlot.core.plot.base.geom
 
 
+import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.core.plot.base.*
-import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsUtil.orthogonal
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 import org.jetbrains.letsPlot.core.plot.base.tooltip.GeomTargetCollector
@@ -17,19 +17,25 @@ import org.jetbrains.letsPlot.core.plot.base.tooltip.TipLayoutHint.Kind.VERTICAL
 
 class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
     private val flipHelper = FlippableGeomHelper(isVertical)
+    private val afterRotation = { aes: Aes<Double> -> flipHelper.getEffectiveAes(aes) }
+
+    private fun afterRotation(rectangle: DoubleRectangle): DoubleRectangle {
+        return flipHelper.flip(rectangle)
+    }
+
+    private fun afterRotation(vector: DoubleVector): DoubleVector {
+        return flipHelper.flip(vector)
+    }
 
     override val wontRender: List<Aes<*>>
         get() {
-            return listOf(
-                flipHelper.getEffectiveAes(Aes.YMIN.orthogonal()),
-                flipHelper.getEffectiveAes(Aes.YMAX.orthogonal()),
-            )
+            return listOf(Aes.XMIN, Aes.XMAX).map(afterRotation)
         }
 
     private fun dataPoints(aesthetics: Aesthetics): Iterable<DataPointAesthetics> {
-        val xAes = flipHelper.getEffectiveAes(Aes.X)
-        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
-        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
+        val xAes = afterRotation(Aes.X)
+        val minAes = afterRotation(Aes.YMIN)
+        val maxAes = afterRotation(Aes.YMAX)
         val data = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, minAes, maxAes)
         return GeomUtil.ordered_X(data)
     }
@@ -41,14 +47,14 @@ class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
         coord: CoordinateSystem,
         ctx: GeomContext
     ) {
-        val xAes = flipHelper.getEffectiveAes(Aes.X)
-        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
-        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
+        val xAes = afterRotation(Aes.X)
+        val minAes = afterRotation(Aes.YMIN)
+        val maxAes = afterRotation(Aes.YMAX)
         val dataPoints = dataPoints(aesthetics)
         val helper = LinesHelper(pos, coord, ctx)
 
-        val upper = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
-        val lower = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[minAes]!!)) }
+        val upper = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
+        val lower = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[minAes]!!)) }
 
         val paths = helper.createBands(dataPoints, upper, lower)
         root.appendNodes(paths)
@@ -66,7 +72,7 @@ class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
     private fun buildHints(aesthetics: Aesthetics, pos: PositionAdjustment, coord: CoordinateSystem, ctx: GeomContext) {
         val helper = GeomHelper(pos, coord, ctx)
         val colorMapper = HintColorUtil.createColorMarkerMapper(GeomKind.RIBBON, ctx)
-        val isVerticallyOriented = when(isVertical) {
+        val isVerticallyOriented = when (isVertical) {
             true -> !ctx.flipped
             false -> ctx.flipped
         }
@@ -74,12 +80,12 @@ class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
             .defaultObjectRadius(0.0)
             .defaultKind(HORIZONTAL_TOOLTIP.takeIf { isVerticallyOriented } ?: VERTICAL_TOOLTIP)
 
-        val xAes = flipHelper.getEffectiveAes(Aes.X)
-        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
-        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
-        val location = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, 0.0)) }
-        val upper = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
-        val lower = { p: DataPointAesthetics -> flipHelper.flip(DoubleVector(p[xAes]!!, p[minAes]!!)) }
+        val xAes = afterRotation(Aes.X)
+        val minAes = afterRotation(Aes.YMIN)
+        val maxAes = afterRotation(Aes.YMAX)
+        val location = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, 0.0)) }
+        val upper = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
+        val lower = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[minAes]!!)) }
 
         for (p in aesthetics.dataPoints()) {
             val x = location(p)?.let { helper.toClient(it, p) }?.x ?: continue

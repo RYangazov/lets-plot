@@ -10,7 +10,6 @@ import org.jetbrains.letsPlot.commons.geometry.DoubleSegment
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.aes.AesScaling
-import org.jetbrains.letsPlot.core.plot.base.aes.AestheticsUtil.orthogonal
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.LegendKeyElementFactory
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
@@ -19,18 +18,22 @@ import org.jetbrains.letsPlot.datamodel.svg.dom.SvgLineElement
 
 class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
     private val flipHelper = FlippableGeomHelper(isVertical)
+    private val afterRotation = { aes: Aes<Double> -> flipHelper.getEffectiveAes(aes) }
+
+    private fun afterRotation(rectangle: DoubleRectangle): DoubleRectangle {
+        return flipHelper.flip(rectangle)
+    }
+
+    private fun afterRotation(segment: DoubleSegment): DoubleSegment {
+        return flipHelper.flip(segment)
+    }
 
     override val legendKeyElementFactory: LegendKeyElementFactory
         get() = ErrorBarLegendKeyElementFactory()
 
     override val wontRender: List<Aes<*>>
         get() {
-            return listOf(
-                flipHelper.getEffectiveAes(Aes.X.orthogonal()),
-                flipHelper.getEffectiveAes(Aes.YMIN.orthogonal()),
-                flipHelper.getEffectiveAes(Aes.YMAX.orthogonal()),
-                flipHelper.getEffectiveAes(Aes.WIDTH.orthogonal())
-            )
+            return listOf(Aes.Y, Aes.XMIN, Aes.XMAX, Aes.HEIGHT).map(afterRotation)
         }
 
     override fun buildIntern(
@@ -40,10 +43,10 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
         coord: CoordinateSystem,
         ctx: GeomContext
     ) {
-        val xAes = flipHelper.getEffectiveAes(Aes.X)
-        val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
-        val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
-        val widthAes = flipHelper.getEffectiveAes(Aes.WIDTH)
+        val xAes = afterRotation(Aes.X)
+        val minAes = afterRotation(Aes.YMIN)
+        val maxAes = afterRotation(Aes.YMAX)
+        val widthAes = afterRotation(Aes.WIDTH)
         val dataPoints = GeomUtil.withDefined(aesthetics.dataPoints(), xAes, minAes, maxAes, widthAes)
 
         val geomHelper = GeomHelper(pos, coord, ctx)
@@ -58,7 +61,7 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
             val height = ymax - ymin
 
             val rect = DoubleRectangle(x - width / 2, ymin, width, height)
-            val segments = errorBarShapeSegments(rect).map { flipHelper.flip(it) }
+            val segments = errorBarShapeSegments(rect).map { afterRotation(it) }
             val g = errorBarShape(segments, p, geomHelper)
             root.add(g)
         }
@@ -66,10 +69,40 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
         flipHelper.buildHints(
             listOf(minAes, maxAes),
             aesthetics, pos, coord, ctx,
-            clientRectByDataPoint(ctx, geomHelper, flipHelper),
+            clientRectByDataPoint(ctx, geomHelper),
             { HintColorUtil.colorWithAlpha(it) },
             colorMarkerMapper = colorsByDataPoint
         )
+    }
+
+    private fun clientRectByDataPoint(
+        ctx: GeomContext,
+        geomHelper: GeomHelper
+    ): (DataPointAesthetics) -> DoubleRectangle? {
+        return { p ->
+            val xAes = afterRotation(Aes.X)
+            val minAes = afterRotation(Aes.YMIN)
+            val maxAes = afterRotation(Aes.YMAX)
+            val widthAes = afterRotation(Aes.WIDTH)
+            if (p.defined(xAes) &&
+                p.defined(minAes) &&
+                p.defined(maxAes) &&
+                p.defined(widthAes)
+            ) {
+                val x = p[xAes]!!
+                val ymin = p[minAes]!!
+                val ymax = p[maxAes]!!
+                val width = p[widthAes]!! * ctx.getResolution(xAes)
+                val height = ymax - ymin
+                val rect = geomHelper.toClient(
+                    afterRotation(DoubleRectangle(x - width / 2.0, ymin - height / 2.0, width, 0.0)),
+                    p
+                )!!
+                rect
+            } else {
+                null
+            }
+        }
     }
 
     internal class ErrorBarLegendKeyElementFactory : LegendKeyElementFactory {
@@ -88,39 +121,6 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
     }
 
     companion object {
-        private fun clientRectByDataPoint(
-            ctx: GeomContext,
-            geomHelper: GeomHelper,
-            flipHelper: FlippableGeomHelper
-        ): (DataPointAesthetics) -> DoubleRectangle? {
-            return { p ->
-                val xAes = flipHelper.getEffectiveAes(Aes.X)
-                val minAes = flipHelper.getEffectiveAes(Aes.YMIN)
-                val maxAes = flipHelper.getEffectiveAes(Aes.YMAX)
-                val widthAes = flipHelper.getEffectiveAes(Aes.WIDTH)
-                if (p.defined(xAes) &&
-                    p.defined(minAes) &&
-                    p.defined(maxAes) &&
-                    p.defined(widthAes)
-                ) {
-                    val x = p[xAes]!!
-                    val ymin = p[minAes]!!
-                    val ymax = p[maxAes]!!
-                    val width = p[widthAes]!! * ctx.getResolution(xAes)
-                    val height = ymax - ymin
-                    val rect = geomHelper.toClient(
-                        flipHelper.flip(
-                            DoubleRectangle(x - width / 2.0, ymin - height / 2.0, width, 0.0)
-                        ),
-                        p
-                    )!!
-                    rect
-                } else {
-                    null
-                }
-            }
-        }
-
         private fun errorBarLegendShape(segments: List<DoubleSegment>, p: DataPointAesthetics): SvgGElement {
             val g = SvgGElement()
             segments.forEach { segment ->

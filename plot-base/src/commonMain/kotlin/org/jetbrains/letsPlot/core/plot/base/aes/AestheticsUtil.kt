@@ -6,7 +6,6 @@
 package org.jetbrains.letsPlot.core.plot.base.aes
 
 import org.jetbrains.letsPlot.commons.values.Color
-import org.jetbrains.letsPlot.core.plot.base.Aes
 import org.jetbrains.letsPlot.core.plot.base.DataPointAesthetics
 import org.jetbrains.letsPlot.core.plot.base.render.point.UpdatableShape
 import org.jetbrains.letsPlot.datamodel.svg.dom.SvgShape
@@ -67,20 +66,6 @@ object AestheticsUtil {
         shape.fillColor().set(p.fill())
         if (p.alpha() != AesInitValue.DEFAULT_ALPHA) {
             shape.fillOpacity().set(p.alpha())
-        }
-    }
-
-    fun Aes<Double>.orthogonal(): Aes<Double> {
-        when (this) {
-            Aes.X -> return Aes.Y
-            Aes.Y -> return Aes.X
-            Aes.YMIN -> return Aes.XMIN
-            Aes.YMAX -> return Aes.XMAX
-            Aes.XMIN -> return Aes.YMIN
-            Aes.XMAX -> return Aes.YMAX
-            Aes.WIDTH -> return Aes.HEIGHT
-            Aes.HEIGHT -> return Aes.WIDTH
-            else -> error("Aes ${this.name} not allowed for function orthogonal")
         }
     }
 }
