@@ -16,7 +16,10 @@ import kotlin.math.max
 
 class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
     private val flipHelper = FlippableGeomHelper(isVertical)
-    private val afterRotation = { aes: Aes<Double> -> flipHelper.getEffectiveAes(aes) }
+
+    private fun afterRotation(aes: Aes<Double>): Aes<Double> {
+        return flipHelper.getEffectiveAes(aes)
+    }
 
     private fun afterRotation(rectangle: DoubleRectangle): DoubleRectangle {
         return flipHelper.flip(rectangle)
@@ -31,7 +34,7 @@ class LineRangeGeom(private val isVertical: Boolean) : GeomBase() {
 
     override val wontRender: List<Aes<*>>
         get() {
-            return listOf(Aes.Y, Aes.XMIN, Aes.XMAX).map(afterRotation)
+            return listOf(Aes.Y, Aes.XMIN, Aes.XMAX).map(::afterRotation)
         }
 
     override fun buildIntern(

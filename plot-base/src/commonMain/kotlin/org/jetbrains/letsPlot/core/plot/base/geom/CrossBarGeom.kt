@@ -14,7 +14,6 @@ import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
 
 class CrossBarGeom(private val isVertical: Boolean) : GeomBase() {
     private val flipHelper = FlippableGeomHelper(isVertical)
-    private val afterRotation = { aes: Aes<Double> -> flipHelper.getEffectiveAes(aes) }
     var fattenMidline: Double = 2.5
 
     override val legendKeyElementFactory: LegendKeyElementFactory
@@ -22,8 +21,12 @@ class CrossBarGeom(private val isVertical: Boolean) : GeomBase() {
 
     override val wontRender: List<Aes<*>>
         get() {
-            return listOf(Aes.XMIN, Aes.XMAX).map(afterRotation)
+            return listOf(Aes.XMIN, Aes.XMAX).map(::afterRotation)
         }
+
+    private fun afterRotation(aes: Aes<Double>): Aes<Double> {
+        return flipHelper.getEffectiveAes(aes)
+    }
 
     private fun afterRotation(rectangle: DoubleRectangle): DoubleRectangle {
         return flipHelper.flip(rectangle)
@@ -48,7 +51,7 @@ class CrossBarGeom(private val isVertical: Boolean) : GeomBase() {
         buildMidlines(root, aesthetics, ctx, geomHelper, fatten = fattenMidline)
         // tooltip
         flipHelper.buildHints(
-            listOf(Aes.YMIN, Aes.YMAX).map(afterRotation),
+            listOf(Aes.YMIN, Aes.YMAX).map(::afterRotation),
             aesthetics, pos, coord, ctx,
             clientRectByDataPoint(ctx, geomHelper, isHintRect = true),
             { HintColorUtil.colorWithAlpha(it) }

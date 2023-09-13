@@ -18,7 +18,10 @@ import org.jetbrains.letsPlot.datamodel.svg.dom.SvgLineElement
 
 class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
     private val flipHelper = FlippableGeomHelper(isVertical)
-    private val afterRotation = { aes: Aes<Double> -> flipHelper.getEffectiveAes(aes) }
+
+    private fun afterRotation(aes: Aes<Double>): Aes<Double> {
+        return flipHelper.getEffectiveAes(aes)
+    }
 
     private fun afterRotation(rectangle: DoubleRectangle): DoubleRectangle {
         return flipHelper.flip(rectangle)
@@ -33,7 +36,7 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
 
     override val wontRender: List<Aes<*>>
         get() {
-            return listOf(Aes.Y, Aes.XMIN, Aes.XMAX, Aes.HEIGHT).map(afterRotation)
+            return listOf(Aes.Y, Aes.XMIN, Aes.XMAX, Aes.HEIGHT).map(::afterRotation)
         }
 
     override fun buildIntern(
@@ -61,7 +64,7 @@ class ErrorBarGeom(private val isVertical: Boolean) : GeomBase() {
             val height = ymax - ymin
 
             val rect = DoubleRectangle(x - width / 2, ymin, width, height)
-            val segments = errorBarShapeSegments(rect).map { afterRotation(it) }
+            val segments = errorBarShapeSegments(rect).map(::afterRotation)
             val g = errorBarShape(segments, p, geomHelper)
             root.add(g)
         }

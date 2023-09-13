@@ -19,7 +19,10 @@ import org.jetbrains.letsPlot.core.plot.base.render.point.PointShapeSvg
 class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
     var fattenMidPoint: Double = DEF_FATTEN
     private val flipHelper = FlippableGeomHelper(isVertical)
-    private val afterRotation = { aes: Aes<Double> -> flipHelper.getEffectiveAes(aes) }
+
+    private fun afterRotation(aes: Aes<Double>): Aes<Double> {
+        return flipHelper.getEffectiveAes(aes)
+    }
 
     private fun afterRotation(rectangle: DoubleRectangle): DoubleRectangle {
         return flipHelper.flip(rectangle)
@@ -37,7 +40,7 @@ class PointRangeGeom(private val isVertical: Boolean) : GeomBase() {
 
     override val wontRender: List<Aes<*>>
         get() {
-            return listOf(Aes.XMIN, Aes.XMAX).map(afterRotation)
+            return listOf(Aes.XMIN, Aes.XMAX).map(::afterRotation)
         }
 
     override fun buildIntern(
