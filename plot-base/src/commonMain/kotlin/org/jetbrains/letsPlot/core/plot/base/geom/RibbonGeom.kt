@@ -6,8 +6,8 @@
 package org.jetbrains.letsPlot.core.plot.base.geom
 
 
-import org.jetbrains.letsPlot.commons.geometry.DoubleRectangle
 import org.jetbrains.letsPlot.commons.geometry.DoubleVector
+import org.jetbrains.letsPlot.core.commons.data.SeriesUtil
 import org.jetbrains.letsPlot.core.plot.base.*
 import org.jetbrains.letsPlot.core.plot.base.geom.util.*
 import org.jetbrains.letsPlot.core.plot.base.render.SvgRoot
@@ -22,8 +22,10 @@ class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
         return flipHelper.getEffectiveAes(aes)
     }
 
-    private fun afterRotation(vector: DoubleVector): DoubleVector {
-        return flipHelper.flip(vector)
+    private fun afterRotation(x: Double?, y: Double?): DoubleVector? {
+        return if (SeriesUtil.isFinite(x) && SeriesUtil.isFinite(y)) {
+            flipHelper.flip(DoubleVector(x!!, y!!))
+        } else null
     }
 
     override val wontRender: List<Aes<*>>
@@ -52,8 +54,8 @@ class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
         val dataPoints = dataPoints(aesthetics)
         val helper = LinesHelper(pos, coord, ctx)
 
-        val upper = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
-        val lower = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[minAes]!!)) }
+        val upper = { p: DataPointAesthetics -> afterRotation(p[xAes], p[maxAes]) }
+        val lower = { p: DataPointAesthetics -> afterRotation(p[xAes], p[minAes]) }
 
         val paths = helper.createBands(dataPoints, upper, lower)
         root.appendNodes(paths)
@@ -82,9 +84,9 @@ class RibbonGeom(private val isVertical: Boolean) : GeomBase() {
         val xAes = afterRotation(Aes.X)
         val minAes = afterRotation(Aes.YMIN)
         val maxAes = afterRotation(Aes.YMAX)
-        val location = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, 0.0)) }
-        val upper = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[maxAes]!!)) }
-        val lower = { p: DataPointAesthetics -> afterRotation(DoubleVector(p[xAes]!!, p[minAes]!!)) }
+        val location = { p: DataPointAesthetics -> afterRotation(p[xAes], 0.0) }
+        val upper = { p: DataPointAesthetics -> afterRotation(p[xAes], p[maxAes]) }
+        val lower = { p: DataPointAesthetics -> afterRotation(p[xAes], p[minAes]) }
 
         for (p in aesthetics.dataPoints()) {
             val x = location(p)?.let { helper.toClient(it, p) }?.x ?: continue
