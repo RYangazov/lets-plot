@@ -455,11 +455,11 @@ def stat_ecdf(mapping=None, *, data=None, geom=None,
                  **other_args)
 
 
-def stat_sum(mapping=None, *, data=None, geom=None,
-             position=None, show_legend=None, sampling=None, tooltips=None,
+def stat_sum(mapping=None, *, data=None, geom=None, position=None, show_legend=None, sampling=None, tooltips=None,
+             color_by=None, fill_by=None,
              **other_args):
     """
-    Sum unique values
+    Sum unique values.
 
     Parameters
     ----------
@@ -483,6 +483,10 @@ def stat_sum(mapping=None, *, data=None, geom=None,
     tooltips : `layer_tooltips`
         Result of the call to the `layer_tooltips()` function.
         Specify appearance, style and content.
+    color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
+        Define the color aesthetic for the geometry.
+    fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
+        Define the fill aesthetic for the geometry.
     other_args
         Other arguments passed on to the layer.
         These are often aesthetics settings used to set an aesthetic to a fixed value,
@@ -507,7 +511,7 @@ def stat_sum(mapping=None, *, data=None, geom=None,
     --------
     .. jupyter-execute::
         :linenos:
-        :emphasize-lines: 7
+        :emphasize-lines: 10
 
         import numpy as np
         from lets_plot import *
@@ -517,13 +521,14 @@ def stat_sum(mapping=None, *, data=None, geom=None,
         np.random.seed(42)
         x = [round(it) for it in np.random.normal(0, 1.5, size=n)]
         y = [round(it) for it in np.random.normal(0, 1.5, size=n)]
-        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + stat_sum()
+        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + \\
+            stat_sum()
 
     |
 
     .. jupyter-execute::
         :linenos:
-        :emphasize-lines: 14-15
+        :emphasize-lines: 10
 
         import numpy as np
         from lets_plot import *
@@ -533,7 +538,9 @@ def stat_sum(mapping=None, *, data=None, geom=None,
         np.random.seed(42)
         x = [round(it) for it in np.random.normal(0, 1.5, size=n)]
         y = [round(it) for it in np.random.normal(0, 1.5, size=n)]
-        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + stat_sum(aes(size='..prop..', group='x'))
+        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + \\
+            stat_sum(aes(size='..prop..', group='x'))
+
 """
     sum_geom = 'point' if geom is None else geom
     return _geom(sum_geom,
@@ -544,4 +551,6 @@ def stat_sum(mapping=None, *, data=None, geom=None,
                  show_legend=show_legend,
                  sampling=sampling,
                  tooltips=tooltips,
+                 color_by=color_by,
+                 fill_by=fill_by,
                  **other_args)

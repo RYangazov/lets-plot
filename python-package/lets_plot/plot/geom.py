@@ -24,7 +24,8 @@ __all__ = ['geom_point', 'geom_path', 'geom_line',
            'geom_density2d', 'geom_density2df', 'geom_jitter',
            'geom_qq', 'geom_qq2', 'geom_qq_line', 'geom_qq2_line',
            'geom_freqpoly', 'geom_step', 'geom_rect', 'geom_segment',
-           'geom_text', 'geom_label', 'geom_pie', 'geom_lollipop']
+           'geom_text', 'geom_label', 'geom_pie', 'geom_lollipop',
+           'geom_count']
 
 
 def geom_point(mapping=None, *, data=None, stat=None, position=None, show_legend=None, sampling=None, tooltips=None,
@@ -1176,7 +1177,7 @@ def geom_bin2d(mapping=None, *, data=None, stat=None, position=None, show_legend
     - alpha : transparency level of a layer. Accept values between 0 and 1.
     - color (colour) : color of the geometry lines. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
     - fill : fill color. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
-    - size : line width. The default size is 0, so the stroke will be invisible.
+    - size : line width, default=0 (i.e. tiles outline initially is not visible).
     - weight : used by 'bin' stat to compute weighted sum instead of simple count.
 
     Examples
@@ -1320,7 +1321,7 @@ def geom_tile(mapping=None, *, data=None, stat=None, position=None, show_legend=
     - alpha : transparency level of a layer. Accept values between 0 and 1.
     - color (colour) : color of the geometry lines. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
     - fill : fill color. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
-    - size : line width. The default size is 0, so the stroke will be invisible.
+    - size : line width, default=0 (i.e. tiles outline initially is not visible).
     - width : width of a tile. Typically range between 0 and 1. Values that are greater than 1 lead to overlapping of the tiles.
     - height : height of a tile. Typically range between 0 and 1. Values that are greater than 1 lead to overlapping of the tiles.
     - linetype : type of the line of tile's border. Codes and names: 0 = 'blank', 1 = 'solid', 2 = 'dashed', 3 = 'dotted', 4 = 'dotdash', 5 = 'longdash', 6 = 'twodash'.
@@ -3068,7 +3069,7 @@ def geom_boxplot(mapping=None, *, data=None, stat=None, position=None, show_lege
         y = np.random.normal(size=n)
         ggplot({'x': x, 'y': y}, aes(x='x', y='y')) + \\
             geom_boxplot(fatten=5, varwidth=True, \\
-                         outlier_shape=8, outlier_size=5)
+                         outlier_shape=8, outlier_size=2)
 
     |
 
@@ -3111,7 +3112,7 @@ def geom_boxplot(mapping=None, *, data=None, stat=None, position=None, show_lege
         ggplot(df.melt()) + \\
             geom_boxplot(aes(x='variable', y='value', color='variable', \\
                              fill='variable'), \\
-                         outlier_shape=21, outlier_size=4, size=2, \\
+                         outlier_shape=21, outlier_size=1.5, size=2, \\
                          alpha=.5, width=.5, show_legend=False)
 
     """
@@ -6446,6 +6447,111 @@ def geom_lollipop(mapping=None, *, data=None, stat=None, position=None, show_leg
                  tooltips=tooltips,
                  orientation=orientation,
                  dir=dir, fatten=fatten, slope=slope, intercept=intercept,
+                 color_by=color_by, fill_by=fill_by,
+                 **other_args)
+
+
+def geom_count(mapping=None, *, data=None, stat=None, position=None, show_legend=None, sampling=None, tooltips=None,
+               color_by=None, fill_by=None,
+               **other_args):
+    """
+    Sum unique values.
+
+    Parameters
+    ----------
+    mapping : `FeatureSpec`
+        Set of aesthetic mappings created by `aes()` function.
+        Aesthetic mappings describe the way that variables in the data are
+        mapped to plot "aesthetics".
+    data : dict or Pandas or Polars `DataFrame`
+        The data to be displayed in this layer. If None, the default, the data
+        is inherited from the plot data as specified in the call to ggplot.
+    stat : str, default='sum'
+        The statistical transformation to use on the data for this layer, as a string.
+    position : str or `FeatureSpec`, default='identity'
+        Position adjustment, either as a string ('identity', 'stack', 'dodge', ...),
+        or the result of a call to a position adjustment function.
+    show_legend : bool, default=True
+        False - do not show legend for this layer.
+    sampling : `FeatureSpec`
+        Result of the call to the `sampling_xxx()` function.
+        To prevent any sampling for this layer pass value "none" (string "none").
+    tooltips : `layer_tooltips`
+        Result of the call to the `layer_tooltips()` function.
+        Specify appearance, style and content.
+    color_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='color'
+        Define the color aesthetic for the geometry.
+    fill_by : {'fill', 'color', 'paint_a', 'paint_b', 'paint_c'}, default='fill'
+        Define the fill aesthetic for the geometry.
+    other_args
+        Other arguments passed on to the layer.
+        These are often aesthetics settings used to set an aesthetic to a fixed value,
+        like color='red', fill='blue', size=3 or shape=21.
+        They may also be parameters to the paired geom/stat.
+
+    Returns
+    -------
+    `LayerSpec`
+        Geom object specification.
+
+    Notes
+    -----
+    `geom_count()` understands the following aesthetics mappings:
+
+    - x : x-axis coordinates.
+    - y : y-axis coordinates.
+    - alpha : transparency level of the point. Accept values between 0 and 1.
+    - color (colour) : color of the geometry. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
+    - fill : fill color. Is applied only to the points of shapes having inner area. String in the following formats: RGB/RGBA (e.g. "rgb(0, 0, 255)"); HEX (e.g. "#0000FF"); color name (e.g. "red"); role name ("pen", "paper" or "brush").
+    - shape : shape of the point, an integer from 0 to 25.
+    - size : size of the point.
+    - stroke : width of the shape border. Applied only to the shapes having border.
+
+
+    Examples
+    --------
+    .. jupyter-execute::
+        :linenos:
+        :emphasize-lines: 10
+
+        import numpy as np
+        from lets_plot import *
+        from lets_plot.mapping import as_discrete
+        LetsPlot.setup_html()
+        n = 50
+        np.random.seed(42)
+        x = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        y = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + \\
+            geom_count()
+
+    |
+
+    .. jupyter-execute::
+        :linenos:
+        :emphasize-lines: 10
+
+        import numpy as np
+        from lets_plot import *
+        from lets_plot.mapping import as_discrete
+        LetsPlot.setup_html()
+        n = 50
+        np.random.seed(42)
+        x = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        y = [round(it) for it in np.random.normal(0, 1.5, size=n)]
+        ggplot({'x': x, 'y': y}, aes(x=as_discrete('x', order=1), y=as_discrete('y', order=1))) + \\
+            geom_count(aes(size='..prop..', group='x'))
+
+"""
+    stat = 'sum' if stat is None else stat
+    return _geom('point',
+                 mapping=mapping,
+                 data=data,
+                 stat=stat,
+                 position=position,
+                 show_legend=show_legend,
+                 sampling=sampling,
+                 tooltips=tooltips,
                  color_by=color_by, fill_by=fill_by,
                  **other_args)
 
