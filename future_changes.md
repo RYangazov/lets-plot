@@ -10,8 +10,6 @@
 
   See: [example notebook](https://nbviewer.org/github/JetBrains/lets-plot/blob/master/docs/f-23e/horizontal_geoms.ipynb).
 
-
-
 ### Changed
 
 ### Fixed
